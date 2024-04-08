@@ -127,6 +127,3 @@ export function pocK6ApiJourney() {
     });
     sleep(1)
 };
-//run both in cloud in morning
-//document k6 proceess
-//draft AC for k6 and PM Pipeline tix, use PW tick as example

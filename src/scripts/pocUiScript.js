@@ -169,7 +169,3 @@ export function pocK6UiJourney() {
   });
   sleep(1)
 };
-//do for pet API,
-//group of: post get delete
-//set up account run in cloud
-//document
