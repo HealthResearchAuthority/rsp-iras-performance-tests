@@ -5,6 +5,11 @@ import { Trend } from 'k6/metrics';
 const baseURL = 'https://test.k6.io'
 
 export const options = {
+  cloud: {
+    distribution: {
+        'amazon:gb:london': { loadZone: 'amazon:gb:london', percent: 100 },
+    },
+},
   scenarios: {
     PocK6UiJourney: {
       executor: 'ramping-vus',
