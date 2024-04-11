@@ -18,7 +18,7 @@ steps:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/pocApiTestResults.xml'
+      testResultsFiles: 'results/report.json'
       failTaskOnFailedTests: true
       failTaskOnFailureToPublishResults: true
       failTaskOnMissingResultsFile: true
