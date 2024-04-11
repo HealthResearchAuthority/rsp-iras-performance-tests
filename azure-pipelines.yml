@@ -12,5 +12,5 @@ steps:
 
   - task: k6-load-test@0
     inputs:
-      filename: 'pocApiScript.js'
+      filename: 'src/scripts/pocApiScript.js'
     displayName: 'Run k6 POC API Test'
