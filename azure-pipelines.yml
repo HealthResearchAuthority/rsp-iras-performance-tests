@@ -20,3 +20,8 @@ steps:
       failTaskOnFailureToPublishResults: true
       failTaskOnMissingResultsFile: true
       testRunTitle: 'k6 POC API Test Results'
+  
+  - publish: $(System.DefaultWorkingDirectory)/results/report.json
+    artifact: test-report
+    condition: always()
+    displayName: Publish k6 Test Report
