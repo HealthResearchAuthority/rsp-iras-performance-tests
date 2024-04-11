@@ -14,3 +14,12 @@ steps:
     inputs:
       filename: 'src/scripts/pocApiScript.js'
     displayName: 'Run k6 POC API Test'
+  
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/pocApiTestResults.xml'
+      failTaskOnFailedTests: true
+      failTaskOnFailureToPublishResults: true
+      failTaskOnMissingResultsFile: true
+      testRunTitle: 'k6 POC API Test Results'
