@@ -12,15 +12,6 @@ steps:
       filename: 'src/scripts/pocApiScript.js'
     displayName: 'Run k6 POC API Test'
   
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '**/results/report.json'
-      failTaskOnFailedTests: true
-      failTaskOnFailureToPublishResults: true
-      failTaskOnMissingResultsFile: true
-      testRunTitle: 'k6 POC API Test Results'
-  
   - publish: $(System.DefaultWorkingDirectory)/results/report.json
     artifact: test-report
     condition: always()
