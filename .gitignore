@@ -1,1 +1,4 @@
+# ignore all output report files
 tests/results/*
+# exception to the rule to keep the folder structure
+!tests/results/.gitkeep 
