@@ -173,6 +173,6 @@ export function pocK6UiJourney() {
 export function handleSummary(data) {
   return {
       stdout: textSummary(data, { indent: '→', enableColors: true }),
-      'tests/results/report.json': JSON.stringify(data)
+      'tests/results/pocUiScriptReport.json': JSON.stringify(data)
   };
 };
