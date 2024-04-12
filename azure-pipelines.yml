@@ -18,7 +18,7 @@ steps:
   - task: k6-load-test@0
     inputs:
       filename: src/scripts/${{ parameters.testScript }}.js
-    displayName: "Run k6 POC API Test"
+    displayName: "Run k6 ${{ parameters.testScript }} Test"
 
   - publish: $(System.DefaultWorkingDirectory)/tests/results/${{ parameters.testScript }}Report.json
     artifact: k6-report

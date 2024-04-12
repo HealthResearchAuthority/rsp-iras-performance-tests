@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, group, sleep } from 'k6';
 import { Trend } from 'k6/metrics';
 import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
-import { jUnit, textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 const baseURL = 'https://petstore.swagger.io/v2'
 

@@ -1,15 +1,16 @@
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
 import { Trend } from 'k6/metrics';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 const baseURL = 'https://test.k6.io'
 
 export const options = {
   cloud: {
     distribution: {
-        'amazon:gb:london': { loadZone: 'amazon:gb:london', percent: 100 },
+      'amazon:gb:london': { loadZone: 'amazon:gb:london', percent: 100 },
     },
-},
+  },
   scenarios: {
     PocK6UiJourney: {
       executor: 'ramping-vus',
@@ -172,7 +173,7 @@ export function pocK6UiJourney() {
 
 export function handleSummary(data) {
   return {
-      stdout: textSummary(data, { indent: '→', enableColors: true }),
-      'tests/results/pocUiScriptReport.json': JSON.stringify(data)
+    stdout: textSummary(data, { indent: '→', enableColors: true }),
+    'tests/results/pocUiScriptReport.json': JSON.stringify(data)
   };
 };
