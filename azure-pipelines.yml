@@ -1,5 +1,14 @@
 # Run k6 POC API Performance Test
 
+parameters:
+  - name: testScript
+    displayName: Enter File Name of Test Script to Use
+    type: string
+    default: pocApiScript.js
+    values:
+      - pocApiScript.js
+      - pocUiScript.js
+
 trigger: none
 
 pool:
@@ -8,10 +17,10 @@ pool:
 steps:
   - task: k6-load-test@0
     inputs:
-      filename: "src/scripts/pocApiScript.js"
+      filename: src/scripts/${{ parameters.testScript }}
     displayName: "Run k6 POC API Test"
 
-  - publish: $(System.DefaultWorkingDirectory)/tests/results/pocApiReport.json
+  - publish: $(System.DefaultWorkingDirectory)/tests/results/report.json
     artifact: k6-report
     condition: always()
     displayName: Publish k6 Test Report

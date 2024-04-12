@@ -134,4 +134,4 @@ export function handleSummary(data) {
         stdout: textSummary(data, { indent: '→', enableColors: true }),
         'tests/results/report.json': JSON.stringify(data)
     };
-}
+};
