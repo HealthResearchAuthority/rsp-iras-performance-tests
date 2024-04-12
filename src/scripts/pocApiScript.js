@@ -132,6 +132,6 @@ export function pocK6ApiJourney() {
 export function handleSummary(data) {
     return {
         stdout: textSummary(data, { indent: '→', enableColors: true }),
-        'tests/results/pocApiReport.json': JSON.stringify(data);
+        'tests/results/pocApiReport.json': JSON.stringify(data)
     };
 }

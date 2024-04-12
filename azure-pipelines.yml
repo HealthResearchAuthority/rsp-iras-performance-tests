@@ -6,13 +6,12 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-
   - task: k6-load-test@0
     inputs:
-      filename: 'src/scripts/pocApiScript.js'
-    displayName: 'Run k6 POC API Test'
-  
-  - publish: $(System.DefaultWorkingDirectory)/results/report.json
-    artifact: test-report
+      filename: "src/scripts/pocApiScript.js"
+    displayName: "Run k6 POC API Test"
+
+  - publish: $(System.DefaultWorkingDirectory)/test/results
+    artifact: k6-report
     condition: always()
     displayName: Publish k6 Test Report
