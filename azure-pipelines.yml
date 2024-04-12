@@ -1,7 +1,4 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Run k6 POC API Performance Test
 
 trigger: none
 
@@ -15,11 +12,7 @@ steps:
       filename: 'src/scripts/pocApiScript.js'
     displayName: 'Run k6 POC API Test'
   
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '**/pocApiTestResults.xml'
-      failTaskOnFailedTests: true
-      failTaskOnFailureToPublishResults: true
-      failTaskOnMissingResultsFile: true
-      testRunTitle: 'k6 POC API Test Results'
+  - publish: $(System.DefaultWorkingDirectory)/results/report.json
+    artifact: test-report
+    condition: always()
+    displayName: Publish k6 Test Report
