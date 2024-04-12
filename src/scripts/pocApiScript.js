@@ -33,7 +33,7 @@ export const options = {
         http_req_failed: ['rate<0.001'],
         http_req_duration: ['p(95)<1000', 'p(100)<5000'],
         //Use Custom Metric As Threshold
-        'delete_pet_response_time': ['p(100)<5000', 'p(95)<1000'],
+        'delete_pet_response_time': ['p(80)<2', 'p(100)<5000', 'p(95)<1000'],
 
     },
 };
