@@ -10,7 +10,7 @@ The Tests can be run locally on the Dev Box via CLI, using our own Azure DevOps 
 Follow the setup guide [here](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/k6%20Setup%20Guide.docx?d=w5a279156829441af94af27126dd33bc1&csf=1&web=1&e=jjdeRK) to set up k6 on your Dev Box and connect with k6 Cloud
 
 Also review the document along with the [Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)  
-to understand the best practices for using k6 and running k6  
+to understand the best practices for using k6 and running tests  
 &nbsp;  
 
 # Run locally (k6 Open Source)
