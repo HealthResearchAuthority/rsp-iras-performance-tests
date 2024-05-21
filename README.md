@@ -34,6 +34,26 @@ Once the test has finished it will print a summary of the results to the console
 ![CLI Results](src/resources/cliResults.png =750x550)  
 &nbsp;  
 
-# Overview of Test Results
-TODO: Explain different elements of results
-Importance of 95%, using Trends to debug Threshold failures etc.
+# Run in Azure DevOps
+This method is open source and can be run as many times as you like without using up k6 resources or incurring extra costs.
+
+However, running via this method will use up our own Azure DevOps resources and will incur additional billable run-time, so please use sparingly.
+
+We will primarily use this method of running the tests, in scenarios where we have used up our k6 Cloud resources for the month.
+
+See Standards document for further details
+
+To run k6 performance test scripts in the Azure pipeline:
+- Go to the repo’s pipeline job [here](https://dev.azure.com/FutureIRAS/Research%20Systems%20Programme/_build?definitionId=10)
+- Click the Run pipeline button
+
+INSERT SCREENSHOT
+
+- Select the desired test script from the radio list
+- Click the Run button
+
+You can view the results on the console in the pipeline step which runs the tests
+
+INSERT SCREENSHOT
+
+The pipeline will also produce a test report in a JSON file and publish it as an artifact.
