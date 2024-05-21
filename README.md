@@ -78,7 +78,7 @@ Then the command will be `k6 cloud src/scripts/pocUiScript.js`
 
 Similarly to the local run, the test will kick off and begin printing results to the console. 
 
-INSERT SCREEN SHOT
+![Cloud CLI Command](src/resources/images/cloudCliCommand.png =800x250)  
 
 However, if you return to the Project Page of k6 Cloud, and click into the Future IRAS Project
 
@@ -86,7 +86,7 @@ You will see all the tests scripts that have been previously run within the proj
 
 And you will see that the test you just have just triggered (pocUiScript.js in this example), is currently in progress.
 
-INSERT SCREEN SHOT
+![Cloud In Progress](src/resources/images/cloudInProgress.png =750x500)  
 
 Back in VS Code,
 
@@ -94,7 +94,30 @@ Once the test has finished, unlike before the results will not be printed to the
 
 Simply a statement that the run has finished.
 
-INSERT SCREEN SHOT
+![Cloud CLI Finish](src/resources/images/cloudCliFinish.png =800x200)  
 
 To view the test results you will need to open the relevant test run on k6 cloud  
 &nbsp;  
+
+## Running via k6 Cloud Console 
+We can re-run test scripts directly through the k6 Cloud UI. 
+
+If you want to initiate a test from a brand-new test script.  
+Or re-run the existing script with changes.  
+Then you will need to make the changes locally and run in k6 Cloud via the local CLI, as demonstrated in the previous section.
+
+To run an existing test on the k6 Cloud UI:
+- Login to the teams k6 Cloud account
+- Navigate to the Future IRAS Project
+- Select a script from project page
+- On the Script Overview page Click the Run button on the top right of the screen
+
+INSERT SCREENSHOT
+
+This will trigger a new test run using the most recent version that has been previously executed in k6 Cloud. 
+
+You will now see an Initialization animation, which will display while k6 gets everything setup.
+
+INSERT SCREENSHOT
+
+Once initialization is complete, then the k6 Cloud Results console will display showing real time data, as the test is in progress
