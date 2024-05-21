@@ -27,11 +27,11 @@ Then the command will be `k6 run src/scripts/pocApiScript.js`
 
 If successful the relevant test script will run, as per its configuration, and begin logging results to the console. As shown below
 
-INSERT SCREEN SHOT
+![CLI Command](src/resources/cliCommand.png =800x250)
 
 Once the test has finished it will print a summary of the results to the console.
 
-INSERT SCREEN SHOT
+![CLI Results](src/resources/cliResults.png =750x550)  
 &nbsp;  
 
 # Overview of Test Results
