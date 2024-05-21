@@ -140,7 +140,7 @@ At a high level the k6 cloud results will show a chart outlining:
 - Response Time 
 - Failure Rate
 
-INSERT SCREEN SHOT
+![Cloud Result Chart](src/resources/images/cloudResultChart.png =900x500)  
 
 Above the chart will be a results summary showing: 
 - List bullet  
@@ -158,7 +158,23 @@ This shows more low-level detail about the test run and can be used to do a more
 - Console Logs 
 - Metrics (Analysis tab)
 
-INSERT SCREENSHOT
+![Cloud Insights](src/resources/images/cloudInsights.png =900x350)  
 
 For more information of Thresholds, Checks Metrics etc, see the documentation [here](https://grafana.com/docs/k6/latest/using-k6/) 
 &nbsp;  
+
+## Set report as baseline
+A baseline test run is useful when doing continuous testing of your application performance.
+
+We will want to set a baseline test run when our system reaches performance expectations,  
+to compare it against later test runs to find how the performance of the system changes.
+
+In k6 Cloud we can set a previous test run as a baseline by: 
+- Entering the results page of a particular test run
+- Clicking the ellipsis in the top right of the screen
+- Selecting the **Set as baseline** option
+
+INSERT SCREEN SHOT
+
+Setting a test run as a baseline will also ensure that the result from that test run will persist  
+beyond the standard data retention policy (14 days for the free version).
