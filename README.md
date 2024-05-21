@@ -112,12 +112,53 @@ To run an existing test on the k6 Cloud UI:
 - Select a script from project page
 - On the Script Overview page Click the Run button on the top right of the screen
 
-INSERT SCREENSHOT
+![Cloud Run](src/resources/images/cloudRun.png =750x400)  
 
 This will trigger a new test run using the most recent version that has been previously executed in k6 Cloud. 
 
 You will now see an Initialization animation, which will display while k6 gets everything setup.
 
+![Cloud Test Loading](src/resources/images/testLoading.png =500x400)  
+
+Once initialization is complete, then the k6 Cloud Results console will display showing real time data, as the test is in progress  
+&nbsp;  
+
+# Analysing reports
+The CLI report that is printed to the console when running k6 OSS on your local machine will output a basic table of results. 
+
+The results will include built in k6 metrics, as well as any custom metrics you have configured.
+
+![CLI Results](src/resources/images/cliResults.png =750x550)  
+&nbsp;  
+
+The k6 Cloud UI provides a report with far greater visualisation of test results,  
+as well as more in depth information about the performance of each request during the test run.
+
+At a high level the k6 cloud results will show a chart outlining: 
+- Number of Virtual Users 
+- Request Rate 
+- Response Time 
+- Failure Rate
+
+INSERT SCREEN SHOT
+
+Above the chart will be a results summary showing: 
+- List bullet  
+- Number of requests made 
+- Number of request failures 
+- Peak rates per second 
+- 95 percentile response time
+ 
+Beneath the chart is a Performance Insights panel. 
+
+This shows more low-level detail about the test run and can be used to do a more deep dive analysis into the performance using: 
+- Thresholds  
+- Checks 
+- Individual Request Logs 
+- Console Logs 
+- Metrics (Analysis tab)
+
 INSERT SCREENSHOT
 
-Once initialization is complete, then the k6 Cloud Results console will display showing real time data, as the test is in progress
+For more information of Thresholds, Checks Metrics etc, see the documentation [here](https://grafana.com/docs/k6/latest/using-k6/) 
+&nbsp;  
