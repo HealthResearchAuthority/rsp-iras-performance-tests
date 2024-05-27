@@ -7,7 +7,7 @@ The Tests can be run locally on the Dev Box via CLI, using our own Azure DevOps 
 &nbsp;  
 
 # Pre-requisites
-Follow the setup guide [here](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/k6%20Setup%20Guide.docx?d=w5a279156829441af94af27126dd33bc1&csf=1&web=1&e=jjdeRK) to set up k6 on your Dev Box and connect with k6 Cloud
+Follow the setup guide [here](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/k6%20Setup%20Guide.docx?d=w773a69b410a8481b840b04b7f3bdc3a0&csf=1&web=1&e=VYFrQZ) to set up k6 on your Dev Box and connect with k6 Cloud
 
 Also review the document along with the [Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)  
 to understand the best practices for using k6 and running tests  
@@ -182,5 +182,5 @@ beyond the standard data retention policy (14 days for the free version).
 
 # Supporting Documentation
 1. [Test Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)
-2. [k6 Setup Guide](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/k6%20Setup%20Guide.docx?d=w5a279156829441af94af27126dd33bc1&csf=1&web=1&e=jjdeRK)
+2. [k6 Setup Guide](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/k6%20Setup%20Guide.docx?d=w773a69b410a8481b840b04b7f3bdc3a0&csf=1&web=1&e=VYFrQZ)
 3. [k6 Documentation](https://grafana.com/docs/k6/latest/)
