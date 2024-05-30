@@ -29,7 +29,7 @@ Put [X] inside the [] to make the box ticked
 
 - [] Your code builds clean without any warnings, i.e. no ESLint or SonarCube errors
 - [] You have run the Pipeline jobs against this branch successfully
-- [] Any new or updated tests add value, i.e. assert the right thing?
+- [] Any new or updated tests add value, i.e. provide correct assurances, fail when expected and log errors appropriately
 - [] Tests scripts have been structured into appropriate user journeys
 - [] No duplicate tests have been added
 - [] You are using the correct naming conventions
