@@ -193,7 +193,7 @@ You can then edit the test configuration (load, duration, name etc) by entering 
 The test builder converts this configuration into an `options`object within the k6 script,  
 which provides the configuration to the scripts functions at runtime.
 
-![Test Builder](src/resources/images/setBaseLine.png =900x300)  
+![Test Builder](src/resources/images/testBuilder.png =750x450)  
 
 If you are new to writing k6 test scripts, it is recommended that you use the k6 test builder.  
 It can also be useful for experienced k6 users to quickly spin up a test script, which they can then modify in code to suit their needs.  
