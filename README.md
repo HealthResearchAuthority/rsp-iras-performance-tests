@@ -180,6 +180,26 @@ Setting a test run as a baseline will also ensure that the result from that test
 beyond the standard data retention policy (14 days for the free version).  
 &nbsp;  
 
+# Guide to Writing Test Scripts
+This section provides a high level overview on writing k6 test scripts to assist you in creating your own.  
+For more in depth guidance and further details please consult the official k6 documentation.
+
+## Using Test Builder
+The k6 cloud service provides a graphical interface to generate a k6 test script.  
+Using the test builder you can record a user journey/scenario, through a website or application  
+and it will convert your interactions into http requests and structure them within a k6 test script file.
+
+You can then edit the test configuration (load, duration, name etc) by entering properties into appropriately labelled fields.  
+The test builder converts this configuration into an `options`object within the k6 script,  
+which provides the configuration to the scripts functions at runtime.
+
+![Test Builder](src/resources/images/setBaseLine.png =900x300)  
+
+If you are new to writing k6 test scripts, it is recommended that you use the k6 test builder.  
+It can also be useful for experienced k6 users to quickly spin up a test script, which they can then modify in code to suit their needs.  
+See [here]( https://grafana.com/docs/grafana-cloud/testing/k6/author-run/test-builder/) for a guide on how to use the test builder.
+
+
 # Supporting Documentation
 1. [Test Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)
 2. [k6 Setup Guide](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/k6%20Setup%20Guide.docx?d=w773a69b410a8481b840b04b7f3bdc3a0&csf=1&web=1&e=VYFrQZ)
