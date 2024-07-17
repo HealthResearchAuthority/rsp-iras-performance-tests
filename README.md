@@ -199,6 +199,64 @@ If you are new to writing k6 test scripts, it is recommended that you use the k6
 It can also be useful for experienced k6 users to quickly spin up a test script, which they can then modify in code to suit their needs.  
 See [here]( https://grafana.com/docs/grafana-cloud/testing/k6/author-run/test-builder/) for a guide on how to use the test builder.
 
+## Structure of a Test Script
+ A k6 test script typically follows a standard structure that includes: 
+ - importing necessary modules
+ - delaring test properties such as data, custom metrics and functions
+ - defining options for the test 
+ - a setup function for any necessary initialization code
+ - a main test function that will be executed by virtual users (VUs)
+ - teardown functions which execute after the main test function has completed
+
+Here’s an overview of the structure of a standard k6 test script:
+
+### Importing Modules
+At the top of the script, you usually import the k6 modules you'll need,  
+such as http for making HTTP requests and sleep for pausing execution.
+
+![Test Builder](src/resources/images/testBuilder.png =750x450)  
+
+### Declaring Custom Metrics
+Custom Metrics, along with test data and any other test properties,  
+must be declared Within the init context of the script. I.e. near the top before any other functions execute.
+To use custom metrics you must import them from the `k6/metrics` module (see above).
+
+The following example creates a custom Trend. The object in the script is called `TrendSpecificRequestDuration`,  
+and its metric appears in the results output as `specific_response_time`.
+
+![Test Builder](src/resources/images/testBuilder.png =750x450)  
+
+### Defining Options
+Next, you define the options for your test, such as the number of virtual users (VUs),  
+the duration of the test, stages for ramping up and down, thresholds for performance metrics, scenarios etc.
+
+![Test Builder](src/resources/images/testBuilder.png =750x450)  
+
+### Setup Code (Optional)
+If you need to set up any data or state before the test runs, you can use the setup function.  
+This code runs once before any virtual users start executing the main test function.
+
+![Test Builder](src/resources/images/testBuilder.png =750x450)  
+
+### Main Test Function
+The core of the script is the default function, which contains the code that each virtual user will execute.  
+This function typically makes HTTP requests, performs checks, and includes sleeps to simulate real user behavior.
+
+![Test Builder](src/resources/images/testBuilder.png =750x450)  
+
+### Teardown Code (Optional)
+Finally, you can include a teardown function that runs after all virtual users have finished executing the main test function.  
+This can be used to clean up any state or perform post-test analysis.
+
+![Test Builder](src/resources/images/testBuilder.png =750x450)  
+
+### Complete Example
+Putting it all together, here’s a simple complete k6 test script:
+
+![Test Builder](src/resources/images/testBuilder.png =750x450)  
+
+### Example with scenarios
+
 
 # Supporting Documentation
 1. [Test Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)
