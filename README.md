@@ -195,11 +195,21 @@ which provides the configuration to the scripts functions at runtime.
 
 ![Test Builder](src/resources/images/testBuilder.png =750x450)  
 
-If you are new to writing k6 test scripts, it is recommended that you use the k6 test builder.  
+If you are new to using the k6 tool, it is recommended that you use the k6 test builder.  
 It can also be useful for experienced k6 users to quickly spin up a test script, which they can then modify in code to suit their needs.  
 See [here]( https://grafana.com/docs/grafana-cloud/testing/k6/author-run/test-builder/) for a guide on how to use the test builder.
 
+## Script Editor
+The k6 cloud service also provides a Script Editor (see screenshot above), that provides a the skeleton of a standard script,  
+which you can then edit in the UI similar to an IDE.  
+A key feature of the Script Editor is that it provides code snippets for a variety of typical k6 test functionality,  
+ranging from basic to advanced.
 
+![Script Examples](src/resources/images/scriptExamples.png =750x450)  
+
+Once again if you are new to writing k6 test scripts, it may be a useful to use the script editor  
+to generate a starting point for your test script which you can then adjust.  
+And make use of the code snippets to help you learn the features and capabilities of k6.
 
 ## Structure of a Test Script
  A k6 test script typically follows a standard structure that includes: 
@@ -307,11 +317,11 @@ and the amount of load that will be distributed onto server as a percentage shar
 If you are unsure how to do this, it can be added simply by setting configuring the load zone settings  
 within the k6 test builder.
 
-![Cloud Builder](src/resources/images/cloudConfigBuilder.png =500x500)  
+![Cloud Builder](src/resources/images/cloudConfigBuilder.png =850x350)  
 
 The configuration shown above will be added into the `options` object wiithin the test script as shown below
 
-![Cloud Script](src/resources/images/cloudConfigScript.png =500x500)  
+![Cloud Script](src/resources/images/cloudConfigScript.png =700x500)  
 
 # Supporting Documentation
 1. [Test Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)
