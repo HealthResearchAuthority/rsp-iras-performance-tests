@@ -399,7 +399,7 @@ which provides more granular insight into the overall test results.
 Keep the checks simple, short and basic, e.g. expected response code returned and/or an expected element in response body.
 
 ### Miscellaneous
-- **Grouping Single Request**: Don’t have single request groups as it adds unnecessary boilerplate.  
+- **Grouping Single Requests**: Don’t have single request groups as it adds unnecessary boilerplate.  
 Instead consider using tags for single requests to achieve similar group benefits e.g. name.  
 Or for single requests with dynamic URLs, use the URL grouping feature.  
 For further information see [here](https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/#discouraged-one-group-per-request)
