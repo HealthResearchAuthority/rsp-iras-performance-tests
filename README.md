@@ -290,7 +290,8 @@ The script below shows:
 - A custom trend metric named `specific_response_time` declared within the init context
 - A `thresholds` property within the `options` object
 - A threshold configured for the built-in `http_req_duration` metric
-- A threshold configured for the `specific_response_time` custom metric
+- A threshold configured for the `specific_response_time` custom metric  
+(note the threshold property name must match the name of the custom metric)
 - Two requests made within the main test function
 - The response duration being add to the associated Trend object of the `specific_response_time` custom metric,  
 for the 2nd request in the main test function
@@ -300,7 +301,7 @@ The pass/fail criteria for this test script will therefore be:
 2. 100% of `http.get("https://test-api.k6.io/public/crocodiles/` requests ONLY must be less than 5 seconds,  
 as the `specific_response_time` custom metric is set to only track response data for tha request.
 
-![Full Simple](src/resources/images/fullSimple.png =1100x800)  
+![Custom Threshold](src/resources/images/customThreshold.png =1100x800)  
 
 ### Scenarios
 You can add scenarios to your test configuration, within the `options` portion of the test script.  
@@ -350,11 +351,20 @@ and the amount of load that will be distributed onto server as a percentage shar
 If you are unsure how to do this, it can be added simply by setting configuring the load zone settings  
 within the k6 test builder.
 
-![Cloud Builder](src/resources/images/cloudConfigBuilder.png =850x350)  
+![Cloud Builder](src/resources/images/cloudConfigBuilder.png =950x350)  
 
 The configuration shown above will be added into the `options` object wiithin the test script as shown below
 
-![Cloud Script](src/resources/images/cloudConfigScript.png =700x500)  
+![Cloud Script](src/resources/images/cloudConfigScript.png =800x500)  
+
+## Best Practice Guidelines for k6 Scripting
+- Randomised, realistic sleep range between requests – simulating human behaviour
+- Short sleep between VU iterations – try and find out why exactly
+- Ramping up and ramping down
+- Graceful stop periods
+- Where possible make requests that return a wide range of payloads
+- Don’t have single request groups – if needed use tags for single request for group benefits e.g. name
+&nbsp;  
 
 # Supporting Documentation
 1. [Test Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)
