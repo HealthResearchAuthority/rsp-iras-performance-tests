@@ -358,12 +358,57 @@ The configuration shown above will be added into the `options` object wiithin th
 ![Cloud Script](src/resources/images/cloudConfigScript.png =800x500)  
 
 ## Best Practice Guidelines for k6 Scripting
-- Randomised, realistic sleep range between requests – simulating human behaviour
-- Short sleep between VU iterations – try and find out why exactly
-- Ramping up and ramping down
-- Graceful stop periods
-- Where possible make requests that return a wide range of payloads
-- Don’t have single request groups – if needed use tags for single request for group benefits e.g. name
+### Use Realistic Load Patterns
+- **Gradual Ramp-up/Ramp-down**: Use stages to simulate realistic load patterns, and gradually increase and decrease load over time.  
+Drastically changing the load suddenly creates a spike, which is a different form of performance testing.  
+- **Think Time**: Include randomised, realistic sleep periods between requests, to simulate user think time and increase the realism of the test scenario.  
+This is to replicate actual human user behaviours, without it we would be simulating bots navigating the application.
+- **Pause between iterations**: Add a short, hardcoded sleep between VU iterations, generally around 1 second.  
+This is to allow the current iteration of that VU to be disposed of, before the new iteration is spun up.
+- **Graceful stop periods**: The `gracefulStop` is a period at the end of the test in which k6 lets iterations in progress finish.  
+If a test has a set duration or ramp down, its possible that k6 could interrupt iterations in progress.  
+These interruptions can lead to skewed metrics and unexpected test results.  
+The `gracefulStop` option is available for all scenario executors except `externally-controlled`
+Note that the `ramping-vus` executor allows for the extra property of a `gracefulRampDown`  
+which provides the time to wait for an already started iteration to finish before stopping it during a ramp down
+
+The example script shown below, implements these guidelines for creating realistic load patterns
+
+![Realistic Pattern](src/resources/images/realisticPattern.png =800x500)  
+
+### Data Management
+- **Data Preparation**: Prepare any necessary test data before the main test script executes.  
+Either withing the init context or using the `setup` function.
+- **Data-driven Tests**: Use external data files or dynamic data generation to vary inputs and simulate real user interactions.  
+Where possible make requests that return a wide range of payloads to simulate realistic and varied workflows.
+- **Shared Arrays** - Use k6's `sharedArray` component to import and use external data files.  
+They drastically reduce processing overheads, such as memory and CPU usage, compared to the alternatives.  
+Note a `sharedArray` can only be instantiated within the init context. For further information, see [here](https://grafana.com/docs/k6/latest/examples/data-parameterization/#performance-implications-of-sharedarray)
+
+The simple example script shown below, implements these guidelines for creating realistic load patterns
+
+![Data Management](src/resources/images/dataManagement.png =800x500)  
+
+### Monitoring and Logging
+- **Custom Metrics**: Utilise custom metrics to capture specific types of response data,  
+which provides more granular insight into the overall test results.
+- **Logging**: Use appropriate logging to capture important information without overwhelming the output.
+- **Validate Responses**: Use checks to validate responses and ensure your application is fundamentally behaving as expected.  
+Keep the checks simple, short and basic, e.g. expected response code returned and/or an expected element in response body.
+
+### Miscellaneous
+- **Grouping Single Request**: Don’t have single request groups as it adds unnecessary boilerplate.  
+Instead consider using tags for single requests to achieve similar group benefits e.g. name.  
+Or for single requests with dynamic URLs, use the URL grouping feature.  
+For further information see [here](https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/#discouraged-one-group-per-request)
+
+Shown below is an example of bad practice when using groups
+
+![Single Groups](src/resources/images/singleGroups.png =800x500)  
+
+- **Baseline and Benchmarking**: Establish a performance baseline by running initial tests with a known configuration and load.  
+Use the baseline to compare against future tests to identify regressions or improvements.  
+Update and establish a new baseline when improvements are made.
 &nbsp;  
 
 # Supporting Documentation
