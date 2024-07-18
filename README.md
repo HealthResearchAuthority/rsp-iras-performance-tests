@@ -199,6 +199,8 @@ If you are new to writing k6 test scripts, it is recommended that you use the k6
 It can also be useful for experienced k6 users to quickly spin up a test script, which they can then modify in code to suit their needs.  
 See [here]( https://grafana.com/docs/grafana-cloud/testing/k6/author-run/test-builder/) for a guide on how to use the test builder.
 
+
+
 ## Structure of a Test Script
  A k6 test script typically follows a standard structure that includes: 
  - importing necessary modules
@@ -295,7 +297,21 @@ For each group function k6 emits a `group_duration` metric, which contains the t
 The group tags and the `group_duration` metric can add another element to your analysis of test results.
 For further information on Groups and Tagging, see [here](https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/) 
 
-![Groups](src/resources/images/groups.png =700x700)  
+![Groups](src/resources/images/groups.png =500x500)  
+
+### Cloud Configuration
+To configure your test script to run in k6 cloud you need to add the `cloud` property within your scripts `options` object.
+The cloud property simply states the location of the Amazon cloud server you wish to use,  
+and the amount of load that will be distributed onto server as a percentage share.
+
+If you are unsure how to do this, it can be added simply by setting configuring the load zone settings  
+within the k6 test builder.
+
+![Cloud Builder](src/resources/images/cloudConfigBuilder.png =500x500)  
+
+The configuration shown above will be added into the `options` object wiithin the test script as shown below
+
+![Cloud Script](src/resources/images/cloudConfigScript.png =500x500)  
 
 # Supporting Documentation
 1. [Test Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)
