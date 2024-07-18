@@ -255,7 +255,7 @@ Putting it all together, here’s a simple complete k6 test script:
 
 ![Full Simple](src/resources/images/fullSimple.png =1100x800)  
 
-## Additional Test Script features
+## Additional Test Script Features
 
 ### Scenarios
 You can add scenarios to your test configuration, within the `options` portion of the test script.  
@@ -263,9 +263,9 @@ Scenarios allow you to configure your VUs and test iterations in more granular d
 as they provide various additional options which dictate how your main test function runs.
 
 The options provided are shown below.  
-For more details, including the type of test executors available see [here](https://grafana.com/docs/k6/latest/using-k6/scenarios/)  
+For more details, including the type of test executors available, see [here](https://grafana.com/docs/k6/latest/using-k6/scenarios/)  
 
-![Scenario Options](src/resources/images/scenarioOptions.png =700x700)  
+![Scenario Options](src/resources/images/scenarioOptions.png =600x400)  
 
 ### Example with Multiple Scenarios
 You can use multiple scenarios in one script, and these scenarios can be run in sequence or in parallel.
@@ -280,7 +280,22 @@ as each scenario calls a unique test function to execute.
 Note that the value of the `exec` property of each scenario matches the name of a test function,  
 as the purpose of this property to tell the scenario which function to execute.
 
-![Scenario Options](src/resources/images/scenarioOptions.png =700x700)  
+![Multiple Scenarios](src/resources/images/scenarioMulti.png =700x700)  
+
+For further details on Multiple Scenario configurations, see [here](https://grafana.com/docs/k6/latest/using-k6/scenarios/advanced-examples/)
+
+### Groups
+For extra organization of your main test scripts you can utilise k6's groups feature.   
+Groups can be used to separate your main test functions into smaller functions which have logical grouping.   
+It is similar the concept of `steps` in Playwright and can allow for BDD-style testing.
+
+All metrics emitted within a group will be tagged with the group name.  
+For each group function k6 emits a `group_duration` metric, which contains the total time to execute the group function.
+
+The group tags and the `group_duration` metric can add another element to your analysis of test results.
+For further information on Groups and Tagging, see [here](https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/) 
+
+![Groups](src/resources/images/groups.png =700x700)  
 
 # Supporting Documentation
 1. [Test Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)
