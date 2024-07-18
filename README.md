@@ -160,7 +160,7 @@ This shows more low-level detail about the test run and can be used to do a more
 
 ![Cloud Insights](src/resources/images/cloudInsights.png =900x350)  
 
-For more information of Thresholds, Checks Metrics etc, see the documentation [here](https://grafana.com/docs/k6/latest/using-k6/) 
+For more information of Thresholds, Checks, Metrics etc, see the documentation [here](https://grafana.com/docs/k6/latest/using-k6/) 
 &nbsp;  
 
 ## Set report as baseline
@@ -268,6 +268,39 @@ Putting it all together, here’s a simple complete k6 test script:
 ![Full Simple](src/resources/images/fullSimple.png =1100x800)  
 
 ## Additional Test Script Features
+
+### Thresholds
+Thresholds are the pass/fail criteria that you define for your test metrics.  
+If the performance of the system under test does not meet the conditions of your threshold,  
+the test finishes with a failed status.
+
+The thresholds are defined within the `options` object of the test script.  
+You can define a threshold using k6's built-in metrics, for example `http_req_duration`,   
+without any additional configuration outside of the thresholds definition
+
+For further information on Thresholds, see [here](https://grafana.com/docs/k6/latest/using-k6/thresholds/)
+
+### Defining Thresholds using Custom Metrics
+You can also define a threshold using a Custom Metric.  
+However it will require some additional configuration, namely:
+1. Declaring the Custom Metric within the init context of your test script
+2. Adding response data to the Custom Metric at the appropriate point in your main test function
+
+The script below shows:
+- A custom trend metric named `specific_response_time` declared within the init context
+- A `thresholds` property within the `options` object
+- A threshold configured for the built-in `http_req_duration` metric
+- A threshold configured for the `specific_response_time` custom metric
+- Two requests made within the main test function
+- The response duration being add to the associated Trend object of the `specific_response_time` custom metric,  
+for the 2nd request in the main test function
+
+The pass/fail criteria for this test script will therefore be:
+1. 95% of all requests within the script must be less than 500 milliseconds, as the `http_req_duration` tracks every request
+2. 100% of `http.get("https://test-api.k6.io/public/crocodiles/` requests ONLY must be less than 5 seconds,  
+as the `specific_response_time` custom metric is set to only track response data for tha request.
+
+![Full Simple](src/resources/images/fullSimple.png =1100x800)  
 
 ### Scenarios
 You can add scenarios to your test configuration, within the `options` portion of the test script.  
