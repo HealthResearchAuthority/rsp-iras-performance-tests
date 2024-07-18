@@ -17,10 +17,18 @@ pool:
 steps:
   - task: k6-load-test@0
     inputs:
-      filename: src/scripts/${{ parameters.testScript }}.js
+      filename: 'src/scripts/${{ parameters.testScript }}.js'
+    env:
+      K6_WEB_DASHBOARD: true
+      K6_WEB_DASHBOARD_EXPORT: tests/results/${{ parameters.testScript }}Report.html
     displayName: "Run k6 ${{ parameters.testScript }} Test"
-
+    
   - publish: $(System.DefaultWorkingDirectory)/tests/results/${{ parameters.testScript }}Report.json
-    artifact: k6-report
+    artifact: k6-report-json
     condition: always()
-    displayName: Publish k6 Test Report
+    displayName: Publish k6 Test Report JSON
+
+  - publish: $(System.DefaultWorkingDirectory)/tests/results/${{ parameters.testScript }}Report.html
+    artifact: k6-report-html
+    condition: always()
+    displayName: Publish k6 Test Report HTML
