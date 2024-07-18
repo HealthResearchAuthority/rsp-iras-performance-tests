@@ -258,7 +258,7 @@ This function typically makes HTTP requests, performs checks, and includes sleep
 
 ### Teardown Code (Optional)
 Finally, you can include a teardown function that runs after all virtual users have finished executing the main test function.  
-This can be used to clean up any state or perform post-test analysis.
+This can be used to clean up any state data or perform post-test analysis.
 
 ![Teardown](src/resources/images/teardown.png =600x150)  
 
@@ -374,7 +374,7 @@ which provides the time to wait for an already started iteration to finish befor
 
 The example script shown below, implements these guidelines for creating realistic load patterns
 
-![Realistic Pattern](src/resources/images/realisticPattern.png =800x500)  
+![Realistic Pattern](src/resources/images/realisticPattern.png =800x700)  
 
 ### Data Management
 - **Data Preparation**: Prepare any necessary test data before the main test script executes.  
@@ -387,7 +387,9 @@ Note a `sharedArray` can only be instantiated within the init context. For furth
 
 The simple example script shown below, implements these guidelines for creating realistic load patterns
 
-![Data Management](src/resources/images/dataManagement.png =800x500)  
+![Users JSON](src/resources/images/usersJson.png =600x200)  
+
+![Data Management](src/resources/images/dataManagement.png =900x350)  
 
 ### Monitoring and Logging
 - **Custom Metrics**: Utilise custom metrics to capture specific types of response data,  
