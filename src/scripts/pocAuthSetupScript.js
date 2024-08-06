@@ -43,7 +43,6 @@ export async function setup() {
     console.log("IN ELSE IF STATE");
     return `${__ENV.SECRET_DATA}`;
   } else {
-    // the variable is undefined
     console.log("IN ELSE STATE");
     fail("No ENV Argument Set");
   }
