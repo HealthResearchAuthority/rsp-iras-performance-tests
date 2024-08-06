@@ -31,27 +31,21 @@ export const options = {
 };
 
 export async function setup() {
-  console.log(`${__ENV.ENCRYPTED_DATA}`);
-  console.log(`${__ENV.SECRET_DATA}`);
   if (`${__ENV.ENCRYPTED_DATA}`.toString() !== "undefined") {
-    // the local variable is defined
-    console.log("IN IF STATE");
+    // the local env variable is defined
     const decrypted = await decryptData(`${__ENV.ENCRYPTED_DATA}`);
     return decrypted;
   } else if (`${__ENV.SECRET_DATA}`.toString() !== "undefined") {
-    // the remote variable is defined
-    console.log("IN ELSE IF STATE");
+    // the remote env variable is defined
     return `${__ENV.SECRET_DATA}`;
   } else {
-    // the variable is undefined
-    console.log("IN ELSE STATE");
+    // no env variable is defined
     fail("No ENV Argument Set");
   }
 }
 
 export function accessMessages(data) {
   let response;
-  console.log(data);
   function userThinkTime() {
     sleep(Math.random() * 2 + 2);
   }
