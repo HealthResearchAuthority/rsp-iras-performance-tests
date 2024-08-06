@@ -1,21 +1,20 @@
 import { crypto } from "k6/experimental/webcrypto";
 import { b64encode } from "k6/encoding";
-import { SharedArray } from "k6/data";
-
-//keyValues must be 32 comma separated integers
-const keyValues = new SharedArray("keyValues", function () {
-  return JSON.parse(open("../resources/data/keyArray.json"));
-});
 
 export default async function () {
+  //Replace with text to encrypt, revert immediately after use
   const textToEncrypt = "<add text to encrypt>";
-  const key = new Uint8Array(keyValues);
+  const key = crypto.getRandomValues(new Uint8Array(32));
+  let keyArray = [];
 
   try {
     const encryptedText = await encrypt(key, textToEncrypt);
     const encodedData = b64encode(encryptedText);
     // Output value to be used for decryption
     console.log("Encrypted & Encoded data: '" + encodedData + "'");
+    key.forEach((value) => keyArray.push(value));
+    // Output value to be used for keyArray
+    console.log("Values to use in Key Array: " + keyArray);
   } catch (e) {
     console.log("Error: " + JSON.stringify(e));
   }
