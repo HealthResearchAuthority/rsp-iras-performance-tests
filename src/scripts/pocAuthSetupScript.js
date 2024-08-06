@@ -31,12 +31,12 @@ export const options = {
 };
 
 export async function setup() {
-  console.log(`${__ENV.ENCRYPED_DATA}`);
-  const encryptedData = `${__ENV.ENCRYPED_DATA}`.toString();
-  if (`${__ENV.ENCRYPED_DATA}`.toString() !== "undefined") {
+  console.log(`${__ENV.ENCRYPTED_DATA}`);
+  console.log(`${__ENV.SECRET_DATA}`);
+  if (`${__ENV.ENCRYPTED_DATA}`.toString() !== "undefined") {
     // the local variable is defined
     console.log("IN IF STATE");
-    const decrypted = await decryptData(`${__ENV.ENCRYPED_DATA}`);
+    const decrypted = await decryptData(`${__ENV.ENCRYPTED_DATA}`);
     return decrypted;
   } else if (`${__ENV.SECRET_DATA}`.toString() !== "undefined") {
     // the remote variable is defined
