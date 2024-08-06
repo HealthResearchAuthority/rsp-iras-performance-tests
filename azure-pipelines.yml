@@ -1,4 +1,4 @@
-# Run k6 POC API Performance Test
+# Run k6 POC Performance Tests
 
 parameters:
   - name: testScript
@@ -8,6 +8,7 @@ parameters:
     values:
       - pocApiScript
       - pocUiScript
+      - pocAuthSetupScript
 
 trigger: none
 
@@ -17,6 +18,7 @@ pool:
 steps:
   - task: k6-load-test@0
     inputs:
+      args: -e SECRET_DATA=123
       filename: src/scripts/${{ parameters.testScript }}.js
     displayName: "Run k6 ${{ parameters.testScript }} Test"
 
