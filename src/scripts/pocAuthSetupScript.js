@@ -60,8 +60,7 @@ export function accessMessages(data) {
         response.timings.duration < 1000,
     });
     console.log(
-      "Request Sent: " + response.request.method + " " + response.url,
-      +"\n" + response.request.body
+      "Request Sent: " + response.request.method + " " + response.url
     );
     if (!isGetHomePageReqSuccessful) {
       console.error(
@@ -115,7 +114,7 @@ export function accessMessages(data) {
         response.timings.duration < 1000,
     });
     console.log(
-      "Request Sent: " + response.request.method + " " + response.url
+      "Request Sent: " + response.request.method + " " + response.request.url
     );
     if (!isPostLoginMsgReqSuccessful) {
       console.error(
@@ -145,7 +144,7 @@ export function accessMessages(data) {
         response.timings.duration < 1000,
     });
     console.log(
-      "Request Sent: " + response.request.method + " " + response.url
+      "Request Sent: " + response.request.method + " " + response.request.url
     );
     if (!isPostLogoutMsgReqSuccessful) {
       console.error(
