@@ -49,27 +49,36 @@ Use when running test scripts that require values to be encrypted
 In VS Code:
 
 - Open the `encryptData.js` file located in the `src/utils` folder
-- Add the value you want to encrypt to the `textToEncrypt` variable
-  <Add image here>
+- Add the value you want to encrypt to the `textToEncrypt` variable 
+
+  ![Encrypt Util](src/resources/images/encryptUtil.png =600x400)
+
 - Open a Terminal
 - Navigate to the root folder of the project
 - Execute the command `k6 run src/utils/encryptData.js`
 - The encrypted value and an array of 32 integers will be logged to the console
-  <Add image here>
+
+  ![Encrypted Value](src/resources/images/encryptedValue.png =800x400)
+
 - Revert the `textToEncrypt` variable back to the placeholder value
-- Copy and paste the array from the console into the `keyArray.json` file
-  <add images here>
+- Copy and paste the array from the console into the `keyArray.json` file  
+which is located in the `src/resources/data` folder
+
+  ![Key Array](src/resources/images/keyArray.png =700x200)
+
+  ![Key Array Example](src/resources/images/keyArrayExample.png =800x250)
+
 - Copy the encrypted value from the console
 - Execute the command `k6 run -e ENCRYPTED_DATA=<encrypted value from console> <relative path of test script>`
 
-For example, if the test script `pocAuthSetupScript.js` is stored in the `src/scripts folder`
+For example, if the test script `pocAuthSetupScript.js` is stored in the `src/scripts folder`  
 and the encrypted value logged to the console was: `T+fQW10T7HleFQLtN9RcJKxUWYus34Vuyn2itPVbnA==`
 
 Then the command will be `k6 run -e ENCRYPTED_DATA=T+fQW10T7HleFQLtN9RcJKxUWYus34Vuyn2itPVbnA== src/scripts/pocAuthSetupScript.js`
 
 If successful the relevant test script will run, as per its configuration, and begin logging results to the console. As shown below
-<Add actual image here>
-![CLI Command](src/resources/images/cliCommand.png =800x250)
+
+![Encrypted Success Run Local](src/resources/images/encryptedSuccessRunLocal.png =800x400)
 
 Once the test has finished it will print a summary of the results to the console.
 
@@ -156,17 +165,29 @@ See the setup guide to learn how to connect your VS Code terminal to the teams k
 Once you are connected:
 
 - Open the `encryptData.js` file located in the `src/utils` folder
-- Add the value you want to encrypt to the `textToEncrypt` variable
+- Add the value you want to encrypt to the `textToEncrypt` variable 
+
+  ![Encrypt Util](src/resources/images/encryptUtil.png =600x400)
+
 - Open a Terminal
 - Navigate to the root folder of the project
-- Execute the command `k6 cloud src/utils/encryptData.js`
+- Execute the command `k6 run src/utils/encryptData.js`
 - The encrypted value and an array of 32 integers will be logged to the console
+
+  ![Encrypted Value](src/resources/images/encryptedValue.png =800x400)
+
 - Revert the `textToEncrypt` variable back to the placeholder value
-- Copy and paste the array from the console into the `keyArray.json` file
+- Copy and paste the array from the console into the `keyArray.json` file  
+which is located in the `src/resources/data` folder
+
+  ![Key Array](src/resources/images/keyArray.png =700x200)
+
+  ![Key Array Example](src/resources/images/keyArrayExample.png =800x250)
+
 - Copy the encrypted value from the console
 - Execute the command `k6 cloud -e ENCRYPTED_DATA=<encrypted value from console> <relative path of test script>`
 
-For example, if the test script `pocAuthSetupScript.js` is stored in the `src/scripts folder`
+For example, if the test script `pocAuthSetupScript.js` is stored in the `src/scripts folder`  
 and the encrypted value logged to the console was: `T+fQW10T7HleFQLtN9RcJKxUWYus34Vuyn2itPVbnA==`
 
 Then the command will be `k6 cloud -e ENCRYPTED_DATA=T+fQW10T7HleFQLtN9RcJKxUWYus34Vuyn2itPVbnA== src/scripts/pocAuthSetupScript.js`
