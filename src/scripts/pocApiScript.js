@@ -3,12 +3,14 @@ import { check, group, sleep } from "k6";
 import { Trend } from "k6/metrics";
 import { randomItem } from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.1/index.js";
+import { SharedArray } from "k6/data";
 
 const baseURL = "https://petstore.swagger.io/v2";
 
 //Request Params to Select From
-const petNames = ["Percy", "Penelope", "Polly", "Paul", "Phil"];
-const petCategories = ["Pig", "Python", "Parrot", "Porcupine", "Porpoise"];
+const petValues = new SharedArray("petValues", function () {
+  return JSON.parse(open("../resources/data/testData.json")).apiScript;
+});
 
 export const options = {
   cloud: {
@@ -69,8 +71,8 @@ export function pocK6ApiJourney() {
   group("Create, Fetch & Remove Pet Journey", function () {
     const petId = generateRandomId();
     const petCategoryId = generateRandomId();
-    const petCategory = randomItem(petCategories);
-    const petName = randomItem(petNames);
+    const petCategory = randomItem(petValues[0].petCategories);
+    const petName = randomItem(petValues[0].petNames);
 
     const postData = JSON.stringify({
       id: petId,
