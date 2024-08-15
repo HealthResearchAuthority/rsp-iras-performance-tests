@@ -6,6 +6,7 @@ import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.1/index.js";
 import { SharedArray } from "k6/data";
 
 const baseURL = "https://petstore.swagger.io/v2";
+const baseURL = "https://petstore.swagger.io/v2";
 
 //Request Params to Select From
 const petValues = new SharedArray("petValues", function () {
@@ -13,6 +14,30 @@ const petValues = new SharedArray("petValues", function () {
 });
 
 export const options = {
+  cloud: {
+    distribution: {
+      "amazon:gb:london": { loadZone: "amazon:gb:london", percent: 100 },
+    },
+  },
+  scenarios: {
+    PocK6ApiJourney: {
+      executor: "ramping-vus",
+      gracefulStop: "10s",
+      stages: [
+        { duration: "10s", target: 2 },
+        { duration: "20s", target: 2 },
+        { duration: "10s", target: 0 },
+      ],
+      gracefulRampDown: "10s",
+      exec: "pocK6ApiJourney",
+    },
+  },
+  thresholds: {
+    http_req_failed: ["rate<0.001"],
+    http_req_duration: ["p(95)<1000", "p(100)<5000"],
+    //Use Custom Metric As Threshold
+    delete_pet_response_time: ["p(100)<5000", "p(95)<1000"],
+  },
   cloud: {
     distribution: {
       "amazon:gb:london": { loadZone: "amazon:gb:london", percent: 100 },
@@ -49,10 +74,22 @@ export const TrendDeletePetReqDuration = new Trend(
   "delete_pet_response_time",
   true
 );
+export const TrendPostPetReqDuration = new Trend(
+  "post_pet_response_time",
+  true
+);
+export const TrendGetPetReqDuration = new Trend("get_pet_response_time", true);
+export const TrendDeletePetReqDuration = new Trend(
+  "delete_pet_response_time",
+  true
+);
 
 export function pocK6ApiJourney() {
   let response;
 
+  function userThinkTime() {
+    sleep(Math.random() * 2 + 2);
+  }
   function userThinkTime() {
     sleep(Math.random() * 2 + 2);
   }
@@ -61,7 +98,16 @@ export function pocK6ApiJourney() {
     const id = Math.floor(100000 + Math.random() * 900000);
     return id;
   }
+  function generateRandomId() {
+    const id = Math.floor(100000 + Math.random() * 900000);
+    return id;
+  }
 
+  const postHeaders = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
   const postHeaders = {
     headers: {
       "Content-Type": "application/json",
@@ -74,6 +120,17 @@ export function pocK6ApiJourney() {
     const petCategory = randomItem(petValues[0].petCategories);
     const petName = randomItem(petValues[0].petNames);
 
+    const postData = JSON.stringify({
+      id: petId,
+      category: {
+        id: petCategoryId,
+        name: `${petCategory}`,
+      },
+      name: `${petName}`,
+      photoUrls: [],
+      tags: [],
+      status: "available",
+    });
     const postData = JSON.stringify({
       id: petId,
       category: {
@@ -104,7 +161,44 @@ export function pocK6ApiJourney() {
       );
     }
     userThinkTime();
+    response = http.post(`${baseURL}/pet`, postData, postHeaders);
+    TrendPostPetReqDuration.add(response.timings.duration);
+    const isPostPetReqSuccessful = check(response, {
+      "Post Pet Request Success": () => response.status === 200,
+      "Post Pet Request Time < 5secs": () => response.timings.duration < 5000,
+      "Post Pet Request Time < 1secs": () => response.timings.duration < 1000,
+    });
+    console.log(
+      "Request Sent: " + response.request.method + " " + response.url,
+      +"\n" + response.request.body
+    );
+    if (!isPostPetReqSuccessful) {
+      console.error(
+        `Post Pet Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime();
 
+    response = http.get(`${baseURL}/pet/${petId}`);
+    TrendGetPetReqDuration.add(response.timings.duration);
+    const isGetPetReqSuccessful = check(response, {
+      "Get Pet Request Success": () => response.status === 200,
+      "Get Pet Request Expected Pet Id Returned": (r) =>
+        r.body.includes(`"id":${petId}`) == true,
+      "Get Pet Request Time < 5secs": () => response.timings.duration < 5000,
+      "Get Pet Request Time < 1secs": () => response.timings.duration < 1000,
+    });
+    console.log(
+      "Request Sent: " + response.request.method + " " + response.url
+    );
+    if (!isGetPetReqSuccessful) {
+      console.error(
+        `Get Pet Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code} \nResponse Body - ${response.body}`
+      );
+    }
+    userThinkTime();
     response = http.get(`${baseURL}/pet/${petId}`);
     TrendGetPetReqDuration.add(response.timings.duration);
     const isGetPetReqSuccessful = check(response, {
@@ -147,8 +241,36 @@ export function pocK6ApiJourney() {
   });
   sleep(1);
 }
+    response = http.del(`${baseURL}/pet/${petId}`);
+    TrendDeletePetReqDuration.add(response.timings.duration);
+    const isDeletePetReqSuccessful = check(response, {
+      "Delete Pet Request Success": () => response.status === 200,
+      "Delete Pet Request Expected Pet Id Returned": (r) =>
+        r.body.includes(`"message":"${petId}"`) == true,
+      "Delete Pet Request Time < 5secs": () => response.timings.duration < 5000,
+      "Delete Pet Request Time < 1secs": () => response.timings.duration < 1000,
+    });
+    console.log(
+      "Request Sent: " + response.request.method + " " + response.url
+    );
+    if (!isDeletePetReqSuccessful) {
+      console.error(
+        `Delete Pet Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code} \nResponse Body - ${response.body}`
+      );
+    }
+    userThinkTime();
+  });
+  sleep(1);
+}
 
 export function handleSummary(data) {
+  return {
+    stdout: textSummary(data, { indent: "→", enableColors: true }),
+    "tests/results/pocApiScriptReport.json": JSON.stringify(data),
+  };
+}
+
   return {
     stdout: textSummary(data, { indent: "→", enableColors: true }),
     "tests/results/pocApiScriptReport.json": JSON.stringify(data),
