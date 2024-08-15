@@ -6,7 +6,7 @@ import { SharedArray } from "k6/data";
 
 const baseURL = "https://test.k6.io";
 
-const userValues = new SharedArray("petValues", function () {
+const userValues = new SharedArray("userValues", function () {
   return JSON.parse(open("../resources/data/testData.json")).uiScript;
 });
 
