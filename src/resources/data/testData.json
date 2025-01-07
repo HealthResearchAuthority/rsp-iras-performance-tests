@@ -10,5 +10,25 @@
       "username": "admin",
       "password": "123"
     }
+  ],
+  "irasTabNavigation": [
+    {
+      "textAssertions": {
+        "idgHeader": "This is the TEST Identity Gateway",
+        "idgRedirectText": "Click the submit button if automatic redirection failed.",
+        "authHomePageText": "If you need to make changes to an approved project, click on the Make changes to an approved project button to start the process.",
+        "reviewAppsHeader": "Review applications",
+        "adminHeader": "Manage User and Roles",
+        "qsetHeader": "Upload a Question Set",
+        "myAppsHeader": "My Research Applications"
+      },
+      "selectors": {
+        "mainHeading": "h1",
+        "paragraph": "p",
+        "govukTextBody": "p[class=govuk-body]",
+        "titleId": "#title",
+        "govukHeading": "h2[class=govuk-heading-l]"
+      }
+    }
   ]
 }
