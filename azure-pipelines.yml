@@ -4,11 +4,11 @@ parameters:
   - name: testScript
     displayName: Select a Test Script
     type: string
-    default: pocApiScript
+    default: irasTabNavigationScript
     values:
       - pocApiScript
       - pocUiScript
-      - pocAuthSetupScript
+      - irasTabNavigationScript
 
 trigger: none
 
