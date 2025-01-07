@@ -321,6 +321,6 @@ export function irasTabNavigation(data) {
 export function handleSummary(data) {
   return {
     stdout: textSummary(data, { indent: "→", enableColors: true }),
-    "tests/results/pocAuthSetupScriptReport.json": JSON.stringify(data),
+    "tests/results/irasTabNavigationScriptReport.json": JSON.stringify(data),
   };
 }
