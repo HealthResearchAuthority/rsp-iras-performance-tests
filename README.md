@@ -35,12 +35,11 @@ Then the command will be `k6 run src/scripts/pocApiScript.js`
 
 If successful the relevant test script will run, as per its configuration, and begin logging results to the console. As shown below
 
-![CLI Command](src/resources/images/cliCommand.png =800x250)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cliCommand.png" alt="CLI Command" width="800" height="250">
 
 Once the test has finished it will print a summary of the results to the console.
 
-![CLI Results](src/resources/images/cliResults.png =750x550)  
-&nbsp;
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cliResults.png" alt="CLI Results" width="750" height="550">
 
 ## With Encrypted Data (Passwords etc)
 
@@ -51,22 +50,22 @@ In VS Code:
 - Open the `encryptData.js` file located in the `src/utils` folder
 - Add the value you want to encrypt to the `textToEncrypt` variable 
 
-  ![Encrypt Util](src/resources/images/encryptUtil.png =600x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/encryptUtil.png" alt="Encrypt Util" width="600" height="400">
 
 - Open a Terminal
 - Navigate to the root folder of the project
 - Execute the command `k6 run src/utils/encryptData.js`
 - The encrypted value and an array of 32 integers will be logged to the console
 
-  ![Encrypted Value](src/resources/images/encryptedValue.png =800x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/encryptedValue.png" alt="Encrypt Value" width="800" height="400">
 
 - Revert the `textToEncrypt` variable back to the placeholder value
 - Copy and paste the array from the console into the `keyArray.json` file  
 which is located in the `src/resources/data` folder
 
-  ![Key Array](src/resources/images/keyArray.png =700x200)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/keyArray.png" alt="Key Array" width="700" height="200">
 
-  ![Key Array Example](src/resources/images/keyArrayExample.png =800x250)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/keyArrayExample.png" alt="Key Array Example" width="800" height="250">
 
 - Copy the encrypted value from the console
 - Execute the command `k6 run -e ENCRYPTED_DATA=<encrypted value from console> <relative path of test script>`
@@ -78,7 +77,7 @@ Then the command will be `k6 run -e ENCRYPTED_DATA=T+fQW10T7HleFQLtN9RcJKxUWYus3
 
 If successful the relevant test script will run, as per its configuration, and begin logging results to the console. As shown below
 
-![Encrypted Success Run Local](src/resources/images/encryptedSuccessRunLocal.png =800x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/encryptedSuccessRunLocal.png" alt="Encrypted Success Run Local" width="800" height="400">
 
 Once the test has finished it will print a summary of the results to the console.
 
@@ -97,7 +96,7 @@ To run k6 performance test scripts in the Azure pipeline:
 - Go to the repo’s pipeline job [here](https://dev.azure.com/FutureIRAS/Research%20Systems%20Programme/_build?definitionId=10)
 - Click the Run pipeline button
 
-![CLI Results](src/resources/images/runPipeline.png =300x100)  
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/runPipeline.png" alt="Run Pipeline" width="300" height="100">  
 &nbsp;
 
 - Select the desired test script from the radio list
@@ -106,7 +105,7 @@ To run k6 performance test scripts in the Azure pipeline:
 
 You can view the results on the console in the pipeline step which runs the tests
 
-![CLI Results](src/resources/images/selectScript.png =300x700)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/selectScript.png" alt="Select Script" width="300" height="700">  
 
 The pipeline will also produce a test report in a JSON file and publish it as an artifact  
 &nbsp;
@@ -135,7 +134,7 @@ Then the command will be `k6 cloud src/scripts/pocUiScript.js`
 
 Similarly to the local run, the test will kick off and begin printing results to the console.
 
-![Cloud CLI Command](src/resources/images/cloudCliCommand.png =800x250)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudCliCommand.png" alt="Cloud CLI Command" width="800" height="250">  
 
 However, if you return to the Project Page of k6 Cloud, and click into the Future IRAS Project
 
@@ -143,7 +142,7 @@ You will see all the tests scripts that have been previously run within the proj
 
 And you will see that the test you just have just triggered (pocUiScript.js in this example), is currently in progress.
 
-![Cloud In Progress](src/resources/images/cloudInProgress.png =750x500)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudInProgress.png" alt="Cloud In Progress" width="750" height="500">
 
 Back in VS Code,
 
@@ -151,7 +150,7 @@ Once the test has finished, unlike before the results will not be printed to the
 
 Simply a statement that the run has finished.
 
-![Cloud CLI Finish](src/resources/images/cloudCliFinish.png =800x200)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudCliFinish.png" alt="Cloud CLI Finish" width="800" height="200">
 
 To view the test results you will need to open the relevant test run on k6 cloud  
 &nbsp;
@@ -167,22 +166,22 @@ Once you are connected:
 - Open the `encryptData.js` file located in the `src/utils` folder
 - Add the value you want to encrypt to the `textToEncrypt` variable 
 
-  ![Encrypt Util](src/resources/images/encryptUtil.png =600x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/encryptUtil.png" alt="Encrypt Util" width="600" height="400">
 
 - Open a Terminal
 - Navigate to the root folder of the project
 - Execute the command `k6 run src/utils/encryptData.js`
 - The encrypted value and an array of 32 integers will be logged to the console
 
-  ![Encrypted Value](src/resources/images/encryptedValue.png =800x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/encryptedValue.png" alt="Encrypt Value" width="800" height="400">
 
 - Revert the `textToEncrypt` variable back to the placeholder value
 - Copy and paste the array from the console into the `keyArray.json` file  
 which is located in the `src/resources/data` folder
 
-  ![Key Array](src/resources/images/keyArray.png =700x200)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/keyArray.png" alt="Key Array" width="700" height="200">
 
-  ![Key Array Example](src/resources/images/keyArrayExample.png =800x250)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/keyArrayExample.png" alt="Key Array Example" width="800" height="250">
 
 - Copy the encrypted value from the console
 - Execute the command `k6 cloud -e ENCRYPTED_DATA=<encrypted value from console> <relative path of test script>`
@@ -224,13 +223,13 @@ To run an existing test on the k6 Cloud UI:
 - Select a script from project page
 - On the Script Overview page Click the Run button on the top right of the screen
 
-![Cloud Run](src/resources/images/cloudRun.png =750x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudRun.png" alt="Cloud Run" width="750" height="400">
 
 This will trigger a new test run using the most recent version that has been previously executed in k6 Cloud.
 
 You will now see an Initialization animation, which will display while k6 gets everything setup.
 
-![Cloud Test Loading](src/resources/images/testLoading.png =500x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/testLoading.png" alt="Cloud Test Loading" width="500" height="400">
 
 Once initialization is complete, then the k6 Cloud Results console will display showing real time data, as the test is in progress  
 &nbsp;
@@ -241,7 +240,7 @@ The CLI report that is printed to the console when running k6 OSS on your local 
 
 The results will include built in k6 metrics, as well as any custom metrics you have configured.
 
-![CLI Results](src/resources/images/cliResults.png =750x550)  
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cliResults.png" alt="CLI Results" width="750" height="550">  
 &nbsp;
 
 The k6 Cloud UI provides a report with far greater visualisation of test results,  
@@ -254,7 +253,7 @@ At a high level the k6 cloud results will show a chart outlining:
 - Response Time
 - Failure Rate
 
-![Cloud Result Chart](src/resources/images/cloudResultChart.png =900x500)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudResultChart.png" alt="Cloud Result Chart" width="900" height="500"> 
 
 Above the chart will be a results summary showing:
 
@@ -274,7 +273,7 @@ This shows more low-level detail about the test run and can be used to do a more
 - Console Logs
 - Metrics (Analysis tab)
 
-![Cloud Insights](src/resources/images/cloudInsights.png =900x350)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudInsights.png" alt="Cloud Insights" width="900" height="350"> 
 
 For more information of Thresholds, Checks, Metrics etc, see the documentation [here](https://grafana.com/docs/k6/latest/using-k6/)
 &nbsp;
@@ -292,7 +291,7 @@ In k6 Cloud we can set a previous test run as a baseline by:
 - Clicking the ellipsis in the top right of the screen
 - Selecting the **Set as baseline** option
 
-![Set Baseline](src/resources/images/setBaseLine.png =900x300)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/setBaseLine.png" alt="Set Baseline" width="900" height="300"> 
 
 Setting a test run as a baseline will also ensure that the result from that test run will persist  
 beyond the standard data retention policy (14 days for the free version).  
@@ -313,7 +312,7 @@ You can then edit the test configuration (load, duration, name etc) by entering 
 The test builder converts this configuration into an `options`object within the k6 script,  
 which provides the configuration to the scripts functions at runtime.
 
-![Test Builder](src/resources/images/testBuilder.png =750x450)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/testBuilder.png" alt="Test Builder" width="750" height="450"> 
 
 If you are new to using the k6 tool, it is recommended that you use the k6 test builder.  
 It can also be useful for experienced k6 users to quickly spin up a test script, which they can then modify in code to suit their needs.  
@@ -326,7 +325,7 @@ which you can then edit in the UI similar to an IDE.
 A key feature of the Script Editor is that it provides code snippets for a variety of typical k6 test functionality,  
 ranging from basic to advanced.
 
-![Script Examples](src/resources/images/scriptExamples.png =750x450)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/scriptExamples.png" alt="Script Examples" width="750" height="450"> 
 
 Once again if you are new to writing k6 test scripts, it may be a useful to use the script editor  
 to generate a starting point for your test script which you can then adjust.  
@@ -350,7 +349,7 @@ Here’s an overview of the structure of a standard k6 test script:
 At the top of the script, you usually import the k6 modules you'll need,  
 such as http for making HTTP requests and sleep for pausing execution.
 
-![Imports](src/resources/images/imports.png =350x100)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/imports.png" alt="Imports" width="350" height="100"> 
 
 ### Declaring Custom Metrics
 
@@ -361,41 +360,41 @@ To use custom metrics you must import them from the `k6/metrics` module (see abo
 The following example creates a custom Trend. The object in the script is called `TrendSpecificRequestDuration`,  
 and its metric appears in the results output as `specific_response_time`.
 
-![Custom Metric](src/resources/images/customMetric.png =800x200)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/customMetric.png" alt="Custom Metric" width="800" height="200"> 
 
 ### Defining Options
 
 Next, you define the options for your test, such as the number of virtual users (VUs),  
 the duration of the test, stages for ramping up and down, thresholds for performance metrics, scenarios etc.
 
-![Options](src/resources/images/options.png =850x350)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/options.png" alt="Options" width="850" height="350"> 
 
 ### Setup Code (Optional)
 
 If you need to set up any data or state before the test runs, you can use the setup function.  
 This code runs once before any virtual users start executing the main test function.
 
-![Setup](src/resources/images/setup.png =800x150)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/setup.png" alt="Setup" width="800" height="150"> 
 
 ### Main Test Function
 
 The core of the script is the default function, which contains the code that each virtual user will execute.  
 This function typically makes HTTP requests, performs checks, and includes sleeps to simulate real user behavior.
 
-![Main Default](src/resources/images/mainDefault.png =1000x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/mainDefault.png" alt="Main Default" width="1000" height="400"> 
 
 ### Teardown Code (Optional)
 
 Finally, you can include a teardown function that runs after all virtual users have finished executing the main test function.  
 This can be used to clean up any state data or perform post-test analysis.
 
-![Teardown](src/resources/images/teardown.png =600x150)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/teardown.png" alt="Teardown" width="600" height="150"> 
 
 ### Complete Example
 
 Putting it all together, here’s a simple complete k6 test script:
 
-![Full Simple](src/resources/images/fullSimple.png =1100x800)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/fullSimple.png" alt="Full Simple" width="1100" height="800"> 
 
 ## Additional Test Script Features
 
@@ -436,7 +435,7 @@ The pass/fail criteria for this test script will therefore be:
 2. 100% of `http.get("https://test-api.k6.io/public/crocodiles/` requests ONLY must be less than 5 seconds,  
    as the `specific_response_time` custom metric is set to only track response data for tha request.
 
-![Custom Threshold](src/resources/images/customThreshold.png =1100x800)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/customThreshold.png" alt="Custom Threshold" width="1100" height="800"> 
 
 ### Scenarios
 
@@ -447,7 +446,7 @@ as they provide various additional options which dictate how your main test func
 The options provided are shown below.  
 For more details, including the type of test executors available, see [here](https://grafana.com/docs/k6/latest/using-k6/scenarios/)
 
-![Scenario Options](src/resources/images/scenarioOptions.png =600x400)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/scenarioOptions.png" alt="Scenario Options" width="600" height="400"> 
 
 ### Example with Multiple Scenarios
 
@@ -464,7 +463,7 @@ as each scenario calls a unique test function to execute.
 Note that the value of the `exec` property of each scenario matches the name of a test function,  
 as the purpose of this property to tell the scenario which function to execute.
 
-![Multiple Scenarios](src/resources/images/scenarioMulti.png =700x700)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/scenarioMulti.png" alt="Multiple Scenarios" width="700" height="700">
 
 For further details on Multiple Scenario configurations, see [here](https://grafana.com/docs/k6/latest/using-k6/scenarios/advanced-examples/)
 
@@ -480,7 +479,7 @@ For each group function k6 emits a `group_duration` metric, which contains the t
 The group tags and the `group_duration` metric can add another element to your analysis of test results.
 For further information on Groups and Tagging, see [here](https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/)
 
-![Groups](src/resources/images/groups.png =500x500)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/groups.png" alt="Groups" width="500" height="500">
 
 ### Cloud Configuration
 
@@ -491,11 +490,11 @@ and the amount of load that will be distributed onto server as a percentage shar
 If you are unsure how to do this, it can be added simply by setting configuring the load zone settings  
 within the k6 test builder.
 
-![Cloud Builder](src/resources/images/cloudConfigBuilder.png =950x350)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudConfigBuilder.png" alt="Cloud Builder" width="950" height="350">
 
 The configuration shown above will be added into the `options` object wiithin the test script as shown below
 
-![Cloud Script](src/resources/images/cloudConfigScript.png =800x500)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudConfigScript.png" alt="Cloud Script" width="800" height="500">
 
 ## Best Practice Guidelines for k6 Scripting
 
@@ -516,7 +515,7 @@ The configuration shown above will be added into the `options` object wiithin th
 
 The example script shown below, implements these guidelines for creating realistic load patterns
 
-![Realistic Pattern](src/resources/images/realisticPattern.png =800x700)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/realisticPattern.png" alt="Realistic Pattern" width="800" height="700">
 
 ### Data Management
 
@@ -530,9 +529,9 @@ The example script shown below, implements these guidelines for creating realist
 
 The simple example script shown below, implements these guidelines for creating realistic load patterns
 
-![Users JSON](src/resources/images/usersJson.png =600x200)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/usersJson.png" alt="Users JSON" width="600" height="200">
 
-![Data Management](src/resources/images/dataManagement.png =900x350)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/dataManagement.png" alt="Data Management" width="900" height="350">
 
 ### Monitoring and Logging
 
@@ -551,7 +550,7 @@ The simple example script shown below, implements these guidelines for creating 
 
 Shown below is an example of bad practice when using groups
 
-![Single Groups](src/resources/images/singleGroups.png =800x500)
+<img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/singleGroups.png" alt="Single Groups" width="800" height="500">
 
 - **Baseline and Benchmarking**: Establish a performance baseline by running initial tests with a known configuration and load.  
   Use the baseline to compare against future tests to identify regressions or improvements.  
