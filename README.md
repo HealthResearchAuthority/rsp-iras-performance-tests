@@ -362,7 +362,14 @@ and its metric appears in the results output as `specific_response_time`.
 
 <img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/customMetric.png" alt="Custom Metric" width="800" height="200"> 
 
-Metric types - Trend, Counter, Gauge, Rates - brief desc of each + recommend only using Trend
+There are 4 types of Metrics in k6  
+- Trend: Used to collect timing data and represent the average, median, min, max and percentiles, e.g. response times
+- Counter: Used to count how often something happens, e.g. number of requests
+- Gauge: Used to store only one value at a time, the most recent value added, e.g. response content
+- Rates: Used to track how often a conditon is met as a percentage, e.g. error and success rates
+
+For the purposes of this project we should only need to concern ourselves with custom Trends, to track specific response times.  
+The built in Metrics should suffice for other needs, such as number of requests made, overall failure rate etc.
 For more information on Metrics see the official k6 documentation [here](https://grafana.com/docs/k6/latest/using-k6/metrics/)
 
 ### Defining Options
