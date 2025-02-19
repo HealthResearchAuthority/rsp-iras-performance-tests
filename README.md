@@ -275,6 +275,13 @@ This shows more low-level detail about the test run and can be used to do a more
 
 <img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudInsights.png" alt="Cloud Insights" width="900" height="350"> 
 
+Note any thresholds that fail will have a red X, all passing thresholds will have a green tick.  
+You can utilize Custom Trend metrics to summarise the response times for individual requests, which can help identify performance bottlenecks.  
+For example if your overall p95 response time was 2 seconds.  
+And your Custom Trend for requests A, B and C have a p95 response time of 500ms-1s,  
+but your Custom Trend for request D has a p95 response time of 3 seconds.  
+Then clearly request D is the least performant request and could be recommended for optimisation.
+
 For more information of Thresholds, Checks, Metrics etc, see the documentation [here](https://grafana.com/docs/k6/latest/using-k6/)
 &nbsp;
 
