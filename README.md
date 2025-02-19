@@ -362,6 +362,9 @@ and its metric appears in the results output as `specific_response_time`.
 
 <img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/customMetric.png" alt="Custom Metric" width="800" height="200"> 
 
+Metric types - Trend, Counter, Gauge, Rates - brief desc of each + recommend only using Trend
+For more information on Metrics see the official k6 documentation [here](https://grafana.com/docs/k6/latest/using-k6/metrics/)
+
 ### Defining Options
 
 Next, you define the options for your test, such as the number of virtual users (VUs),  
@@ -379,7 +382,9 @@ This code runs once before any virtual users start executing the main test funct
 ### Main Test Function
 
 The core of the script is the default function, which contains the code that each virtual user will execute.  
-This function typically makes HTTP requests, performs checks, and includes sleeps to simulate real user behavior.
+This function typically makes HTTP requests, performs checks, and includes sleeps to simulate real user behavior.  
+Note that we now make use of the custom `TrendSpecificRequestDuration` metric we defined previously,  
+by adding the reponse time to it, once the request has completed
 
 <img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/mainDefault.png" alt="Main Default" width="1000" height="400"> 
 
