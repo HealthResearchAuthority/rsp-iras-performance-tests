@@ -170,13 +170,3 @@ export function handleSummary(data) {
     "tests/results/pocAuthSetupScriptReport.json": JSON.stringify(data),
   };
 }
-//To document
-//
-//add initial recorded script of Qset journey, copy script into new file
-//Assume loginIras has been created previously - note to add the setup method from it, and pass in the data
-//summarise changes to recorded script, to fit best practice guide in ReadMe - baseUrl, trim req, use variables,
-//custom metrics, checks, groups etc
-//add variable used to fill out create form and project info qset to external file, import as Shared Array and use
-//submit as finished doc on sharepoint, link and reference in ReadMe (in test builder and Shared Array section)
-//PR
-//Review KT vid for anything else
