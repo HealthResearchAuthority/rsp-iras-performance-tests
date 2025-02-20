@@ -1,4 +1,4 @@
-import { sleep, group } from "k6";
+import { sleep, group, fail } from "k6";
 import http from "k6/http";
 import { decryptData } from "../utils/decryptData.js";
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.1/index.js";
@@ -140,6 +140,9 @@ export async function setup() {
       Host: "irasportal-automationtest.azurewebsites.net",
     },
   });
+  if (response.status != 200) {
+    fail("Failure to Authorize, No Cookies Set");
+  }
   const authCookiesArr = response.request.headers.Cookie;
   return authCookiesArr;
 }
