@@ -10,5 +10,22 @@
       "username": "admin",
       "password": "123"
     }
+  ],
+  "initialQsetScript": [
+    [
+      {
+        "postBody": {
+          "name": "Testing+Name",
+          "description": "Testing+Description"
+        }
+      },
+      {
+        "postBody": {
+          "name": "Another+Name",
+          "description": "Another+Description"
+        }
+      }
+    ],
+    ["String Data For Post Project Filter Req Will Go Here"]
   ]
 }
