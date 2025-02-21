@@ -324,6 +324,7 @@ which provides the configuration to the scripts functions at runtime.
 If you are new to using the k6 tool, it is recommended that you use the k6 test builder.  
 It can also be useful for experienced k6 users to quickly spin up a test script, which they can then modify in code to suit their needs.  
 See [here](https://grafana.com/docs/grafana-cloud/testing/k6/author-run/test-builder/) for a guide on how to use the test builder.
+For more guidance on using the test builder see the step by step guide [here](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/Knowledge%20Transfer/K6%20Step%20by%20Step%20Guide.docx?d=wea88c5446b6b45419adb14ffa3033289&csf=1&web=1&e=u8Izqu)
 
 ## Script Editor
 
@@ -515,6 +516,8 @@ The configuration shown above will be added into the `options` object wiithin th
 
 <img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/cloudConfigScript.png" alt="Cloud Script" width="800" height="500">
 
+For more guidance on using the test builder see the step by step guide [here](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/Knowledge%20Transfer/K6%20Step%20by%20Step%20Guide.docx?d=wea88c5446b6b45419adb14ffa3033289&csf=1&web=1&e=u8Izqu)
+
 ## Best Practice Guidelines for k6 Scripting
 
 ### Use Realistic Load Patterns
@@ -552,6 +555,8 @@ The simple example script shown below, implements these guidelines for creating 
 
 <img src="https://github.com/HealthResearchAuthority/rsp-iras-performance-tests/blob/main/src/resources/images/dataManagement.png" alt="Data Management" width="900" height="350">
 
+For more guidance on setup and data management see the step by step guide [here](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/Knowledge%20Transfer/K6%20Step%20by%20Step%20Guide.docx?d=wea88c5446b6b45419adb14ffa3033289&csf=1&web=1&e=u8Izqu)
+
 ### Monitoring and Logging
 
 - **Custom Metrics**: Utilise custom metrics to capture specific types of response data,  
@@ -580,4 +585,5 @@ Shown below is an example of bad practice when using groups
 
 1. [Test Tooling Standards Document](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/RSP%20Test%20Approach/Draft/Automation%20Test%20Tool%20Standards%20Draft%20Content.docx?d=wc9b5951cd936470984f391877ed0bd20&csf=1&web=1&e=PRwea3) (UPDATE THIS)
 2. [k6 Setup Guide](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/k6%20Setup%20Guide.docx?d=w773a69b410a8481b840b04b7f3bdc3a0&csf=1&web=1&e=VYFrQZ)
-3. [k6 Documentation](https://grafana.com/docs/k6/latest/)
+3. [k6 Step by Step Guide](https://healthresearchauthority.sharepoint.com/:w:/r/sites/Future-IRAS/Testing/QA%20Setup%20Docs/Knowledge%20Transfer/K6%20Step%20by%20Step%20Guide.docx?d=wea88c5446b6b45419adb14ffa3033289&csf=1&web=1&e=TanKuL)
+4. [k6 Documentation](https://grafana.com/docs/k6/latest/)
