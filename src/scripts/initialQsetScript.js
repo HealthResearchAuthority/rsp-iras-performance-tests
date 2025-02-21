@@ -36,6 +36,7 @@ export const options = {
   thresholds: {
     http_req_failed: ["rate<0.001"],
     http_req_duration: ["p(95)<3000", "p(100)<5000"],
+    load_iras_home_page_response_time: ["p(100)<3000", "p(95)<1500"],
   },
   scenarios: {
     InitialQsetJourney: {
