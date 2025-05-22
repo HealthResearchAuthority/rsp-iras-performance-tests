@@ -11,21 +11,98 @@
       "password": "123"
     }
   ],
-  "initialQsetScript": [
+  "loginDetails": [
+    {
+      "usernameInput": "futureiras.automation@hra.nhs.uk",
+      "username": "futureiras.automation@hra.nhs.uk@carbon.super"
+    }
+  ],
+  "basicJourneysScript": [
     [
       {
-        "postBody": {
-          "name": "Testing+Name",
-          "description": "Testing+Description"
-        }
+        "revBodyPostBodies": [
+          {
+            "postBody": {
+              "OrganisationName": "",
+              "Countries": ["England", "Northern Ireland"],
+              "EmailAddress": "qaauto_k6_healthresearchauthority@reviewbodies.com",
+              "Description": "qaauto__k6_Responsible for confirmation of research governance compliance",
+              "__RequestVerificationToken": ""
+            }
+          },
+          {
+            "postBody": {
+              "OrganisationName": "",
+              "Countries": ["Scotland", "Wales"],
+              "EmailAddress": "qaauto_k6_enquiriesteam@hfea.gov.uk",
+              "Description": "qaauto__k6_The Human Fertilisation and Embryology Authority (HFEA) oversees the use of gametes and embryos in fertility treatment and research. It licenses fertility clinics and centres carrying out in vitro fertilisation (IVF), other assisted conception procedures and human embryo research.",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ]
       },
       {
-        "postBody": {
-          "name": "Another+Name",
-          "description": "Another+Description"
+        "organisationName": "QA Automation_K6 Health Research Authority (HRA) ",
+        "id": "00000000-0000-0000-0000-000000000000",
+        "createdBy": "",
+        "updatedBy": "",
+        "isActive": "True",
+        "revBodyProfileIds": [
+          "21885920-3f6a-4e1e-b28a-d719ae5135b4",
+          "690067f1-eafd-43a8-9bb9-01f29e050399",
+          "8af934f8-8296-4eaa-8d62-b40fd517105b",
+          "4a336efc-a580-4985-a319-3eedf79cd13e",
+          "60bb7cbb-09f8-4e38-a257-fa317bf73cfb",
+          "a51a8b5b-d664-4d2f-a192-d3e9aa7fad3e",
+          "4a19dd55-31c1-43b4-ae76-3972e25eaa5e",
+          "42ccf149-60b4-4ff2-8073-a099ac57cbdd",
+          "020f015b-d933-46f1-ab26-67474fd5bb33",
+          "32ed59eb-308e-401e-9586-e013f9077085"
+        ],
+        "editCreatedBy": "FutureIRAS",
+        "editUpdatedBy": "FutureIRAS",
+        "emailPrefix": "qaauto_k6_test_edit_email_",
+        "emailSuffix": "@hra.nhs.uk"
+      },
+      {
+        "baseGetHeaders": {
+          "headers": {
+            "Accept": "text/html,application/xhtml+xml,application/xml;",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-GB,en-US;",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Host": "irasportal-automationtest.azurewebsites.net",
+            "Cookie": []
+          }
+        },
+        "basePostHeaders": {
+          "headers": {
+            "Accept": "text/html,application/xhtml+xml,application/xml;",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-GB,en-US;",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Host": "irasportal-automationtest.azurewebsites.net",
+            "Origin": "https://irasportal-automationtest.azurewebsites.net",
+            "Cookie": []
+          }
         }
       }
     ],
-    ["String Data For Post Project Filter Req Will Go Here"]
+    ["String Data For Post Project Filter Req Will Go Here"],
+    {
+      "homePageCheck": "This is your account homepage where you can access your workspaces",
+      "sysAdminCheck": "View, add, disable or edit review body records.",
+      "revBodyListCheck": "Find a review body",
+      "addRevBodyCheck": "Add a new review body",
+      "confirmRevBodyChangeCheck": "Check the information here is correct before creating the profile.",
+      "submitRevBodyEditCheck": "Review body has been successfully added",
+      "revBodyProfileCheck": "Review body profile:",
+      "revBodyEditCheck": "Edit review body details",
+      "revBodyAuditCheck": "Audit history:",
+      "manageUserListCheck": "Manage users"
+    }
   ]
 }

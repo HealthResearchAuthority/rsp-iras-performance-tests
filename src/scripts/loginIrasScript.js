@@ -1,9 +1,17 @@
-import { sleep, group, fail } from "k6";
+import { sleep, group, fail, check } from "k6";
 import http from "k6/http";
 import { decryptData } from "../utils/decryptData.js";
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.1/index.js";
+import { SharedArray } from "k6/data";
 
 const baseURL = "https://irasportal-automationtest.azurewebsites.net/";
+
+const loginDetails = new SharedArray("postBodies", function () {
+  return JSON.parse(open("../resources/data/testData.json")).loginDetails;
+});
+const usernameInput = loginDetails[0].usernameInput;
+const username = loginDetails[0].username;
+
 export async function getPassword() {
   if (`${__ENV.ENCRYPTED_DATA}`.toString() !== "undefined") {
     // the local env variable is defined
@@ -77,8 +85,8 @@ export async function setup() {
   response = http.post(
     "https://test.id.nihr.ac.uk/commonauth",
     {
-      usernameUserInput: "future_iras_auto_admin_user@test.id.nihr.ac.uk",
-      username: "future_iras_auto_admin_user@test.id.nihr.ac.uk@carbon.super",
+      usernameUserInput: `${usernameInput}`,
+      username: `${username}`,
       password: `${password}`,
       sessionDataKey: `${sessionKey}`,
     },
@@ -163,6 +171,22 @@ export function loginIras(data) {
         Cookie: cookies,
       },
     });
+    const isGetHomePageReqSuccessful = check(response, {
+      "Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(
+          "This is your account homepage where you can access your workspaces"
+        ) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.url
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
   });
   sleep(1);
 }
