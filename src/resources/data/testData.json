@@ -39,6 +39,101 @@
               "__RequestVerificationToken": ""
             }
           }
+        ],
+        "revBodyStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "revBodyConfirmStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "IsActive": "",
+              "OrganisationName": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "userPostBodies": [
+          {
+            "postBody": {
+              "Status": "",
+              "Title": "Mr",
+              "FirstName": "Qa_auto_k6_first",
+              "LastName": "Qa_auto_k6_last",
+              "Email": "",
+              "Telephone": "66778899001",
+              "Organisation": "K6 Test",
+              "JobTitle": "K6 User",
+              "UserRoles[0].Name": "user",
+              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
+              "UserRoles[0].IsSelected": "true",
+              "UserRoles[1].Name": "operations",
+              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
+              "UserRoles[2].Name": "admin",
+              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
+              "UserRoles[3].Name": "reviewer",
+              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
+              "__RequestVerificationToken": ""
+            }
+          },
+          {
+            "postBody": {
+              "Status": "",
+              "Title": "Miss",
+              "FirstName": "Qa_auto_k6_first",
+              "LastName": "Qa_auto_k6_last",
+              "Email": "",
+              "Telephone": "00112233445",
+              "Organisation": "K6 Inc",
+              "JobTitle": "K6 Admin",
+              "UserRoles[0].Name": "user",
+              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
+              "UserRoles[1].Name": "operations",
+              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
+              "UserRoles[2].Name": "admin",
+              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
+              "UserRoles[2].IsSelected": "true",
+              "UserRoles[3].Name": "reviewer",
+              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
+              "__RequestVerificationToken": ""
+            }
+          },
+          {
+            "postBody": {
+              "Status": "",
+              "Title": "Master",
+              "FirstName": "Qa_auto_k6_first",
+              "LastName": "Qa_auto_k6_last",
+              "Email": "",
+              "Telephone": "01234567890",
+              "Organisation": "K6",
+              "JobTitle": "K6 Reviewer",
+              "UserRoles[0].Name": "user",
+              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
+              "UserRoles[1].Name": "operations",
+              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
+              "UserRoles[2].Name": "admin",
+              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
+              "UserRoles[3].Name": "reviewer",
+              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
+              "UserRoles[3].IsSelected": "true",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "userStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "Email": "",
+              "__RequestVerificationToken": ""
+            }
+          }
         ]
       },
       {
@@ -62,7 +157,19 @@
         "editCreatedBy": "FutureIRAS",
         "editUpdatedBy": "FutureIRAS",
         "emailPrefix": "qaauto_k6_test_edit_email_",
-        "emailSuffix": "@hra.nhs.uk"
+        "emailSuffix": "@hra.nhs.uk",
+        "userProfileIds": [
+          "b1a05303-486e-4ce7-a0a5-c20e9d62ef19",
+          "6d77f204-d3c4-4c97-83e2-ea8afd52424f",
+          "af2388c2-631e-4144-9343-fd9175bcd8f1",
+          "e55d6a74-abf2-4f2f-a480-c7fe1380efdc",
+          "ed92644d-1f10-45a8-a3f1-f62153fdeaa8",
+          "7480ae3d-59e3-46cb-a177-3c0cd7a413a6",
+          "57f1cbc4-1d3e-436b-abab-d61c98e7c3b1",
+          "53260357-3693-4360-9586-849309fa45c4",
+          "5fb86e42-c53a-423a-bde3-2f3706b6d0fc",
+          "43c0b142-3459-4c2e-97dc-1451fe71a2a6"
+        ]
       },
       {
         "baseGetHeaders": {
@@ -98,11 +205,23 @@
       "revBodyListCheck": "Find a review body",
       "addRevBodyCheck": "Add a new review body",
       "confirmRevBodyChangeCheck": "Check the information here is correct before creating the profile.",
-      "submitRevBodyEditCheck": "Review body has been successfully added",
+      "submitRevBodyCheck": "Review body has been successfully added",
       "revBodyProfileCheck": "Review body profile:",
       "revBodyEditCheck": "Edit review body details",
+      "revBodyStatusChangeCheck": "Confirm that you want to",
+      "revBodyConfirmStatusChangeCheck": "to confirm that their profile has been",
       "revBodyAuditCheck": "Audit history:",
-      "manageUserListCheck": "Manage users"
+      "revBodyUserListCheck": "Search, assign or remove users from this review body",
+      "revBodyAddUserCheck": "Search for user to add to review body",
+      "manageUserListCheck": "Manage users",
+      "addUserPageCheck": "Add a new user profile record",
+      "confirmAddUserCheck": "Check and create user profile",
+      "submitAddUserCheck": "User has been successfully added",
+      "userProfileCheck": "User profile:",
+      "userEditCheck": "Edit user profile record",
+      "userStatusChangeCheck": "Confirm that you want to",
+      "submitUserStatusChangeCheck": "to confirm that their record has been",
+      "userAuditCheck": "Audit history:"
     }
   ]
 }
