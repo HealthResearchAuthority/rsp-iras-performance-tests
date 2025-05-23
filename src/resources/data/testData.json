@@ -134,6 +134,50 @@
               "__RequestVerificationToken": ""
             }
           }
+        ],
+        "startProjIrasPostBody": [
+          {
+            "postBody": {
+              "IrasId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "projectDetailsPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "IQT0002",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0002",
+              "Questions[0].Category": "project+record+v1",
+              "Questions[0].SectionId": "IQT0002",
+              "Questions[0].Section": "Project+details",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Short+project+title",
+              "Questions[0].ShortQuestionText": "",
+              "Questions[0].QuestionType": "text",
+              "Questions[0].DataType": "Text",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].AnswerText": "K6 Testing Example",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0003",
+              "Questions[1].Category": "project+record+v1",
+              "Questions[1].SectionId": "IQT0002",
+              "Questions[1].Section": "Project+details",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Planned+project+end+date",
+              "Questions[1].ShortQuestionText": "Project+end+date",
+              "Questions[1].QuestionType": "Date",
+              "Questions[1].DataType": "Date",
+              "Questions[1].IsMandatory": "True",
+              "Questions[1].IsOptional": "False",
+              "Questions[1].Day": "01",
+              "Questions[1].Month": "02",
+              "Questions[1].Year": "2027",
+              "__RequestVerificationToken": ""
+            }
+          }
         ]
       },
       {
@@ -221,7 +265,12 @@
       "userEditCheck": "Edit user profile record",
       "userStatusChangeCheck": "Confirm that you want to",
       "submitUserStatusChangeCheck": "to confirm that their record has been",
-      "userAuditCheck": "Audit history:"
+      "userAuditCheck": "Audit history:",
+      "myResearchPageCheck": "My research",
+      "createProjectRecordPageCheck": "Create a project record",
+      "startProjectIrasPageCheck": "This is the 4 to 7 digit ID generated when you created your initial application",
+      "displayProjDetailsPageCheck": "Project details",
+      "displayKeyRolesPageCheck": "Key project roles"
     }
   ]
 }
