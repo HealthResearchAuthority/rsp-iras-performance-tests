@@ -10,5 +10,395 @@
       "username": "admin",
       "password": "123"
     }
+  ],
+  "loginDetails": [
+    {
+      "usernameInput": "futureiras.automation@hra.nhs.uk",
+      "username": "futureiras.automation@hra.nhs.uk@carbon.super"
+    }
+  ],
+  "basicJourneysScript": [
+    [
+      {
+        "revBodyPostBodies": [
+          {
+            "postBody": {
+              "OrganisationName": "",
+              "Countries": ["England", "Northern Ireland"],
+              "EmailAddress": "qaauto_k6_healthresearchauthority@reviewbodies.com",
+              "Description": "qaauto__k6_Responsible for confirmation of research governance compliance",
+              "__RequestVerificationToken": ""
+            }
+          },
+          {
+            "postBody": {
+              "OrganisationName": "",
+              "Countries": ["Scotland", "Wales"],
+              "EmailAddress": "qaauto_k6_enquiriesteam@hfea.gov.uk",
+              "Description": "qaauto__k6_The Human Fertilisation and Embryology Authority (HFEA) oversees the use of gametes and embryos in fertility treatment and research. It licenses fertility clinics and centres carrying out in vitro fertilisation (IVF), other assisted conception procedures and human embryo research.",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "revBodyStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "revBodyConfirmStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "IsActive": "",
+              "OrganisationName": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "userPostBodies": [
+          {
+            "postBody": {
+              "Status": "",
+              "Title": "Mr",
+              "FirstName": "Qa_auto_k6_first",
+              "LastName": "Qa_auto_k6_last",
+              "Email": "",
+              "Telephone": "66778899001",
+              "Organisation": "K6 Test",
+              "JobTitle": "K6 User",
+              "UserRoles[0].Name": "user",
+              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
+              "UserRoles[0].IsSelected": "true",
+              "UserRoles[1].Name": "operations",
+              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
+              "UserRoles[2].Name": "admin",
+              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
+              "UserRoles[3].Name": "reviewer",
+              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
+              "__RequestVerificationToken": ""
+            }
+          },
+          {
+            "postBody": {
+              "Status": "",
+              "Title": "Miss",
+              "FirstName": "Qa_auto_k6_first",
+              "LastName": "Qa_auto_k6_last",
+              "Email": "",
+              "Telephone": "00112233445",
+              "Organisation": "K6 Inc",
+              "JobTitle": "K6 Admin",
+              "UserRoles[0].Name": "user",
+              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
+              "UserRoles[1].Name": "operations",
+              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
+              "UserRoles[2].Name": "admin",
+              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
+              "UserRoles[2].IsSelected": "true",
+              "UserRoles[3].Name": "reviewer",
+              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
+              "__RequestVerificationToken": ""
+            }
+          },
+          {
+            "postBody": {
+              "Status": "",
+              "Title": "Master",
+              "FirstName": "Qa_auto_k6_first",
+              "LastName": "Qa_auto_k6_last",
+              "Email": "",
+              "Telephone": "01234567890",
+              "Organisation": "K6",
+              "JobTitle": "K6 Reviewer",
+              "UserRoles[0].Name": "user",
+              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
+              "UserRoles[1].Name": "operations",
+              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
+              "UserRoles[2].Name": "admin",
+              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
+              "UserRoles[3].Name": "reviewer",
+              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
+              "UserRoles[3].IsSelected": "true",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "userStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "Email": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "startProjIrasPostBody": [
+          {
+            "postBody": {
+              "IrasId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "projectDetailsPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "IQT0002",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0002",
+              "Questions[0].Category": "project record v1",
+              "Questions[0].SectionId": "IQT0002",
+              "Questions[0].Section": "Project details",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Short project title",
+              "Questions[0].ShortQuestionText": "",
+              "Questions[0].QuestionType": "text",
+              "Questions[0].DataType": "Text",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].AnswerText": "K6 Testing Example",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0003",
+              "Questions[1].Category": "project record v1",
+              "Questions[1].SectionId": "IQT0002",
+              "Questions[1].Section": "Project details",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Planned project end date",
+              "Questions[1].ShortQuestionText": "Project end date",
+              "Questions[1].QuestionType": "Date",
+              "Questions[1].DataType": "Date",
+              "Questions[1].IsMandatory": "True",
+              "Questions[1].IsOptional": "False",
+              "Questions[1].Day": "01",
+              "Questions[1].Month": "02",
+              "Questions[1].Year": "2027",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "keyRolesPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "IQT0003",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0311",
+              "Questions[0].Category": "project record v1",
+              "Questions[0].SectionId": "IQT0003",
+              "Questions[0].Section": "Key project roles",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Chief Investigator",
+              "Questions[0].ShortQuestionText": "",
+              "Questions[0].QuestionType": "Text",
+              "Questions[0].DataType": "Email",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].AnswerText": "qa_auto_k6.test@bmail.com",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0312",
+              "Questions[1].Category": "project record v1",
+              "Questions[1].SectionId": "IQT0003",
+              "Questions[1].Section": "Key project roles",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Primary sponsor organisation",
+              "Questions[1].ShortQuestionText": "",
+              "Questions[1].QuestionType": "rts:org_lookup",
+              "Questions[1].DataType": "Text",
+              "Questions[1].IsMandatory": "True",
+              "Questions[1].IsOptional": "False",
+              "Questions[1].AnswerText": "ROYAL PAPWORTH HOSPITAL NHS FOUNDATION TRUST",
+              "input-autocomplete": "ROYAL PAPWORTH HOSPITAL NHS FOUNDATION TRUST",
+              "Questions[2].Index": "2",
+              "Questions[2].QuestionId": "IQA0313",
+              "Questions[2].Category": "project record v1",
+              "Questions[2].SectionId": "IQT0003",
+              "Questions[2].Section": "Key project roles",
+              "Questions[2].Heading": "3",
+              "Questions[2].QuestionText": "Sponsor contact",
+              "Questions[2].ShortQuestionText": "",
+              "Questions[2].QuestionType": "Text",
+              "Questions[2].DataType": "Email",
+              "Questions[2].IsMandatory": "True",
+              "Questions[2].IsOptional": "False",
+              "Questions[2].AnswerText": "qa_auto_k6.sponsor@bmail.com",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "researchLocationPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "IQT0004",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0032",
+              "Questions[0].Category": "project record v1",
+              "Questions[0].SectionId": "IQT0004",
+              "Questions[0].Section": "Research locations",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Which nations are participating in your project?",
+              "Questions[0].ShortQuestionText": "Participating nations",
+              "Questions[0].QuestionType": "look-up list",
+              "Questions[0].DataType": "Checkbox",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].Answers[0].AnswerId": "OPT0018",
+              "Questions[0].Answers[0].AnswerText": "England",
+              "Questions[0].Answers[0].isSelected": "true",
+              "Questions[0].Answers[1].AnswerId": "OPT0019",
+              "Questions[0].Answers[1].AnswerText": "Northern Ireland",
+              "Questions[0].Answers[2].AnswerId": "OPT0020",
+              "Questions[0].Answers[2].AnswerText": "Scotland",
+              "Questions[0].Answers[2].isSelected": "true",
+              "Questions[0].Answers[3].AnswerId": "OPT0021",
+              "Questions[0].Answers[3].AnswerText": "Wales",
+              "Questions[0].Answers[3].isSelected": "true",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0004",
+              "Questions[1].Category": "project record v1",
+              "Questions[1].SectionId": "IQT0004",
+              "Questions[1].Section": "Research locations",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Is the project taking place at any NHS / HSC organisations?",
+              "Questions[1].ShortQuestionText": "NHS / HSC organisations",
+              "Questions[1].QuestionType": "Boolean",
+              "Questions[1].DataType": "Boolean",
+              "Questions[1].IsMandatory": "True",
+              "Questions[1].IsOptional": "False",
+              "Questions[1].Answers[0].AnswerId": "OPT0004",
+              "Questions[1].Answers[0].AnswerText": "Yes",
+              "Questions[1].Answers[1].AnswerId": "OPT0005",
+              "Questions[1].Answers[1].AnswerText": "No",
+              "Questions[1].SelectedOption": "OPT0005",
+              "Questions[2].Index": "2",
+              "Questions[2].QuestionId": "IQA0005",
+              "Questions[2].Category": "project record v1",
+              "Questions[2].SectionId": "IQT0004",
+              "Questions[2].Section": "Research locations",
+              "Questions[2].Heading": "3",
+              "Questions[2].QuestionText": "What is the lead nation for the project?",
+              "Questions[2].ShortQuestionText": "Lead nation",
+              "Questions[2].QuestionType": "look-up list",
+              "Questions[2].DataType": "Radio button",
+              "Questions[2].IsMandatory": "False",
+              "Questions[2].IsOptional": "False",
+              "Questions[2].Answers[0].AnswerId": "OPT0018",
+              "Questions[2].Answers[0].AnswerText": "England",
+              "Questions[2].Answers[1].AnswerId": "OPT0019",
+              "Questions[2].Answers[1].AnswerText": "Northern Ireland",
+              "Questions[2].Answers[2].AnswerId": "OPT0020",
+              "Questions[2].Answers[2].AnswerText": "Scotland",
+              "Questions[2].Answers[3].AnswerId": "OPT0021",
+              "Questions[2].Answers[3].AnswerText": "Wales",
+              "__RequestVerificationToken": "",
+              "Questions[0].Answers[1].isSelected": "false"
+            }
+          }
+        ],
+        "confirmProjDetailsPostBody": [
+          {
+            "postBody": {
+              "__RequestVerificationToken": ""
+            }
+          }
+        ]
+      },
+      {
+        "organisationName": "QA Automation_K6 Health Research Authority (HRA) ",
+        "id": "00000000-0000-0000-0000-000000000000",
+        "createdBy": "",
+        "updatedBy": "",
+        "isActive": "True",
+        "revBodyProfileIds": [
+          "21885920-3f6a-4e1e-b28a-d719ae5135b4",
+          "690067f1-eafd-43a8-9bb9-01f29e050399",
+          "8af934f8-8296-4eaa-8d62-b40fd517105b",
+          "4a336efc-a580-4985-a319-3eedf79cd13e",
+          "60bb7cbb-09f8-4e38-a257-fa317bf73cfb",
+          "a51a8b5b-d664-4d2f-a192-d3e9aa7fad3e",
+          "4a19dd55-31c1-43b4-ae76-3972e25eaa5e",
+          "42ccf149-60b4-4ff2-8073-a099ac57cbdd",
+          "020f015b-d933-46f1-ab26-67474fd5bb33",
+          "32ed59eb-308e-401e-9586-e013f9077085"
+        ],
+        "editCreatedBy": "FutureIRAS",
+        "editUpdatedBy": "FutureIRAS",
+        "emailPrefix": "qaauto_k6_test_edit_email_",
+        "emailSuffix": "@hra.nhs.uk",
+        "userProfileIds": [
+          "b1a05303-486e-4ce7-a0a5-c20e9d62ef19",
+          "6d77f204-d3c4-4c97-83e2-ea8afd52424f",
+          "af2388c2-631e-4144-9343-fd9175bcd8f1",
+          "e55d6a74-abf2-4f2f-a480-c7fe1380efdc",
+          "ed92644d-1f10-45a8-a3f1-f62153fdeaa8",
+          "7480ae3d-59e3-46cb-a177-3c0cd7a413a6",
+          "57f1cbc4-1d3e-436b-abab-d61c98e7c3b1",
+          "53260357-3693-4360-9586-849309fa45c4",
+          "5fb86e42-c53a-423a-bde3-2f3706b6d0fc",
+          "43c0b142-3459-4c2e-97dc-1451fe71a2a6"
+        ],
+        "orgSearchParam": "worth"
+      },
+      {
+        "baseGetHeaders": {
+          "headers": {
+            "Accept": "text/html,application/xhtml+xml,application/xml;",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-GB,en-US;",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Host": "irasportal-automationtest.azurewebsites.net",
+            "Cookie": []
+          }
+        },
+        "basePostHeaders": {
+          "headers": {
+            "Accept": "text/html,application/xhtml+xml,application/xml;",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-GB,en-US;",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Host": "irasportal-automationtest.azurewebsites.net",
+            "Origin": "https://irasportal-automationtest.azurewebsites.net",
+            "Cookie": []
+          }
+        }
+      }
+    ],
+    ["String Data For Post Project Filter Req Will Go Here"],
+    {
+      "homePageCheck": "This is your account homepage where you can access your workspaces",
+      "sysAdminCheck": "View, add, disable or edit review body records.",
+      "revBodyListCheck": "Find a review body",
+      "addRevBodyCheck": "Add a new review body",
+      "confirmRevBodyChangeCheck": "Check the information here is correct before creating the profile.",
+      "submitRevBodyCheck": "Review body has been successfully added",
+      "revBodyProfileCheck": "Review body profile:",
+      "revBodyEditCheck": "Edit review body details",
+      "revBodyStatusChangeCheck": "Confirm that you want to",
+      "revBodyConfirmStatusChangeCheck": "to confirm that their profile has been",
+      "revBodyAuditCheck": "Audit history:",
+      "revBodyUserListCheck": "Search, assign or remove users from this review body",
+      "revBodyAddUserCheck": "Search for user to add to review body",
+      "manageUserListCheck": "Manage users",
+      "addUserPageCheck": "Add a new user profile record",
+      "confirmAddUserCheck": "Check and create user profile",
+      "submitAddUserCheck": "User has been successfully added",
+      "userProfileCheck": "User profile:",
+      "userEditCheck": "Edit user profile record",
+      "userStatusChangeCheck": "Confirm that you want to",
+      "submitUserStatusChangeCheck": "to confirm that their record has been",
+      "userAuditCheck": "Audit history:",
+      "myResearchPageCheck": "My research",
+      "createProjectRecordPageCheck": "Create a project record",
+      "startProjectIrasPageCheck": "This is the 4 to 7 digit ID generated when you created your initial application",
+      "displayProjDetailsPageCheck": "Project details",
+      "displayKeyRolesPageCheck": "Key project roles",
+      "displayResearchLocationsPageCheck": "Research locations",
+      "displaySubmitApplicationPageCheck": "Review your answers",
+      "projectOverviewPageCheck": "Project overview"
+    }
   ]
 }
