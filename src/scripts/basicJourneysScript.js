@@ -35,6 +35,7 @@ const editUpdatedBy = scriptData[0][1].editUpdatedBy;
 const emailPrefix = scriptData[0][1].emailPrefix;
 const emailSuffix = scriptData[0][1].emailSuffix;
 const userProfileIds = scriptData[0][1].userProfileIds;
+const orgSearchParam = scriptData[0][1].orgSearchParam;
 
 const homePageCheck = scriptData[2].homePageCheck;
 const sysAdminCheck = scriptData[2].sysAdminCheck;
@@ -58,13 +59,17 @@ const userProfileCheck = scriptData[2].userProfileCheck;
 const userEditCheck = scriptData[2].userEditCheck;
 const userStatusChangeCheck = scriptData[2].userStatusChangeCheck;
 const submitUserStatusChangeCheck = scriptData[2].submitUserStatusChangeCheck;
-const confirmUserStatusChangeCheck = scriptData[2].confirmUserStatusChangeCheck;
 const userAuditCheck = scriptData[2].userAuditCheck;
 const myResearchPageCheck = scriptData[2].myResearchPageCheck;
 const createProjectRecordPageCheck = scriptData[2].createProjectRecordPageCheck;
 const startProjectIrasPageCheck = scriptData[2].startProjectIrasPageCheck;
 const displayProjDetailsPageCheck = scriptData[2].displayProjDetailsPageCheck;
 const displayKeyRolesPageCheck = scriptData[2].displayKeyRolesPageCheck;
+const displayResearchLocationsPageCheck =
+  scriptData[2].displayResearchLocationsPageCheck;
+const displaySubmitApplicationPageCheck =
+  scriptData[2].displaySubmitApplicationPageCheck;
+const projectOverviewPageCheck = scriptData[2].projectOverviewPageCheck;
 
 export async function getPassword() {
   if (`${__ENV.ENCRYPTED_DATA}`.toString() !== "undefined") {
@@ -98,10 +103,9 @@ export const options = {
       executor: "ramping-vus",
       gracefulStop: "30s",
       stages: [
-        { target: 1, duration: "10s" },
-        // { target: 2, duration: "30s" },
-        // { target: 0, duration: "30s" },
-        { target: 0, duration: "10s" },
+        { target: 10, duration: "1m" },
+        { target: 10, duration: "8m" },
+        { target: 0, duration: "1m" },
       ],
       gracefulRampDown: "30s",
       exec: "basicJourneysScript",
@@ -248,6 +252,22 @@ export const TrendSaveStartProjectIrasPageReqDuration = new Trend(
 );
 export const TrendSaveProjectDetailsPageReqDuration = new Trend(
   "save_project_details_page_response_time",
+  true
+);
+export const TrendSearchRtsOrgsReqDuration = new Trend(
+  "search_rts_organisations_response_time",
+  true
+);
+export const TrendSaveKeyRolesPageReqDuration = new Trend(
+  "save_key_roles_page_response_time",
+  true
+);
+export const TrendSaveResearchLocationsPageReqDuration = new Trend(
+  "save_research_locations_page_response_time",
+  true
+);
+export const TrendSaveConfirmProjectReqDuration = new Trend(
+  "save_confirm_project_page_response_time",
   true
 );
 
@@ -1668,7 +1688,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
       verifiedProjectDetailsPostBody,
-      postStartProjectIrasHeaders
+      postProjectDetailsHeaders
     );
     firstRedirectDuration = response.timings.duration;
     const isPostProjDetailsReqSuccessful = check(response, {
@@ -1741,8 +1761,292 @@ export function basicJourneysScript(data) {
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
-    // userThinkTime(2, 4);
-    //ToDo Above for Key Roles, Research Locations + Confirm Pages
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}organisation/getorganisations?name=${orgSearchParam}`,
+      getHeaders
+    );
+    TrendSearchRtsOrgsReqDuration.add(response.timings.duration);
+    TrendTransactionalReqDuration.add(response.timings.duration);
+    const isGetRtsOrgsSearchReqSuccessful = check(response, {
+      "Search Rts Orgs Request Success": () => response.status === 200,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetRtsOrgsSearchReqSuccessful) {
+      console.error(
+        `Get Search Rts Orgs Request Success Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const keyRolesPostBody = scriptData[0][0].keyRolesPostBody[0].postBody;
+    const verifiedKeyRolesPostBody = Object.assign({}, keyRolesPostBody, {
+      __RequestVerificationToken: `${requestVerificationToken}`,
+    });
+
+    const postHeadersKeyRolesWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${projectDetailsRedirectUrl}`,
+      }
+    );
+    const postKeyRolesHeaders = {
+      headers: postHeadersKeyRolesWithReferer,
+      redirects: 1,
+    };
+
+    response = http.post(
+      `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
+      verifiedKeyRolesPostBody,
+      postKeyRolesHeaders
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostKeyRolesReqSuccessful = check(response, {
+      "Save Key Roles Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostKeyRolesReqSuccessful) {
+      console.error(
+        `Post Save Key Roles Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    let keyRolesRedirectUrl = response.url;
+    const getHeadersKeyRolesWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${projectDetailsRedirectUrl}`,
+      }
+    );
+    const getKeyRolesHeaders = {
+      headers: getHeadersKeyRolesWithReferer,
+      redirects: 1,
+    };
+
+    response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
+    secondRedirectDuration = response.timings.duration;
+    const isGetKeyRolesReqSuccessful = check(response, {
+      "Resume Key Roles Redirect Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetKeyRolesReqSuccessful) {
+      console.error(
+        `Get Resume Key Roles Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    keyRolesRedirectUrl = response.url;
+
+    response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
+    TrendSaveKeyRolesPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+    );
+    const isGetDisplayResearchLocationsReqSuccessful = check(response, {
+      "Display Research Locations Redirect Page Request Success": () =>
+        response.status === 200,
+      "Display Research Locations Redirect Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${displayResearchLocationsPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetDisplayResearchLocationsReqSuccessful) {
+      console.error(
+        `Get Display Research Locations Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const researchLocationPostBody =
+      scriptData[0][0].researchLocationPostBody[0].postBody;
+    const verifiedResearchLocationsPostBody = Object.assign(
+      {},
+      researchLocationPostBody,
+      {
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
+
+    const postHeadersResearchLocationsWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${keyRolesRedirectUrl}`,
+      }
+    );
+    const postResearchLocationsHeaders = {
+      headers: postHeadersResearchLocationsWithReferer,
+      redirects: 1,
+    };
+
+    response = http.post(
+      `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
+      verifiedResearchLocationsPostBody,
+      postResearchLocationsHeaders
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostResearchLocationsReqSuccessful = check(response, {
+      "Save Research Locations Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostResearchLocationsReqSuccessful) {
+      console.error(
+        `Post Save Research Locations Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    let researchLocationsRedirectUrl = response.url;
+    const getResearchLocationsWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${keyRolesRedirectUrl}`,
+      }
+    );
+    const getResearchLocationsHeaders = {
+      headers: getResearchLocationsWithReferer,
+      redirects: 1,
+    };
+
+    response = http.get(
+      `${researchLocationsRedirectUrl}`,
+      getResearchLocationsHeaders
+    );
+    TrendSaveResearchLocationsPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    );
+    const isGetDisplaySubmitApplicationReqSuccessful = check(response, {
+      "Display Submit Application Redirect Page Request Success": () =>
+        response.status === 200,
+      "Display Submit Application Redirect Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${displaySubmitApplicationPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetDisplaySubmitApplicationReqSuccessful) {
+      console.error(
+        `Get Display Submit Application Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const confirmProjDetailsPostBody =
+      scriptData[0][0].confirmProjDetailsPostBody[0].postBody;
+    const verifiedConfirmProjDetailsPostBody = Object.assign(
+      {},
+      confirmProjDetailsPostBody,
+      {
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
+
+    const postHeadersConfirmProjDetailsWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${researchLocationsRedirectUrl}`,
+      }
+    );
+    const postConfirmProjDetailsHeaders = {
+      headers: postHeadersConfirmProjDetailsWithReferer,
+      redirects: 1,
+    };
+
+    response = http.post(
+      `${baseURL}questionnaire/confirmprojectdetails`,
+      verifiedConfirmProjDetailsPostBody,
+      postConfirmProjDetailsHeaders
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostConfirmProjDetailsReqSuccessful = check(response, {
+      "Confirm Project Details Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostConfirmProjDetailsReqSuccessful) {
+      console.error(
+        `Post Confirm Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+
+    const getProjectOverviewWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${researchLocationsRedirectUrl}`,
+      }
+    );
+    const getProjectOverviewHeaders = {
+      headers: getProjectOverviewWithReferer,
+      redirects: 1,
+    };
+
+    response = http.get(
+      `${baseURL}application/projectoverview`,
+      getProjectOverviewHeaders
+    );
+    TrendSaveConfirmProjectReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    );
+    const isGetProjectOverviewReqSuccessful = check(response, {
+      "Project Overview Redirect Page Request Success": () =>
+        response.status === 200,
+      "Project Overview Redirect Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${projectOverviewPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetProjectOverviewReqSuccessful) {
+      console.error(
+        `Get Project Overview Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
     sleep(1);
   });
 }
@@ -1753,4 +2057,3 @@ export function handleSummary(data) {
     "tests/results/basicJourneysScriptReport.json": JSON.stringify(data),
   };
 }
-//Assess Azure Pipelines (need to add secet variable) then PR
