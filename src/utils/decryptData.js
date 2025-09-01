@@ -1,4 +1,4 @@
-import { crypto } from "k6/experimental/webcrypto";
+import { crypto } from "k6/experimental/webcrypto"; //comment out when running in cloud
 import { b64decode } from "k6/encoding";
 import { SharedArray } from "k6/data";
 

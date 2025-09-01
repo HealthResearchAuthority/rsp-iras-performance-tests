@@ -13,8 +13,8 @@
   ],
   "loginDetails": [
     {
-      "usernameInput": "futureiras.automation@hra.nhs.uk",
-      "username": "futureiras.automation@hra.nhs.uk@carbon.super"
+      "usernameInput": "FutureIRAS.SysAdmin@hra.nhs.uk",
+      "username": "FutureIRAS.SysAdmin@hra.nhs.uk@carbon.super"
     }
   ],
   "basicJourneysScript": [
@@ -23,7 +23,7 @@
         "revBodyPostBodies": [
           {
             "postBody": {
-              "OrganisationName": "",
+              "RegulatoryBodyName": "",
               "Countries": ["England", "Northern Ireland"],
               "EmailAddress": "qaauto_k6_healthresearchauthority@reviewbodies.com",
               "Description": "qaauto__k6_Responsible for confirmation of research governance compliance",
@@ -32,7 +32,7 @@
           },
           {
             "postBody": {
-              "OrganisationName": "",
+              "RegulatoryBodyName": "",
               "Countries": ["Scotland", "Wales"],
               "EmailAddress": "qaauto_k6_enquiriesteam@hfea.gov.uk",
               "Description": "qaauto__k6_The Human Fertilisation and Embryology Authority (HFEA) oversees the use of gametes and embryos in fertility treatment and research. It licenses fertility clinics and centres carrying out in vitro fertilisation (IVF), other assisted conception procedures and human embryo research.",
@@ -63,21 +63,23 @@
             "postBody": {
               "Status": "",
               "Title": "Mr",
-              "FirstName": "Qa_auto_k6_first",
-              "LastName": "Qa_auto_k6_last",
+              "GivenName": "Qa_auto_k6_first",
+              "FamilyName": "Qa_auto_k6_last",
               "Email": "",
               "Telephone": "66778899001",
               "Organisation": "K6 Test",
               "JobTitle": "K6 User",
-              "UserRoles[0].Name": "user",
-              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
+              "UserRoles[0].Name": "applicant",
+              "UserRoles[0].Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
               "UserRoles[0].IsSelected": "true",
-              "UserRoles[1].Name": "operations",
-              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
-              "UserRoles[2].Name": "admin",
-              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
-              "UserRoles[3].Name": "reviewer",
-              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
+              "UserRoles[1].Name": "study-wide_reviewer",
+              "UserRoles[1].Id": "043aca8e-f88e-473e-974c-262f846285ea",
+              "UserRoles[2].Name": "system_administrator",
+              "UserRoles[2].Id": "ddac109a-e4ad-4572-a175-7795f81ec0e7",
+              "UserRoles[3].Name": "team_manager",
+              "UserRoles[3].Id": "952697e4-3d60-4172-b7bf-ee5ed6a7a1c3",
+              "UserRoles[4].Name": "workflow_co-ordinator",
+              "UserRoles[4].Id": "97977acf-0bd5-48c2-9cf5-bc3fd215e5bb",
               "__RequestVerificationToken": ""
             }
           },
@@ -85,43 +87,23 @@
             "postBody": {
               "Status": "",
               "Title": "Miss",
-              "FirstName": "Qa_auto_k6_first",
-              "LastName": "Qa_auto_k6_last",
+              "GivenName": "Qa_auto_k6_first",
+              "FamilyName": "Qa_auto_k6_last",
               "Email": "",
               "Telephone": "00112233445",
               "Organisation": "K6 Inc",
               "JobTitle": "K6 Admin",
-              "UserRoles[0].Name": "user",
-              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
-              "UserRoles[1].Name": "operations",
-              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
-              "UserRoles[2].Name": "admin",
-              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
+              "UserRoles[0].Name": "applicant",
+              "UserRoles[0].Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
+              "UserRoles[1].Name": "study-wide_reviewer",
+              "UserRoles[1].Id": "043aca8e-f88e-473e-974c-262f846285ea",
+              "UserRoles[2].Name": "system_administrator",
+              "UserRoles[2].Id": "ddac109a-e4ad-4572-a175-7795f81ec0e7",
               "UserRoles[2].IsSelected": "true",
-              "UserRoles[3].Name": "reviewer",
-              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
-              "__RequestVerificationToken": ""
-            }
-          },
-          {
-            "postBody": {
-              "Status": "",
-              "Title": "Master",
-              "FirstName": "Qa_auto_k6_first",
-              "LastName": "Qa_auto_k6_last",
-              "Email": "",
-              "Telephone": "01234567890",
-              "Organisation": "K6",
-              "JobTitle": "K6 Reviewer",
-              "UserRoles[0].Name": "user",
-              "UserRoles[0].Id": "4DAD549D-0E48-428F-94B3-1578269CA2E7",
-              "UserRoles[1].Name": "operations",
-              "UserRoles[1].Id": "b008864d-5781-47ee-9aa9-e204155198a3",
-              "UserRoles[2].Name": "admin",
-              "UserRoles[2].Id": "CA17B8D4-3033-4AFD-BB0F-3A6879937512",
-              "UserRoles[3].Name": "reviewer",
-              "UserRoles[3].Id": "E94CB7DB-0708-4FA9-AC54-E857D4760AC1",
-              "UserRoles[3].IsSelected": "true",
+              "UserRoles[3].Name": "team_manager",
+              "UserRoles[3].Id": "952697e4-3d60-4172-b7bf-ee5ed6a7a1c3",
+              "UserRoles[4].Name": "workflow_co-ordinator",
+              "UserRoles[4].Id": "97977acf-0bd5-48c2-9cf5-bc3fd215e5bb",
               "__RequestVerificationToken": ""
             }
           }
@@ -208,8 +190,9 @@
               "Questions[1].DataType": "Text",
               "Questions[1].IsMandatory": "True",
               "Questions[1].IsOptional": "False",
-              "Questions[1].AnswerText": "ROYAL PAPWORTH HOSPITAL NHS FOUNDATION TRUST",
               "input-autocomplete": "ROYAL PAPWORTH HOSPITAL NHS FOUNDATION TRUST",
+              "Questions[1].AnswerText": "ROYAL PAPWORTH HOSPITAL NHS FOUNDATION TRUST",
+              "autoSearchEnabled": "true",
               "Questions[2].Index": "2",
               "Questions[2].QuestionId": "IQA0313",
               "Questions[2].Category": "project record v1",
@@ -311,32 +294,32 @@
         "updatedBy": "",
         "isActive": "True",
         "revBodyProfileIds": [
-          "21885920-3f6a-4e1e-b28a-d719ae5135b4",
-          "690067f1-eafd-43a8-9bb9-01f29e050399",
-          "8af934f8-8296-4eaa-8d62-b40fd517105b",
-          "4a336efc-a580-4985-a319-3eedf79cd13e",
-          "60bb7cbb-09f8-4e38-a257-fa317bf73cfb",
-          "a51a8b5b-d664-4d2f-a192-d3e9aa7fad3e",
-          "4a19dd55-31c1-43b4-ae76-3972e25eaa5e",
-          "42ccf149-60b4-4ff2-8073-a099ac57cbdd",
-          "020f015b-d933-46f1-ab26-67474fd5bb33",
-          "32ed59eb-308e-401e-9586-e013f9077085"
+          "2a809d9e-3d0e-4f40-8641-800a7fa67c98",
+          "91f45790-2d47-42d2-b9eb-46032782b5f7",
+          "5dfdcba8-5f81-4778-adae-e4556be2a52d",
+          "b8343c3e-8ccb-498a-b729-34cf9bcf2c98",
+          "43ca0c16-dde5-437b-90b8-0b04b7ea69f6",
+          "51eb2e3f-8b88-442a-a305-1991bc2fefcd",
+          "7de8b894-31f0-4f26-8805-68a9ba54c3fb",
+          "53fb3779-ebe0-483e-8021-c2b90969ced4",
+          "2ba5406f-35ab-4a7c-84f6-669edbd2e855",
+          "638e1ee8-6675-4fa7-b86b-3eacf4cbfd16"
         ],
         "editCreatedBy": "FutureIRAS",
         "editUpdatedBy": "FutureIRAS",
         "emailPrefix": "qaauto_k6_test_edit_email_",
         "emailSuffix": "@hra.nhs.uk",
         "userProfileIds": [
-          "b1a05303-486e-4ce7-a0a5-c20e9d62ef19",
-          "6d77f204-d3c4-4c97-83e2-ea8afd52424f",
-          "af2388c2-631e-4144-9343-fd9175bcd8f1",
-          "e55d6a74-abf2-4f2f-a480-c7fe1380efdc",
-          "ed92644d-1f10-45a8-a3f1-f62153fdeaa8",
-          "7480ae3d-59e3-46cb-a177-3c0cd7a413a6",
-          "57f1cbc4-1d3e-436b-abab-d61c98e7c3b1",
-          "53260357-3693-4360-9586-849309fa45c4",
-          "5fb86e42-c53a-423a-bde3-2f3706b6d0fc",
-          "43c0b142-3459-4c2e-97dc-1451fe71a2a6"
+          "071cf50f-d0a4-4a54-9247-febb21fd8b27",
+          "6d181584-904c-4c28-bf28-1fd5259554eb",
+          "822ab6df-7a4b-44a1-8258-3eced1de3d64",
+          "8ae67abe-a5d6-4f01-a0ec-9f4e92d56a99",
+          "98121918-a20c-4f6e-95c8-fde10a9513b9",
+          "9d9c9e8c-d08d-43fd-aeab-13b9104d4a03",
+          "a126bf09-027c-4d8b-a42c-e01ac667bb83",
+          "b493aa4d-0b1f-452e-9115-f1f5d85be04b",
+          "b742febf-6c53-4c6e-8143-4d502ec738a9",
+          "f5a46dad-453c-4b16-9afe-a8d98b20c43d"
         ],
         "orgSearchParam": "worth"
       },

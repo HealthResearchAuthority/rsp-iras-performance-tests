@@ -495,7 +495,7 @@ export function basicJourneysScript(data) {
       CreatedBy: `${createdBy}`,
       UpdatedBy: `${updatedBy}`,
       IsActive: `${isActive}`,
-      OrganisationName: `${orgName}`,
+      RegulatoryBodyName: `${orgName}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
 
@@ -530,7 +530,7 @@ export function basicJourneysScript(data) {
       .attr("value");
 
     const submitPostBody = Object.assign({}, selectedPostBody, {
-      OrganisationName: `${orgName}`,
+      RegulatoryBodyName: `${orgName}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
 
@@ -656,7 +656,7 @@ export function basicJourneysScript(data) {
       CreatedBy: `${editCreatedBy}`,
       UpdatedBy: `${editUpdatedBy}`,
       IsActive: `${isActive}`,
-      OrganisationName: `${orgName}`,
+      RegulatoryBodyName: `${orgName}`,
       EmailAddress: `${emailPrefix}${timestamp}${emailSuffix}`,
       Description: `${selectedPostBody.Description} ${timestamp}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
@@ -920,7 +920,7 @@ export function basicJourneysScript(data) {
     userThinkTime(2, 4);
 
     response = http.get(
-      `${baseURL}reviewbody/viewreviewbodyusers?ReviewBodyId=37d402d6-2081-4a6f-868d-06649cb68aab`, //add selected param here when add flow complete
+      `${baseURL}reviewbody/viewreviewbodyusers?reviewBodyId=445f05de-2fca-4035-8cc5-691268cee1cb`, //add selected param here when add flow complete
       getHeaders
     );
     TrendRevBodyUserListReqDuration.add(response.timings.duration);
@@ -943,7 +943,7 @@ export function basicJourneysScript(data) {
     userThinkTime(2, 4);
 
     response = http.get(
-      `${baseURL}reviewbody/viewreviewbodyusers?SearchQuery=qa+auto&ReviewBodyId=37d402d6-2081-4a6f-868d-06649cb68aab&PageSize=20`, //add selected param here when add flow complete
+      `${baseURL}reviewbody/viewreviewbodyusers?SearchQuery=qa+auto&ReviewBodyId=445f05de-2fca-4035-8cc5-691268cee1cb&PageSize=20`, //add selected param here when add flow complete
       getHeaders
     );
     TrendRevBodyUserListSearchReqDuration.add(response.timings.duration);
@@ -1272,8 +1272,8 @@ export function basicJourneysScript(data) {
       Id: `${selectedUserProfile}`,
       OriginalEmail: `${originalEmail}`,
       Status: `${status}`,
-      FirstName: `${selectedUserPostBody.FirstName} ${timestamp}`,
-      LastName: `${selectedUserPostBody.LastName} ${timestamp}`,
+      GivenName: `${selectedUserPostBody.GivenName} ${timestamp}`,
+      FamilyName: `${selectedUserPostBody.FamilyName} ${timestamp}`,
       Email: `${emailPrefix}${timestamp}${emailSuffix}`,
       Organisation: `${selectedUserPostBody.Organisation} ${timestamp}`,
       JobTitle: `${selectedUserPostBody.JobTitle} ${timestamp}`,
@@ -2009,7 +2009,7 @@ export function basicJourneysScript(data) {
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
-
+    let projectOverviewRedirectUrl = response.url;
     const getProjectOverviewWithReferer = Object.assign(
       {},
       getHeaders.headers,
@@ -2023,7 +2023,7 @@ export function basicJourneysScript(data) {
     };
 
     response = http.get(
-      `${baseURL}application/projectoverview`,
+      `${projectOverviewRedirectUrl}`,
       getProjectOverviewHeaders
     );
     TrendSaveConfirmProjectReqDuration.add(
