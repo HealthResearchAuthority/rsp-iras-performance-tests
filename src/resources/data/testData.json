@@ -13,8 +13,7 @@
   ],
   "loginDetails": [
     {
-      "usernameInput": "FutureIRAS.SysAdmin@hra.nhs.uk",
-      "username": "FutureIRAS.SysAdmin@hra.nhs.uk@carbon.super"
+      "usernameInput": "FutureIRAS.SysAdmin@hra.nhs.uk"
     }
   ],
   "basicJourneysScript": [
@@ -328,10 +327,8 @@
           "headers": {
             "Accept": "text/html,application/xhtml+xml,application/xml;",
             "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Accept-Language": "en-GB,en-US;",
+            "Accept-Language": "en-GB,en;q=0.9",
             "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Host": "irasportal-automationtest.azurewebsites.net",
             "Cookie": []
           }
         },
@@ -339,12 +336,10 @@
           "headers": {
             "Accept": "text/html,application/xhtml+xml,application/xml;",
             "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Accept-Language": "en-GB,en-US;",
+            "Accept-Language": "en-US;",
             "Cache-Control": "max-age=0",
-            "Connection": "keep-alive",
             "Content-Type": "application/x-www-form-urlencoded",
-            "Host": "irasportal-automationtest.azurewebsites.net",
-            "Origin": "https://irasportal-automationtest.azurewebsites.net",
+            "Origin": "https://fd-rsp-applications-automationtest-uks-e7f6hkg3c5edhxex.a03.azurefd.net",
             "Cookie": []
           }
         }

@@ -5,15 +5,16 @@ import { decryptData } from "../utils/decryptData.js";
 import { textSummary, ra } from "https://jslib.k6.io/k6-summary/0.0.1/index.js";
 import { SharedArray } from "k6/data";
 import { randomItem } from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
+import { generateTOTP } from "../utils/generateMfaKey.js";
 
 //Script Data and Variables
-const baseURL = "https://irasportal-automationtest.azurewebsites.net/";
+const baseURL =
+  "https://fd-rsp-applications-automationtest-uks-e7f6hkg3c5edhxex.a03.azurefd.net/";
 
 const loginDetails = new SharedArray("loginData", function () {
   return JSON.parse(open("../resources/data/testData.json")).loginDetails;
 });
 const usernameInput = loginDetails[0].usernameInput;
-const username = loginDetails[0].username;
 
 const scriptData = new SharedArray("scriptData", function () {
   return JSON.parse(
@@ -103,9 +104,11 @@ export const options = {
       executor: "ramping-vus",
       gracefulStop: "30s",
       stages: [
-        { target: 10, duration: "1m" },
-        { target: 10, duration: "8m" },
-        { target: 0, duration: "1m" },
+        // { target: 10, duration: "1m" },
+        // { target: 10, duration: "8m" },
+        // { target: 0, duration: "1m" },
+        { target: 1, duration: "2m" },
+        { target: 0, duration: "30s" },
       ],
       gracefulRampDown: "30s",
       exec: "basicJourneysScript",
@@ -278,100 +281,129 @@ export async function setup() {
     headers: {
       Accept: "text/html,application/xhtml+xml,application/xml;",
       "Accept-Encoding": "gzip, deflate, br, zstd",
-      "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
+      "Accept-Language": "en-GB,en;q=0.9",
       "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      Host: "irasportal-automationtest.azurewebsites.net",
     },
   });
-  const sessionKey = response
+
+  const csrf = response
     .html()
-    .find("input[type=hidden][name=sessionDataKey]")
+    .find("input[type=hidden][name=_csrf]")
     .first()
     .attr("value");
-  const clientIdRegex = new RegExp(/(?<=[=]).*?(?=[\&])/);
-  const clientId = clientIdRegex.exec(response.url).toString();
-  const dateTime = Date.now();
-
-  response = http.get(
-    `https://test.id.nihr.ac.uk/logincontext?sessionDataKey=${sessionKey}&relyingParty=${clientId}&tenantDomain=carbon.super&_=${dateTime}`,
-    {
-      headers: {
-        accept: "*/*",
-        "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
-        "cache-control": "no-cache",
-      },
-    }
-  );
 
   response = http.post(
-    "https://test.id.nihr.ac.uk/commonauth",
+    `${response.url}`,
     {
-      usernameUserInput: `${usernameInput}`,
-      username: `${username}`,
-      password: `${password}`,
-      sessionDataKey: `${sessionKey}`,
+      _csrf: `${csrf}`,
+      supportInternationalNumbers: "",
     },
     {
       headers: {
         accept: "text/html,application/xhtml+xml,application/xml;",
         "accept-encoding": "gzip, deflate, br, zstd",
-        "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+        "accept-language": "en-GB,en;q=0.9",
         "cache-control": "no-cache",
         "content-type": "application/x-www-form-urlencoded",
-        origin: "https://test.id.nihr.ac.uk",
+        origin: "https://signin.integration.account.gov.uk",
       },
     }
   );
-  const code = response
-    .html()
-    .find("input[type=hidden][name=code]")
-    .first()
-    .attr("value");
-  const state = response
-    .html()
-    .find("input[type=hidden][name=state]")
-    .first()
-    .attr("value");
-  const sessionState = response
-    .html()
-    .find("input[type=hidden][name=session_state]")
-    .first()
-    .attr("value");
 
   response = http.post(
-    `${baseURL}signin-oidc`,
+    `${response.url}`,
     {
-      code: `${code}`,
-      state: `${state}`,
-      session_state: `${sessionState}`,
+      _csrf: `${csrf}`,
+      email: `${usernameInput}`,
     },
     {
       headers: {
-        Accept: "text/html,application/xhtml+xml,application/xml;",
-        "Accept-Encoding": "gzip, deflate, br, zstd",
-        "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-        "Content-Type": "application/x-www-form-urlencoded",
-        Host: "irasportal-automationtest.azurewebsites.net",
-        Origin: "https://test.id.nihr.ac.uk",
+        accept: "text/html,application/xhtml+xml,application/xml;",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "en-GB,en;q=0.9",
+        "cache-control": "no-cache",
+        "content-type": "application/x-www-form-urlencoded",
+        origin: "https://signin.integration.account.gov.uk",
       },
     }
   );
+
+  response = http.post(
+    `${response.url}`,
+    {
+      _csrf: `${csrf}`,
+      isReauthJourney: "false",
+      password: `${password}`,
+    },
+    {
+      headers: {
+        accept: "text/html,application/xhtml+xml,application/xml;",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "en-GB,en;q=0.9",
+        "cache-control": "no-cache",
+        "content-type": "application/x-www-form-urlencoded",
+        origin: "https://signin.integration.account.gov.uk",
+      },
+    }
+  );
+
+  const secret = "ZE4S5KESHY7XYKJZTKHWW2GGFQLWJQY2";
+  const totpCode = generateTOTP(secret);
+
+  response = http.post(
+    `${response.url}`,
+    {
+      _csrf: `${csrf}`,
+      isAccountRecoveryPermitted: "true",
+      mfaIssuePath: "/mfa-reset-with-ipv",
+      code: `${totpCode}`,
+    },
+    {
+      headers: {
+        accept: "text/html,application/xhtml+xml,application/xml;",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "en-GB,en;q=0.9",
+        "cache-control": "no-cache",
+        "content-type": "application/x-www-form-urlencoded",
+        origin: "https://signin.integration.account.gov.uk",
+      },
+      redirects: 1,
+    }
+  );
+
+  response = http.get(`${response.headers.Location}`, {
+    headers: {
+      Accept: "text/html,application/xhtml+xml,application/xml;",
+      "Accept-Encoding": "gzip, deflate, br, zstd",
+      "Accept-Language": "en-GB,en;q=0.9",
+      "Cache-Control": "no-cache",
+    },
+    redirects: 1,
+  });
+
+  response = http.get(`${response.url}`, {
+    headers: {
+      Accept: "text/html,application/xhtml+xml,application/xml;",
+      "Accept-Encoding": "gzip, deflate, br, zstd",
+      "Accept-Language": "en-GB,en;q=0.9",
+      "Cache-Control": "no-cache",
+    },
+    redirects: 1,
+  });
 
   response = http.get(`${baseURL}`, {
     headers: {
       Accept: "text/html,application/xhtml+xml,application/xml;",
       "Accept-Encoding": "gzip, deflate, br, zstd",
-      "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
+      "Accept-Language": "en-GB,en;q=0.9",
       "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      Host: "irasportal-automationtest.azurewebsites.net",
     },
   });
-  if (response.status != 200) {
+
+  if (
+    response.html().find("h1[class=govuk-heading-l]").first().text() !=
+    "My Account homepage"
+  ) {
     fail("Failure to Authorize, No Cookies Set");
   }
   const authCookiesArr = response.request.headers.Cookie;
