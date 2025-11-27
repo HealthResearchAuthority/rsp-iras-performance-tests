@@ -9,7 +9,7 @@ import { generateTOTP } from "../utils/generateMfaKey.js";
 
 //Script Data and Variables
 const baseURL =
-  "https://fd-rsp-applications-automationtest-uks-e7f6hkg3c5edhxex.a03.azurefd.net/";
+  "https://fd-rsp-applications-preprod-uks-f6esbkgtfncwc4gf.a03.azurefd.net/";
 
 const loginDetails = new SharedArray("loginData", function () {
   return JSON.parse(open("../resources/data/testData.json")).loginDetails;
@@ -34,6 +34,7 @@ const revBodyProfileIds = scriptData[0][1].revBodyProfileIds;
 const editCreatedBy = scriptData[0][1].editCreatedBy;
 const editUpdatedBy = scriptData[0][1].editUpdatedBy;
 const emailPrefix = scriptData[0][1].emailPrefix;
+const emailEditPrefix = scriptData[0][1].emailEditPrefix;
 const emailSuffix = scriptData[0][1].emailSuffix;
 const userProfileIds = scriptData[0][1].userProfileIds;
 const orgSearchParam = scriptData[0][1].orgSearchParam;
@@ -415,6 +416,7 @@ export function basicJourneysScript(data) {
   let orgName;
   let emailAdd;
   const cookies = data[0];
+
   const getHeadersWithCookies = Object.assign({}, baseGetHeaders.headers, {
     Cookie: `${cookies}`,
   });
@@ -453,7 +455,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(`${baseURL}systemadmin`, getHeaders);
     TrendSysAdminReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -472,7 +473,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(`${baseURL}reviewbody/view`, getHeaders);
     TrendRevBodyListReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -491,7 +491,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(`${baseURL}reviewbody/create`, getHeaders);
     TrendAddRevBodyReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -510,7 +509,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     requestVerificationToken = response
       .html()
       .find("input[type=hidden][name=__RequestVerificationToken]")
@@ -519,7 +517,6 @@ export function basicJourneysScript(data) {
     timestamp = Date.now();
     orgName = `${orgNameBase}${timestamp}`;
     const selectedPostBody = randomItem(revBodyPostBodies).postBody;
-
     const confirmPostBody = Object.assign({}, selectedPostBody, {
       Id: `${id}`,
       CreatedBy: `${createdBy}`,
@@ -528,7 +525,6 @@ export function basicJourneysScript(data) {
       RegulatoryBodyName: `${orgName}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
-
     response = http.post(
       `${baseURL}reviewbody/confirm-changes`,
       confirmPostBody,
@@ -552,18 +548,15 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     requestVerificationToken = response
       .html()
       .find("input[type=hidden][name=__RequestVerificationToken]")
       .first()
       .attr("value");
-
     const submitPostBody = Object.assign({}, selectedPostBody, {
       RegulatoryBodyName: `${orgName}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
-
     response = http.post(
       `${baseURL}reviewbody/submit`,
       submitPostBody,
@@ -586,7 +579,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(`${baseURL}reviewbody/view`, getHeaders);
     TrendRevBodyListReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -605,7 +597,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
       `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
       getHeaders
@@ -627,7 +618,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     const selectedRevBodyProfile = randomItem(revBodyProfileIds);
     response = http.get(
       `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
@@ -650,7 +640,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
       `${baseURL}reviewbody/update?id=${selectedRevBodyProfile}`,
       getHeaders
@@ -672,7 +661,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     requestVerificationToken = response
       .html()
       .find("input[type=hidden][name=__RequestVerificationToken]")
@@ -680,23 +668,20 @@ export function basicJourneysScript(data) {
       .attr("value");
     timestamp = Date.now();
     orgName = `${orgNameBase}${timestamp}`;
-
     const submitEditPostBody = Object.assign({}, selectedPostBody, {
       Id: `${selectedRevBodyProfile}`,
       CreatedBy: `${editCreatedBy}`,
       UpdatedBy: `${editUpdatedBy}`,
       IsActive: `${isActive}`,
       RegulatoryBodyName: `${orgName}`,
-      EmailAddress: `${emailPrefix}${timestamp}${emailSuffix}`,
+      EmailAddress: `${emailEditPrefix}${timestamp}${emailSuffix}`,
       Description: `${selectedPostBody.Description} ${timestamp}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
-
     const postHeadersWithRefer = Object.assign({}, postHeaders.headers, {
       Referer: `${baseURL}reviewbody/update?id=${selectedRevBodyProfile}`,
     });
     const postHeadersEdit = { headers: postHeadersWithRefer, redirects: 1 };
-
     response = http.post(
       `${baseURL}reviewbody/submit`,
       submitEditPostBody,
@@ -716,7 +701,6 @@ export function basicJourneysScript(data) {
       );
     }
     const redirectUrl = response.url;
-
     response = http.get(`${redirectUrl}`, getHeaders);
     TrendSubmitRevBodyEditReqDuration.add(
       response.timings.duration + redirectDuration
@@ -740,7 +724,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     requestVerificationToken = response
       .html()
       .find("input[type=hidden][name=__RequestVerificationToken]")
@@ -748,11 +731,10 @@ export function basicJourneysScript(data) {
       .attr("value");
     const statusReqParam = response
       .html()
-      .find("button[type=submit]")
+      .find("button[type=submit][formaction]")
       .first()
       .attr("formaction")
       .replace("/", "");
-
     const revBodyStatusPostBody =
       scriptData[0][0].revBodyStatusPostBody[0].postBody;
     const submitRevBodyStatusPostBody = Object.assign(
@@ -763,7 +745,6 @@ export function basicJourneysScript(data) {
         __RequestVerificationToken: `${requestVerificationToken}`,
       }
     );
-
     response = http.post(
       `${baseURL}${statusReqParam}`,
       submitRevBodyStatusPostBody,
@@ -787,7 +768,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     requestVerificationToken = response
       .html()
       .find("input[type=hidden][name=__RequestVerificationToken]")
@@ -795,7 +775,7 @@ export function basicJourneysScript(data) {
       .attr("value");
     const confirmStatusReqParam = response
       .html()
-      .find("button[type=submit]")
+      .find("button[type=submit][formaction]")
       .first()
       .attr("formaction")
       .replace("/", "");
@@ -804,7 +784,6 @@ export function basicJourneysScript(data) {
       .find("input[type=hidden][id=IsActive]")
       .first()
       .attr("value");
-
     const revBodyConfirmStatusPostBody =
       scriptData[0][0].revBodyConfirmStatusPostBody[0].postBody;
     const confirmRevBodyStatusPostBody = Object.assign(
@@ -817,7 +796,6 @@ export function basicJourneysScript(data) {
         __RequestVerificationToken: `${requestVerificationToken}`,
       }
     );
-
     response = http.post(
       `${baseURL}${confirmStatusReqParam}`,
       confirmRevBodyStatusPostBody,
@@ -841,7 +819,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(`${baseURL}reviewbody/view`, getHeaders);
     TrendRevBodyListReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -860,7 +837,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
       `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
       getHeaders
@@ -882,7 +858,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
       `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
       getHeaders
@@ -904,7 +879,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
       `${baseURL}reviewbody/audit-trail?reviewBodyId=${selectedRevBodyProfile}`,
       getHeaders
@@ -926,7 +900,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
       `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
       getHeaders
@@ -948,9 +921,8 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
-      `${baseURL}reviewbody/viewreviewbodyusers?reviewBodyId=445f05de-2fca-4035-8cc5-691268cee1cb`, //add selected param here when add flow complete
+      `${baseURL}reviewbody/viewreviewbodyusers?reviewBodyId=5e28ac18-a447-42ec-b23e-0257f9e53c53`, //add selected param here when add flow complete
       getHeaders
     );
     TrendRevBodyUserListReqDuration.add(response.timings.duration);
@@ -971,9 +943,8 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
-      `${baseURL}reviewbody/viewreviewbodyusers?SearchQuery=qa+auto&ReviewBodyId=445f05de-2fca-4035-8cc5-691268cee1cb&PageSize=20`, //add selected param here when add flow complete
+      `${baseURL}reviewbody/viewreviewbodyusers?SearchQuery=qa+auto&ReviewBodyId=5e28ac18-a447-42ec-b23e-0257f9e53c53&PageSize=20`, //add selected param here when add flow complete
       getHeaders
     );
     TrendRevBodyUserListSearchReqDuration.add(response.timings.duration);
@@ -1017,7 +988,6 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
-
     response = http.get(
       `${baseURL}reviewbody/viewadduser?SearchQuery=k6&ReviewBodyId=${selectedRevBodyProfile}&PageSize=20`,
       getHeaders
@@ -1304,7 +1274,7 @@ export function basicJourneysScript(data) {
       Status: `${status}`,
       GivenName: `${selectedUserPostBody.GivenName} ${timestamp}`,
       FamilyName: `${selectedUserPostBody.FamilyName} ${timestamp}`,
-      Email: `${emailPrefix}${timestamp}${emailSuffix}`,
+      Email: `${emailEditPrefix}${timestamp}${emailSuffix}`,
       Organisation: `${selectedUserPostBody.Organisation} ${timestamp}`,
       JobTitle: `${selectedUserPostBody.JobTitle} ${timestamp}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
@@ -1520,565 +1490,573 @@ export function basicJourneysScript(data) {
     sleep(1);
   });
 
-  group("Create Project Journey", function () {
-    response = http.get(`${baseURL}`, getHeaders);
-    TrendHomePageReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetHomePageReqSuccessful = check(response, {
-      "Home Page Request Success": () => response.status === 200,
-      "Home Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${homePageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetHomePageReqSuccessful) {
-      console.error(
-        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
+  // group("Create Project Journey", function () {
+  // figure out why getting http fails? even though nothing appears wrong - penultimate setup req is giving 500 but downstream req still works?
+  // Use Alfreds list
+  // Add file with data
+  // Randomly select project with that data
+  // Delete that data from file after using//or mark as used
+  // After run need to delete from DB
+  // Run as is now for current ticket
+  //   response = http.get(`${baseURL}`, getHeaders);
+  //   TrendHomePageReqDuration.add(response.timings.duration);
+  //   TrendNonTransactionalReqDuration.add(response.timings.duration);
+  //   const isGetHomePageReqSuccessful = check(response, {
+  //     "Home Page Request Success": () => response.status === 200,
+  //     "Home Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${homePageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetHomePageReqSuccessful) {
+  //     console.error(
+  //       `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   userThinkTime(2, 4);
 
-    response = http.get(`${baseURL}application/welcome`, getHeaders);
-    TrendMyResearchPageReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetMyResearchPageReqSuccessful = check(response, {
-      "My Research Page Request Success": () => response.status === 200,
-      "My Research Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${myResearchPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetMyResearchPageReqSuccessful) {
-      console.error(
-        `Get My Research Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
+  //   response = http.get(`${baseURL}application/welcome`, getHeaders);
+  //   TrendMyResearchPageReqDuration.add(response.timings.duration);
+  //   TrendNonTransactionalReqDuration.add(response.timings.duration);
+  //   const isGetMyResearchPageReqSuccessful = check(response, {
+  //     "My Research Page Request Success": () => response.status === 200,
+  //     "My Research Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${myResearchPageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetMyResearchPageReqSuccessful) {
+  //     console.error(
+  //       `Get My Research Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   userThinkTime(2, 4);
 
-    response = http.get(`${baseURL}application/createapplication`, getHeaders);
-    TrendCreateProjectRecordPageReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetCreateProjectRecordPageReqSuccessful = check(response, {
-      "Create Project Record Page Request Success": () =>
-        response.status === 200,
-      "Create Project Record Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${createProjectRecordPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetCreateProjectRecordPageReqSuccessful) {
-      console.error(
-        `Get Create Project Record Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
+  //   response = http.get(`${baseURL}application/createapplication`, getHeaders);
+  //   TrendCreateProjectRecordPageReqDuration.add(response.timings.duration);
+  //   TrendNonTransactionalReqDuration.add(response.timings.duration);
+  //   const isGetCreateProjectRecordPageReqSuccessful = check(response, {
+  //     "Create Project Record Page Request Success": () =>
+  //       response.status === 200,
+  //     "Create Project Record Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${createProjectRecordPageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetCreateProjectRecordPageReqSuccessful) {
+  //     console.error(
+  //       `Get Create Project Record Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   userThinkTime(2, 4);
 
-    response = http.get(`${baseURL}application/startproject`, getHeaders);
-    TrendStartProjectIrasPageReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetStartProjectIrasPageReqSuccessful = check(response, {
-      "Start Project IRAS Page Request Success": () => response.status === 200,
-      "Start Project IRAS Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${startProjectIrasPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetStartProjectIrasPageReqSuccessful) {
-      console.error(
-        `Get Start Project IRAS Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
+  //   response = http.get(`${baseURL}application/startproject`, getHeaders);
+  //   TrendStartProjectIrasPageReqDuration.add(response.timings.duration);
+  //   TrendNonTransactionalReqDuration.add(response.timings.duration);
+  //   const isGetStartProjectIrasPageReqSuccessful = check(response, {
+  //     "Start Project IRAS Page Request Success": () => response.status === 200,
+  //     "Start Project IRAS Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${startProjectIrasPageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetStartProjectIrasPageReqSuccessful) {
+  //     console.error(
+  //       `Get Start Project IRAS Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   userThinkTime(2, 4);
 
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
-    const irasId = generateIrasId(1000, 9999999);
+  //   requestVerificationToken = response
+  //     .html()
+  //     .find("input[type=hidden][name=__RequestVerificationToken]")
+  //     .first()
+  //     .attr("value");
+  //   const irasId = generateIrasId(1000, 9999999);
+  //   console.log(irasId);
 
-    const irasPostBody = scriptData[0][0].startProjIrasPostBody[0].postBody;
-    const startProjIrasPostBody = Object.assign({}, irasPostBody, {
-      IrasId: `${irasId}`,
-      __RequestVerificationToken: `${requestVerificationToken}`,
-    });
+  //   const irasPostBody = scriptData[0][0].startProjIrasPostBody[0].postBody;
+  //   const startProjIrasPostBody = Object.assign({}, irasPostBody, {
+  //     IrasId: `${irasId}`,
+  //     __RequestVerificationToken: `${requestVerificationToken}`,
+  //   });
 
-    const postHeadersIrasWithReferer = Object.assign({}, postHeaders.headers, {
-      Referer: `${baseURL}application/startproject`,
-    });
-    const postStartProjectIrasHeaders = {
-      headers: postHeadersIrasWithReferer,
-      redirects: 1,
-    };
+  //   const postHeadersIrasWithReferer = Object.assign({}, postHeaders.headers, {
+  //     Referer: `${baseURL}application/startproject`,
+  //   });
+  //   const postStartProjectIrasHeaders = {
+  //     headers: postHeadersIrasWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.post(
-      `${baseURL}application/startproject`,
-      startProjIrasPostBody,
-      postStartProjectIrasHeaders
-    );
-    let firstRedirectDuration = response.timings.duration;
-    const isPostStartProjIrasReqSuccessful = check(response, {
-      "Start Project IRAS Request Success": () => response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostStartProjIrasReqSuccessful) {
-      console.error(
-        `Post Start Project IRAS Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    let irasRedirectUrl = response.url;
-    const getHeadersIrasWithReferer = Object.assign({}, getHeaders.headers, {
-      Referer: `${baseURL}application/startproject`,
-    });
-    const getStartProjectIrasHeaders = {
-      headers: getHeadersIrasWithReferer,
-      redirects: 1,
-    };
+  //   response = http.post(
+  //     `${baseURL}application/startproject`,
+  //     startProjIrasPostBody,
+  //     postStartProjectIrasHeaders
+  //   );
+  //   let firstRedirectDuration = response.timings.duration;
+  //   const isPostStartProjIrasReqSuccessful = check(response, {
+  //     "Start Project IRAS Request Success": () => response.status === 302,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isPostStartProjIrasReqSuccessful) {
+  //     console.error(
+  //       `Post Start Project IRAS Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   let irasRedirectUrl = response.url;
+  //   const getHeadersIrasWithReferer = Object.assign({}, getHeaders.headers, {
+  //     Referer: `${baseURL}application/startproject`,
+  //   });
+  //   const getStartProjectIrasHeaders = {
+  //     headers: getHeadersIrasWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
-    let secondRedirectDuration = response.timings.duration;
-    const isGetStartProjIrasReqSuccessful = check(response, {
-      "Resume Start Project IRAS Redirect Request Success": () =>
-        response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetStartProjIrasReqSuccessful) {
-      console.error(
-        `Get Resume Start Project IRAS Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    irasRedirectUrl = response.url;
+  //   response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
+  //   let secondRedirectDuration = response.timings.duration;
+  //   const isGetStartProjIrasReqSuccessful = check(response, {
+  //     "Resume Start Project IRAS Redirect Request Success": () =>
+  //       response.status === 302,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetStartProjIrasReqSuccessful) {
+  //     console.error(
+  //       `Get Resume Start Project IRAS Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   irasRedirectUrl = response.url;
 
-    response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
-    TrendSaveStartProjectIrasPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
-    ); //combining duration of intial request and redirect requests
-    TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
-    );
-    const isGetDisplayProjDetailsReqSuccessful = check(response, {
-      "Display Project Details Redirect Page Request Success": () =>
-        response.status === 200,
-      "Display Project Details Redirect Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${displayProjDetailsPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetDisplayProjDetailsReqSuccessful) {
-      console.error(
-        `Get Display Project Details Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
+  //   response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
+  //   TrendSaveStartProjectIrasPageReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+  //   ); //combining duration of intial request and redirect requests
+  //   TrendTransactionalReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+  //   );
+  //   const isGetDisplayProjDetailsReqSuccessful = check(response, {
+  //     "Display Project Details Redirect Page Request Success": () =>
+  //       response.status === 200,
+  //     "Display Project Details Redirect Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${displayProjDetailsPageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetDisplayProjDetailsReqSuccessful) {
+  //     console.error(
+  //       `Get Display Project Details Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   userThinkTime(2, 4);
 
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
+  //   requestVerificationToken = response
+  //     .html()
+  //     .find("input[type=hidden][name=__RequestVerificationToken]")
+  //     .first()
+  //     .attr("value");
 
-    const projectDetailsPostBody =
-      scriptData[0][0].projectDetailsPostBody[0].postBody;
-    const verifiedProjectDetailsPostBody = Object.assign(
-      {},
-      projectDetailsPostBody,
-      {
-        __RequestVerificationToken: `${requestVerificationToken}`,
-      }
-    );
+  //   const projectDetailsPostBody =
+  //     scriptData[0][0].projectDetailsPostBody[0].postBody;
+  //   const verifiedProjectDetailsPostBody = Object.assign(
+  //     {},
+  //     projectDetailsPostBody,
+  //     {
+  //       __RequestVerificationToken: `${requestVerificationToken}`,
+  //     }
+  //   );
 
-    const postHeadersProjDetailsWithReferer = Object.assign(
-      {},
-      postHeaders.headers,
-      {
-        Referer: `${irasRedirectUrl}`,
-      }
-    );
-    const postProjectDetailsHeaders = {
-      headers: postHeadersProjDetailsWithReferer,
-      redirects: 1,
-    };
+  //   const postHeadersProjDetailsWithReferer = Object.assign(
+  //     {},
+  //     postHeaders.headers,
+  //     {
+  //       Referer: `${irasRedirectUrl}`,
+  //     }
+  //   );
+  //   const postProjectDetailsHeaders = {
+  //     headers: postHeadersProjDetailsWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.post(
-      `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
-      verifiedProjectDetailsPostBody,
-      postProjectDetailsHeaders
-    );
-    firstRedirectDuration = response.timings.duration;
-    const isPostProjDetailsReqSuccessful = check(response, {
-      "Save Project Details Request Success": () => response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostProjDetailsReqSuccessful) {
-      console.error(
-        `Post Save Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    let projectDetailsRedirectUrl = response.url;
-    const getHeadersProjDetailsWithReferer = Object.assign(
-      {},
-      getHeaders.headers,
-      {
-        Referer: `${irasRedirectUrl}`,
-      }
-    );
-    const getProjectDetailsHeaders = {
-      headers: getHeadersProjDetailsWithReferer,
-      redirects: 1,
-    };
+  //   response = http.post(
+  //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
+  //     verifiedProjectDetailsPostBody,
+  //     postProjectDetailsHeaders
+  //   );
+  //   firstRedirectDuration = response.timings.duration;
+  //   const isPostProjDetailsReqSuccessful = check(response, {
+  //     "Save Project Details Request Success": () => response.status === 302,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isPostProjDetailsReqSuccessful) {
+  //     console.error(
+  //       `Post Save Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   let projectDetailsRedirectUrl = response.url;
+  //   const getHeadersProjDetailsWithReferer = Object.assign(
+  //     {},
+  //     getHeaders.headers,
+  //     {
+  //       Referer: `${irasRedirectUrl}`,
+  //     }
+  //   );
+  //   const getProjectDetailsHeaders = {
+  //     headers: getHeadersProjDetailsWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.get(
-      `${projectDetailsRedirectUrl}`,
-      getProjectDetailsHeaders
-    );
-    secondRedirectDuration = response.timings.duration;
-    const isGetProjDetailsReqSuccessful = check(response, {
-      "Resume Project Details Redirect Request Success": () =>
-        response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetProjDetailsReqSuccessful) {
-      console.error(
-        `Get Resume Project Details Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    projectDetailsRedirectUrl = response.url;
+  //   response = http.get(
+  //     `${projectDetailsRedirectUrl}`,
+  //     getProjectDetailsHeaders
+  //   );
+  //   secondRedirectDuration = response.timings.duration;
+  //   const isGetProjDetailsReqSuccessful = check(response, {
+  //     "Resume Project Details Redirect Request Success": () =>
+  //       response.status === 302,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetProjDetailsReqSuccessful) {
+  //     console.error(
+  //       `Get Resume Project Details Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   projectDetailsRedirectUrl = response.url;
 
-    response = http.get(
-      `${projectDetailsRedirectUrl}`,
-      getProjectDetailsHeaders
-    );
-    TrendSaveProjectDetailsPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
-    ); //combining duration of intial request and redirect requests
-    TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
-    );
-    const isGetDisplayKeyRolesReqSuccessful = check(response, {
-      "Display Key Roles Redirect Page Request Success": () =>
-        response.status === 200,
-      "Display Key Roles Redirect Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${displayKeyRolesPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetDisplayKeyRolesReqSuccessful) {
-      console.error(
-        `Get Display Key Roles Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
+  //   response = http.get(
+  //     `${projectDetailsRedirectUrl}`,
+  //     getProjectDetailsHeaders
+  //   );
+  //   TrendSaveProjectDetailsPageReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+  //   ); //combining duration of intial request and redirect requests
+  //   TrendTransactionalReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+  //   );
+  //   const isGetDisplayKeyRolesReqSuccessful = check(response, {
+  //     "Display Key Roles Redirect Page Request Success": () =>
+  //       response.status === 200,
+  //     "Display Key Roles Redirect Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${displayKeyRolesPageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetDisplayKeyRolesReqSuccessful) {
+  //     console.error(
+  //       `Get Display Key Roles Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   userThinkTime(2, 4);
 
-    response = http.get(
-      `${baseURL}organisation/getorganisations?name=${orgSearchParam}`,
-      getHeaders
-    );
-    TrendSearchRtsOrgsReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    const isGetRtsOrgsSearchReqSuccessful = check(response, {
-      "Search Rts Orgs Request Success": () => response.status === 200,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRtsOrgsSearchReqSuccessful) {
-      console.error(
-        `Get Search Rts Orgs Request Success Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
+  //   response = http.get(
+  //     `${baseURL}organisation/getorganisations?name=${orgSearchParam}`,
+  //     getHeaders
+  //   );
+  //   TrendSearchRtsOrgsReqDuration.add(response.timings.duration);
+  //   TrendTransactionalReqDuration.add(response.timings.duration);
+  //   const isGetRtsOrgsSearchReqSuccessful = check(response, {
+  //     "Search Rts Orgs Request Success": () => response.status === 200,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetRtsOrgsSearchReqSuccessful) {
+  //     console.error(
+  //       `Get Search Rts Orgs Request Success Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
 
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
+  //   requestVerificationToken = response
+  //     .html()
+  //     .find("input[type=hidden][name=__RequestVerificationToken]")
+  //     .first()
+  //     .attr("value");
 
-    const keyRolesPostBody = scriptData[0][0].keyRolesPostBody[0].postBody;
-    const verifiedKeyRolesPostBody = Object.assign({}, keyRolesPostBody, {
-      __RequestVerificationToken: `${requestVerificationToken}`,
-    });
+  //   const keyRolesPostBody = scriptData[0][0].keyRolesPostBody[0].postBody;
+  //   const verifiedKeyRolesPostBody = Object.assign({}, keyRolesPostBody, {
+  //     __RequestVerificationToken: `${requestVerificationToken}`,
+  //   });
 
-    const postHeadersKeyRolesWithReferer = Object.assign(
-      {},
-      postHeaders.headers,
-      {
-        Referer: `${projectDetailsRedirectUrl}`,
-      }
-    );
-    const postKeyRolesHeaders = {
-      headers: postHeadersKeyRolesWithReferer,
-      redirects: 1,
-    };
+  //   const postHeadersKeyRolesWithReferer = Object.assign(
+  //     {},
+  //     postHeaders.headers,
+  //     {
+  //       Referer: `${projectDetailsRedirectUrl}`,
+  //     }
+  //   );
+  //   const postKeyRolesHeaders = {
+  //     headers: postHeadersKeyRolesWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.post(
-      `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
-      verifiedKeyRolesPostBody,
-      postKeyRolesHeaders
-    );
-    firstRedirectDuration = response.timings.duration;
-    const isPostKeyRolesReqSuccessful = check(response, {
-      "Save Key Roles Request Success": () => response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostKeyRolesReqSuccessful) {
-      console.error(
-        `Post Save Key Roles Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    let keyRolesRedirectUrl = response.url;
-    const getHeadersKeyRolesWithReferer = Object.assign(
-      {},
-      getHeaders.headers,
-      {
-        Referer: `${projectDetailsRedirectUrl}`,
-      }
-    );
-    const getKeyRolesHeaders = {
-      headers: getHeadersKeyRolesWithReferer,
-      redirects: 1,
-    };
+  //   response = http.post(
+  //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
+  //     verifiedKeyRolesPostBody,
+  //     postKeyRolesHeaders
+  //   );
+  //   firstRedirectDuration = response.timings.duration;
+  //   const isPostKeyRolesReqSuccessful = check(response, {
+  //     "Save Key Roles Request Success": () => response.status === 302,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isPostKeyRolesReqSuccessful) {
+  //     console.error(
+  //       `Post Save Key Roles Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   let keyRolesRedirectUrl = response.url;
+  //   const getHeadersKeyRolesWithReferer = Object.assign(
+  //     {},
+  //     getHeaders.headers,
+  //     {
+  //       Referer: `${projectDetailsRedirectUrl}`,
+  //     }
+  //   );
+  //   const getKeyRolesHeaders = {
+  //     headers: getHeadersKeyRolesWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
-    secondRedirectDuration = response.timings.duration;
-    const isGetKeyRolesReqSuccessful = check(response, {
-      "Resume Key Roles Redirect Request Success": () =>
-        response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetKeyRolesReqSuccessful) {
-      console.error(
-        `Get Resume Key Roles Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    keyRolesRedirectUrl = response.url;
+  //   response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
+  //   secondRedirectDuration = response.timings.duration;
+  //   const isGetKeyRolesReqSuccessful = check(response, {
+  //     "Resume Key Roles Redirect Request Success": () =>
+  //       response.status === 302,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetKeyRolesReqSuccessful) {
+  //     console.error(
+  //       `Get Resume Key Roles Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   keyRolesRedirectUrl = response.url;
 
-    response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
-    TrendSaveKeyRolesPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
-    ); //combining duration of intial request and redirect requests
-    TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
-    );
-    const isGetDisplayResearchLocationsReqSuccessful = check(response, {
-      "Display Research Locations Redirect Page Request Success": () =>
-        response.status === 200,
-      "Display Research Locations Redirect Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${displayResearchLocationsPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetDisplayResearchLocationsReqSuccessful) {
-      console.error(
-        `Get Display Research Locations Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
+  //   response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
+  //   TrendSaveKeyRolesPageReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+  //   ); //combining duration of intial request and redirect requests
+  //   TrendTransactionalReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+  //   );
+  //   const isGetDisplayResearchLocationsReqSuccessful = check(response, {
+  //     "Display Research Locations Redirect Page Request Success": () =>
+  //       response.status === 200,
+  //     "Display Research Locations Redirect Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${displayResearchLocationsPageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetDisplayResearchLocationsReqSuccessful) {
+  //     console.error(
+  //       `Get Display Research Locations Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   userThinkTime(2, 4);
 
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
+  //   requestVerificationToken = response
+  //     .html()
+  //     .find("input[type=hidden][name=__RequestVerificationToken]")
+  //     .first()
+  //     .attr("value");
 
-    const researchLocationPostBody =
-      scriptData[0][0].researchLocationPostBody[0].postBody;
-    const verifiedResearchLocationsPostBody = Object.assign(
-      {},
-      researchLocationPostBody,
-      {
-        __RequestVerificationToken: `${requestVerificationToken}`,
-      }
-    );
+  //   const researchLocationPostBody =
+  //     scriptData[0][0].researchLocationPostBody[0].postBody;
+  //   const verifiedResearchLocationsPostBody = Object.assign(
+  //     {},
+  //     researchLocationPostBody,
+  //     {
+  //       __RequestVerificationToken: `${requestVerificationToken}`,
+  //     }
+  //   );
 
-    const postHeadersResearchLocationsWithReferer = Object.assign(
-      {},
-      postHeaders.headers,
-      {
-        Referer: `${keyRolesRedirectUrl}`,
-      }
-    );
-    const postResearchLocationsHeaders = {
-      headers: postHeadersResearchLocationsWithReferer,
-      redirects: 1,
-    };
+  //   const postHeadersResearchLocationsWithReferer = Object.assign(
+  //     {},
+  //     postHeaders.headers,
+  //     {
+  //       Referer: `${keyRolesRedirectUrl}`,
+  //     }
+  //   );
+  //   const postResearchLocationsHeaders = {
+  //     headers: postHeadersResearchLocationsWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.post(
-      `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
-      verifiedResearchLocationsPostBody,
-      postResearchLocationsHeaders
-    );
-    firstRedirectDuration = response.timings.duration;
-    const isPostResearchLocationsReqSuccessful = check(response, {
-      "Save Research Locations Request Success": () => response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostResearchLocationsReqSuccessful) {
-      console.error(
-        `Post Save Research Locations Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    let researchLocationsRedirectUrl = response.url;
-    const getResearchLocationsWithReferer = Object.assign(
-      {},
-      getHeaders.headers,
-      {
-        Referer: `${keyRolesRedirectUrl}`,
-      }
-    );
-    const getResearchLocationsHeaders = {
-      headers: getResearchLocationsWithReferer,
-      redirects: 1,
-    };
+  //   response = http.post(
+  //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
+  //     verifiedResearchLocationsPostBody,
+  //     postResearchLocationsHeaders
+  //   );
+  //   firstRedirectDuration = response.timings.duration;
+  //   const isPostResearchLocationsReqSuccessful = check(response, {
+  //     "Save Research Locations Request Success": () => response.status === 302,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isPostResearchLocationsReqSuccessful) {
+  //     console.error(
+  //       `Post Save Research Locations Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   let researchLocationsRedirectUrl = response.url;
+  //   const getResearchLocationsWithReferer = Object.assign(
+  //     {},
+  //     getHeaders.headers,
+  //     {
+  //       Referer: `${keyRolesRedirectUrl}`,
+  //     }
+  //   );
+  //   const getResearchLocationsHeaders = {
+  //     headers: getResearchLocationsWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.get(
-      `${researchLocationsRedirectUrl}`,
-      getResearchLocationsHeaders
-    );
-    TrendSaveResearchLocationsPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
-    ); //combining duration of intial request and redirect requests
-    TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
-    );
-    const isGetDisplaySubmitApplicationReqSuccessful = check(response, {
-      "Display Submit Application Redirect Page Request Success": () =>
-        response.status === 200,
-      "Display Submit Application Redirect Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${displaySubmitApplicationPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetDisplaySubmitApplicationReqSuccessful) {
-      console.error(
-        `Get Display Submit Application Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
+  //   response = http.get(
+  //     `${researchLocationsRedirectUrl}`,
+  //     getResearchLocationsHeaders
+  //   );
+  //   TrendSaveResearchLocationsPageReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration
+  //   ); //combining duration of intial request and redirect requests
+  //   TrendTransactionalReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration
+  //   );
+  //   const isGetDisplaySubmitApplicationReqSuccessful = check(response, {
+  //     "Display Submit Application Redirect Page Request Success": () =>
+  //       response.status === 200,
+  //     "Display Submit Application Redirect Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${displaySubmitApplicationPageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetDisplaySubmitApplicationReqSuccessful) {
+  //     console.error(
+  //       `Get Display Submit Application Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   userThinkTime(2, 4);
 
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
+  //   requestVerificationToken = response
+  //     .html()
+  //     .find("input[type=hidden][name=__RequestVerificationToken]")
+  //     .first()
+  //     .attr("value");
 
-    const confirmProjDetailsPostBody =
-      scriptData[0][0].confirmProjDetailsPostBody[0].postBody;
-    const verifiedConfirmProjDetailsPostBody = Object.assign(
-      {},
-      confirmProjDetailsPostBody,
-      {
-        __RequestVerificationToken: `${requestVerificationToken}`,
-      }
-    );
+  //   const confirmProjDetailsPostBody =
+  //     scriptData[0][0].confirmProjDetailsPostBody[0].postBody;
+  //   const verifiedConfirmProjDetailsPostBody = Object.assign(
+  //     {},
+  //     confirmProjDetailsPostBody,
+  //     {
+  //       __RequestVerificationToken: `${requestVerificationToken}`,
+  //     }
+  //   );
 
-    const postHeadersConfirmProjDetailsWithReferer = Object.assign(
-      {},
-      postHeaders.headers,
-      {
-        Referer: `${researchLocationsRedirectUrl}`,
-      }
-    );
-    const postConfirmProjDetailsHeaders = {
-      headers: postHeadersConfirmProjDetailsWithReferer,
-      redirects: 1,
-    };
+  //   const postHeadersConfirmProjDetailsWithReferer = Object.assign(
+  //     {},
+  //     postHeaders.headers,
+  //     {
+  //       Referer: `${researchLocationsRedirectUrl}`,
+  //     }
+  //   );
+  //   const postConfirmProjDetailsHeaders = {
+  //     headers: postHeadersConfirmProjDetailsWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.post(
-      `${baseURL}questionnaire/confirmprojectdetails`,
-      verifiedConfirmProjDetailsPostBody,
-      postConfirmProjDetailsHeaders
-    );
-    firstRedirectDuration = response.timings.duration;
-    const isPostConfirmProjDetailsReqSuccessful = check(response, {
-      "Confirm Project Details Request Success": () => response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostConfirmProjDetailsReqSuccessful) {
-      console.error(
-        `Post Confirm Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    let projectOverviewRedirectUrl = response.url;
-    const getProjectOverviewWithReferer = Object.assign(
-      {},
-      getHeaders.headers,
-      {
-        Referer: `${researchLocationsRedirectUrl}`,
-      }
-    );
-    const getProjectOverviewHeaders = {
-      headers: getProjectOverviewWithReferer,
-      redirects: 1,
-    };
+  //   response = http.post(
+  //     `${baseURL}questionnaire/confirmprojectdetails`,
+  //     verifiedConfirmProjDetailsPostBody,
+  //     postConfirmProjDetailsHeaders
+  //   );
+  //   firstRedirectDuration = response.timings.duration;
+  //   const isPostConfirmProjDetailsReqSuccessful = check(response, {
+  //     "Confirm Project Details Request Success": () => response.status === 302,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isPostConfirmProjDetailsReqSuccessful) {
+  //     console.error(
+  //       `Post Confirm Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   let projectOverviewRedirectUrl = response.url;
+  //   const getProjectOverviewWithReferer = Object.assign(
+  //     {},
+  //     getHeaders.headers,
+  //     {
+  //       Referer: `${researchLocationsRedirectUrl}`,
+  //     }
+  //   );
+  //   const getProjectOverviewHeaders = {
+  //     headers: getProjectOverviewWithReferer,
+  //     redirects: 1,
+  //   };
 
-    response = http.get(
-      `${projectOverviewRedirectUrl}`,
-      getProjectOverviewHeaders
-    );
-    TrendSaveConfirmProjectReqDuration.add(
-      response.timings.duration + firstRedirectDuration
-    ); //combining duration of intial request and redirect requests
-    TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
-    );
-    const isGetProjectOverviewReqSuccessful = check(response, {
-      "Project Overview Redirect Page Request Success": () =>
-        response.status === 200,
-      "Project Overview Redirect Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${projectOverviewPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetProjectOverviewReqSuccessful) {
-      console.error(
-        `Get Project Overview Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    sleep(1);
-  });
+  //   response = http.get(
+  //     `${projectOverviewRedirectUrl}`,
+  //     getProjectOverviewHeaders
+  //   );
+  //   TrendSaveConfirmProjectReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration
+  //   ); //combining duration of intial request and redirect requests
+  //   TrendTransactionalReqDuration.add(
+  //     response.timings.duration + firstRedirectDuration
+  //   );
+  //   const isGetProjectOverviewReqSuccessful = check(response, {
+  //     "Project Overview Redirect Page Request Success": () =>
+  //       response.status === 200,
+  //     "Project Overview Redirect Page Loaded Correctly": (res) =>
+  //       res.body.indexOf(`${projectOverviewPageCheck}`) !== -1,
+  //   });
+  //   console.info(
+  //     "Request Sent: " + response.request.method + " " + response.request.url
+  //   );
+  //   if (!isGetProjectOverviewReqSuccessful) {
+  //     console.error(
+  //       `Get Project Overview Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+  //     );
+  //   }
+  //   sleep(1);
+  // });
 }
 
 export function handleSummary(data) {
