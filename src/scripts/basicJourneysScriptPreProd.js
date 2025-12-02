@@ -9,7 +9,8 @@ import { generateTOTP } from "../utils/generateMfaKey.js";
 
 //Script Data and Variables
 const baseURL =
-  "https://fd-rsp-applications-preprod-uks-f6esbkgtfncwc4gf.a03.azurefd.net/";
+  // "https://fd-rsp-applications-preprod-uks-f6esbkgtfncwc4gf.a03.azurefd.net/";
+  "https://fd-rsp-applications-automationtest-uks-e7f6hkg3c5edhxex.a03.azurefd.net/";
 
 const loginDetails = new SharedArray("loginData", function () {
   return JSON.parse(open("../resources/data/testData.json")).loginDetails;
@@ -105,9 +106,11 @@ export const options = {
       executor: "ramping-vus",
       gracefulStop: "30s",
       stages: [
-        { target: 10, duration: "1m" },
-        { target: 10, duration: "8m" },
-        { target: 0, duration: "1m" },
+        // { target: 10, duration: "1m" },
+        // { target: 10, duration: "8m" },
+        // { target: 0, duration: "1m" },
+        { target: 1, duration: "2s" },
+        { target: 0, duration: "3s" },
       ],
       gracefulRampDown: "30s",
       exec: "basicJourneysScript",
@@ -273,6 +276,11 @@ export const TrendSaveConfirmProjectReqDuration = new Trend(
   true
 );
 
+export const TrendCreateModificationPageReqDuration = new Trend(
+  "load_create_modification_page_response_time",
+  true
+);
+
 export async function setup() {
   let response;
   const password = await getPassword();
@@ -377,18 +385,23 @@ export async function setup() {
       "Accept-Language": "en-GB,en;q=0.9",
       "Cache-Control": "no-cache",
     },
-    redirects: 1,
+    // redirects: 1,
   });
 
-  response = http.get(`${response.url}`, {
-    headers: {
-      Accept: "text/html,application/xhtml+xml,application/xml;",
-      "Accept-Encoding": "gzip, deflate, br, zstd",
-      "Accept-Language": "en-GB,en;q=0.9",
-      "Cache-Control": "no-cache",
-    },
-    redirects: 1,
-  });
+  //MIGHT NOT NEED THIS COMMENTED OUT LOGIN CODE
+
+  // response = http.get(`${response.url}`, {
+  //   headers: {
+  //     Accept: "text/html,application/xhtml+xml,application/xml;",
+  //     "Accept-Encoding": "gzip, deflate, br, zstd",
+  //     "Accept-Language": "en-GB,en;q=0.9",
+  //     "Cache-Control": "no-cache",
+  //   },
+  //   redirects: 1,
+  // });
+  // console.log(response.status);
+  // console.log("ERROR HERE?");
+  // console.log(response.body);
 
   response = http.get(`${baseURL}`, {
     headers: {
@@ -401,7 +414,7 @@ export async function setup() {
 
   if (
     response.html().find("h1[class=govuk-heading-l]").first().text() !=
-    "My Account homepage"
+    "My account homepage"
   ) {
     fail("Failure to Authorize, No Cookies Set");
   }
@@ -437,1626 +450,2062 @@ export function basicJourneysScript(data) {
   }
 
   group("Manage Review Body Journey", function () {
-    response = http.get(`${baseURL}`, getHeaders);
-    TrendHomePageReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetHomePageReqSuccessful = check(response, {
-      "Home Page Request Success": () => response.status === 200,
-      "Home Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${homePageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetHomePageReqSuccessful) {
-      console.error(
-        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(`${baseURL}systemadmin`, getHeaders);
-    TrendSysAdminReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetSysAdminPageReqSuccessful = check(response, {
-      "System Admin Page Request Success": () => response.status === 200,
-      "System Admin Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${sysAdminCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetSysAdminPageReqSuccessful) {
-      console.error(
-        `Get System Admin Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(`${baseURL}reviewbody/view`, getHeaders);
-    TrendRevBodyListReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    let isGetRevBodyListPageReqSuccessful = check(response, {
-      "Review Body List Page Request Success": () => response.status === 200,
-      "Review Body List Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyListPageReqSuccessful) {
-      console.error(
-        `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(`${baseURL}reviewbody/create`, getHeaders);
-    TrendAddRevBodyReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetAddRevBodyPageReqSuccessful = check(response, {
-      "Add Review Body Page Request Success": () => response.status === 200,
-      "Add Review Body Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${addRevBodyCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetAddRevBodyPageReqSuccessful) {
-      console.error(
-        `Get Add Review Body Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
-    timestamp = Date.now();
-    orgName = `${orgNameBase}${timestamp}`;
-    const selectedPostBody = randomItem(revBodyPostBodies).postBody;
-    const confirmPostBody = Object.assign({}, selectedPostBody, {
-      Id: `${id}`,
-      CreatedBy: `${createdBy}`,
-      UpdatedBy: `${updatedBy}`,
-      IsActive: `${isActive}`,
-      RegulatoryBodyName: `${orgName}`,
-      __RequestVerificationToken: `${requestVerificationToken}`,
-    });
-    response = http.post(
-      `${baseURL}reviewbody/confirm-changes`,
-      confirmPostBody,
-      postHeaders
-    );
-    TrendConfirmRevBodyChangesReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    const isPostConfirmRevBodyChangesPageReqSuccessful = check(response, {
-      "Confirm Review Body Changes Page Request Success": () =>
-        response.status === 200,
-      "Confirm Review Body Changes Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${confirmRevBodyChangeCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostConfirmRevBodyChangesPageReqSuccessful) {
-      console.error(
-        `Post Confirm Review Body Changes Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
-    const submitPostBody = Object.assign({}, selectedPostBody, {
-      RegulatoryBodyName: `${orgName}`,
-      __RequestVerificationToken: `${requestVerificationToken}`,
-    });
-    response = http.post(
-      `${baseURL}reviewbody/submit`,
-      submitPostBody,
-      postHeaders
-    );
-    TrendSubmitRevBodyReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    const isPostSubmitRevBodyPageReqSuccessful = check(response, {
-      "Submit Review Body Page Request Success": () => response.status === 200,
-      "Submit Review Body Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${submitRevBodyCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostSubmitRevBodyPageReqSuccessful) {
-      console.error(
-        `Post Submit Review Body Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(`${baseURL}reviewbody/view`, getHeaders);
-    TrendRevBodyListReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    isGetRevBodyListPageReqSuccessful = check(response, {
-      "Review Body List Page Request Success": () => response.status === 200,
-      "Review Body List Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyListPageReqSuccessful) {
-      console.error(
-        `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
-      getHeaders
-    );
-    TrendRevBodyListSearchReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    let isGetRevBodyListSearchPageReqSuccessful = check(response, {
-      "Review Body List Search Request Success": () => response.status === 200,
-      "Review Body List Search Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyListSearchPageReqSuccessful) {
-      console.error(
-        `Get Review Body List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    const selectedRevBodyProfile = randomItem(revBodyProfileIds);
-    response = http.get(
-      `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
-      getHeaders
-    );
-    TrendRevBodyProfileReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    let isGetRevBodyProfilePageReqSuccessful = check(response, {
-      "Review Body Profile Page Request Success": () => response.status === 200,
-      "Review Body Profile Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyProfilePageReqSuccessful) {
-      console.error(
-        `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/update?id=${selectedRevBodyProfile}`,
-      getHeaders
-    );
-    TrendRevBodyEditReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetRevBodyEditPageReqSuccessful = check(response, {
-      "Review Body Edit Page Request Success": () => response.status === 200,
-      "Review Body Edit Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyEditCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyEditPageReqSuccessful) {
-      console.error(
-        `Get Review Body Edit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
-    timestamp = Date.now();
-    orgName = `${orgNameBase}${timestamp}`;
-    const submitEditPostBody = Object.assign({}, selectedPostBody, {
-      Id: `${selectedRevBodyProfile}`,
-      CreatedBy: `${editCreatedBy}`,
-      UpdatedBy: `${editUpdatedBy}`,
-      IsActive: `${isActive}`,
-      RegulatoryBodyName: `${orgName}`,
-      EmailAddress: `${emailEditPrefix}${timestamp}${emailSuffix}`,
-      Description: `${selectedPostBody.Description} ${timestamp}`,
-      __RequestVerificationToken: `${requestVerificationToken}`,
-    });
-    const postHeadersWithRefer = Object.assign({}, postHeaders.headers, {
-      Referer: `${baseURL}reviewbody/update?id=${selectedRevBodyProfile}`,
-    });
-    const postHeadersEdit = { headers: postHeadersWithRefer, redirects: 1 };
-    response = http.post(
-      `${baseURL}reviewbody/submit`,
-      submitEditPostBody,
-      postHeadersEdit
-    );
-    const redirectDuration = response.timings.duration;
-    const isPostSubmitRevBodyEditReqSuccessful = check(response, {
-      "Submit Review Body Edit Request Success": () => response.status === 302,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostSubmitRevBodyEditReqSuccessful) {
-      console.error(
-        `Post Submit Review Body Edit Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    const redirectUrl = response.url;
-    response = http.get(`${redirectUrl}`, getHeaders);
-    TrendSubmitRevBodyEditReqDuration.add(
-      response.timings.duration + redirectDuration
-    ); //combining duration of intial request and redirect request
-    TrendTransactionalReqDuration.add(
-      response.timings.duration + redirectDuration
-    );
-    const isGetSubmitRevBodyEditRedirectPageReqSuccessful = check(response, {
-      "Submit Review Body Edit Redirect Page Request Success": () =>
-        response.status === 200,
-      "Submit Review Body Edit Redirect Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetSubmitRevBodyEditRedirectPageReqSuccessful) {
-      console.error(
-        `Get Submit Review Body Edit Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
-    const statusReqParam = response
-      .html()
-      .find("button[type=submit][formaction]")
-      .first()
-      .attr("formaction")
-      .replace("/", "");
-    const revBodyStatusPostBody =
-      scriptData[0][0].revBodyStatusPostBody[0].postBody;
-    const submitRevBodyStatusPostBody = Object.assign(
-      {},
-      revBodyStatusPostBody,
-      {
-        Id: `${selectedRevBodyProfile}`,
-        __RequestVerificationToken: `${requestVerificationToken}`,
-      }
-    );
-    response = http.post(
-      `${baseURL}${statusReqParam}`,
-      submitRevBodyStatusPostBody,
-      postHeaders
-    );
-    TrendRevBodyStatusChangeReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    let isPostRevBodyStatusChangePageReqSuccessful = check(response, {
-      "Review Body Status Change Page Request Success": () =>
-        response.status === 200,
-      "Review Body Status Change Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyStatusChangeCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostRevBodyStatusChangePageReqSuccessful) {
-      console.error(
-        `Post Review Body Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
-    const confirmStatusReqParam = response
-      .html()
-      .find("button[type=submit][formaction]")
-      .first()
-      .attr("formaction")
-      .replace("/", "");
-    const newIsActive = response
-      .html()
-      .find("input[type=hidden][id=IsActive]")
-      .first()
-      .attr("value");
-    const revBodyConfirmStatusPostBody =
-      scriptData[0][0].revBodyConfirmStatusPostBody[0].postBody;
-    const confirmRevBodyStatusPostBody = Object.assign(
-      {},
-      revBodyConfirmStatusPostBody,
-      {
-        Id: `${selectedRevBodyProfile}`,
-        IsActive: `${newIsActive}`,
-        OrganisationName: `${orgName}`,
-        __RequestVerificationToken: `${requestVerificationToken}`,
-      }
-    );
-    response = http.post(
-      `${baseURL}${confirmStatusReqParam}`,
-      confirmRevBodyStatusPostBody,
-      postHeaders
-    );
-    TrendRevBodyConfirmStatusChangeReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    let isPostConfirmRevBodyStatusChangePageReqSuccessful = check(response, {
-      "Review Body Confirm Status Change Page Request Success": () =>
-        response.status === 200,
-      "Review Body Confirm Status Change Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyConfirmStatusChangeCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostConfirmRevBodyStatusChangePageReqSuccessful) {
-      console.error(
-        `Post Review Body Confirm Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(`${baseURL}reviewbody/view`, getHeaders);
-    TrendRevBodyListReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    isGetRevBodyListPageReqSuccessful = check(response, {
-      "Review Body List Page Request Success": () => response.status === 200,
-      "Review Body List Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyListPageReqSuccessful) {
-      console.error(
-        `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
-      getHeaders
-    );
-    TrendRevBodyListSearchReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    isGetRevBodyListSearchPageReqSuccessful = check(response, {
-      "Review Body List Search Request Success": () => response.status === 200,
-      "Review Body List Search Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyListSearchPageReqSuccessful) {
-      console.error(
-        `Get Review Body List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
-      getHeaders
-    );
-    TrendRevBodyProfileReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    isGetRevBodyProfilePageReqSuccessful = check(response, {
-      "Review Body Profile Page Request Success": () => response.status === 200,
-      "Review Body Profile Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyProfilePageReqSuccessful) {
-      console.error(
-        `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/audit-trail?reviewBodyId=${selectedRevBodyProfile}`,
-      getHeaders
-    );
-    TrendRevBodyAuditReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetRevBodyAuditPageReqSuccessful = check(response, {
-      "Review Body Audit Page Request Success": () => response.status === 200,
-      "Review Body Audit Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyAuditCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyAuditPageReqSuccessful) {
-      console.error(
-        `Get Review Body Audit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
-      getHeaders
-    );
-    TrendRevBodyProfileReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    isGetRevBodyProfilePageReqSuccessful = check(response, {
-      "Review Body Profile Page Request Success": () => response.status === 200,
-      "Review Body Profile Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyProfilePageReqSuccessful) {
-      console.error(
-        `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/viewreviewbodyusers?reviewBodyId=5e28ac18-a447-42ec-b23e-0257f9e53c53`, //add selected param here when add flow complete
-      getHeaders
-    );
-    TrendRevBodyUserListReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetRevBodyUserListPageReqSuccessful = check(response, {
-      "Review Body User List Page Request Success": () =>
-        response.status === 200,
-      "Review Body User List Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyUserListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyUserListPageReqSuccessful) {
-      console.error(
-        `Get Review Body User List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/viewreviewbodyusers?SearchQuery=qa+auto&ReviewBodyId=5e28ac18-a447-42ec-b23e-0257f9e53c53&PageSize=20`, //add selected param here when add flow complete
-      getHeaders
-    );
-    TrendRevBodyUserListSearchReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    const isGetRevBodyUserListSearchPageReqSuccessful = check(response, {
-      "Review Body User List Search Page Request Success": () =>
-        response.status === 200,
-      "Review Body User List Search Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyUserListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyUserListSearchPageReqSuccessful) {
-      console.error(
-        `Get Review Body User List Search Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-
-    response = http.get(
-      `${baseURL}reviewbody/viewadduser?reviewBodyId=${selectedRevBodyProfile}`,
-      getHeaders
-    );
-    TrendRevBodyAddUserReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetRevBodyAddUserPageReqSuccessful = check(response, {
-      "Review Body Add User Page Request Success": () =>
-        response.status === 200,
-      "Review Body Add User Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyAddUserCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyAddUserPageReqSuccessful) {
-      console.error(
-        `Get Review Body Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-    response = http.get(
-      `${baseURL}reviewbody/viewadduser?SearchQuery=k6&ReviewBodyId=${selectedRevBodyProfile}&PageSize=20`,
-      getHeaders
-    );
-    TrendRevBodyAddUserSearchReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    const isGetRevBodyAddUserSearchPageReqSuccessful = check(response, {
-      "Review Body Add User Search Page Request Success": () =>
-        response.status === 200,
-      "Review Body Add User Search Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${revBodyAddUserCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetRevBodyAddUserSearchPageReqSuccessful) {
-      console.error(
-        `Get Review Body Add User Search Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    sleep(1);
+    // response = http.get(`${baseURL}`, getHeaders);
+    // TrendHomePageReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetHomePageReqSuccessful = check(response, {
+    //   "Home Page Request Success": () => response.status === 200,
+    //   "Home Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${homePageCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetHomePageReqSuccessful) {
+    //   console.error(
+    //     `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}systemadmin`, getHeaders);
+    // TrendSysAdminReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetSysAdminPageReqSuccessful = check(response, {
+    //   "System Admin Page Request Success": () => response.status === 200,
+    //   "System Admin Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${sysAdminCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetSysAdminPageReqSuccessful) {
+    //   console.error(
+    //     `Get System Admin Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}reviewbody/view`, getHeaders);
+    // TrendRevBodyListReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // let isGetRevBodyListPageReqSuccessful = check(response, {
+    //   "Review Body List Page Request Success": () => response.status === 200,
+    //   "Review Body List Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyListPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}reviewbody/create`, getHeaders);
+    // TrendAddRevBodyReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetAddRevBodyPageReqSuccessful = check(response, {
+    //   "Add Review Body Page Request Success": () => response.status === 200,
+    //   "Add Review Body Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${addRevBodyCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetAddRevBodyPageReqSuccessful) {
+    //   console.error(
+    //     `Get Add Review Body Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // timestamp = Date.now();
+    // orgName = `${orgNameBase}${timestamp}`;
+    // const selectedPostBody = randomItem(revBodyPostBodies).postBody;
+    // const confirmPostBody = Object.assign({}, selectedPostBody, {
+    //   Id: `${id}`,
+    //   CreatedBy: `${createdBy}`,
+    //   UpdatedBy: `${updatedBy}`,
+    //   IsActive: `${isActive}`,
+    //   RegulatoryBodyName: `${orgName}`,
+    //   __RequestVerificationToken: `${requestVerificationToken}`,
+    // });
+    // response = http.post(
+    //   `${baseURL}reviewbody/confirm-changes`,
+    //   confirmPostBody,
+    //   postHeaders
+    // );
+    // TrendConfirmRevBodyChangesReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // const isPostConfirmRevBodyChangesPageReqSuccessful = check(response, {
+    //   "Confirm Review Body Changes Page Request Success": () =>
+    //     response.status === 200,
+    //   "Confirm Review Body Changes Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${confirmRevBodyChangeCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostConfirmRevBodyChangesPageReqSuccessful) {
+    //   console.error(
+    //     `Post Confirm Review Body Changes Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // const submitPostBody = Object.assign({}, selectedPostBody, {
+    //   RegulatoryBodyName: `${orgName}`,
+    //   __RequestVerificationToken: `${requestVerificationToken}`,
+    // });
+    // response = http.post(
+    //   `${baseURL}reviewbody/submit`,
+    //   submitPostBody,
+    //   postHeaders
+    // );
+    // TrendSubmitRevBodyReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // const isPostSubmitRevBodyPageReqSuccessful = check(response, {
+    //   "Submit Review Body Page Request Success": () => response.status === 200,
+    //   "Submit Review Body Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${submitRevBodyCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostSubmitRevBodyPageReqSuccessful) {
+    //   console.error(
+    //     `Post Submit Review Body Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}reviewbody/view`, getHeaders);
+    // TrendRevBodyListReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // isGetRevBodyListPageReqSuccessful = check(response, {
+    //   "Review Body List Page Request Success": () => response.status === 200,
+    //   "Review Body List Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyListPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
+    //   getHeaders
+    // );
+    // TrendRevBodyListSearchReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // let isGetRevBodyListSearchPageReqSuccessful = check(response, {
+    //   "Review Body List Search Request Success": () => response.status === 200,
+    //   "Review Body List Search Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyListSearchPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // const selectedRevBodyProfile = randomItem(revBodyProfileIds);
+    // response = http.get(
+    //   `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
+    //   getHeaders
+    // );
+    // TrendRevBodyProfileReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // let isGetRevBodyProfilePageReqSuccessful = check(response, {
+    //   "Review Body Profile Page Request Success": () => response.status === 200,
+    //   "Review Body Profile Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyProfilePageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/update?id=${selectedRevBodyProfile}`,
+    //   getHeaders
+    // );
+    // TrendRevBodyEditReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetRevBodyEditPageReqSuccessful = check(response, {
+    //   "Review Body Edit Page Request Success": () => response.status === 200,
+    //   "Review Body Edit Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyEditCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyEditPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body Edit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // timestamp = Date.now();
+    // orgName = `${orgNameBase}${timestamp}`;
+    // const submitEditPostBody = Object.assign({}, selectedPostBody, {
+    //   Id: `${selectedRevBodyProfile}`,
+    //   CreatedBy: `${editCreatedBy}`,
+    //   UpdatedBy: `${editUpdatedBy}`,
+    //   IsActive: `${isActive}`,
+    //   RegulatoryBodyName: `${orgName}`,
+    //   EmailAddress: `${emailEditPrefix}${timestamp}${emailSuffix}`,
+    //   Description: `${selectedPostBody.Description} ${timestamp}`,
+    //   __RequestVerificationToken: `${requestVerificationToken}`,
+    // });
+    // const postHeadersWithRefer = Object.assign({}, postHeaders.headers, {
+    //   Referer: `${baseURL}reviewbody/update?id=${selectedRevBodyProfile}`,
+    // });
+    // const postHeadersEdit = { headers: postHeadersWithRefer, redirects: 1 };
+    // response = http.post(
+    //   `${baseURL}reviewbody/submit`,
+    //   submitEditPostBody,
+    //   postHeadersEdit
+    // );
+    // const redirectDuration = response.timings.duration;
+    // const isPostSubmitRevBodyEditReqSuccessful = check(response, {
+    //   "Submit Review Body Edit Request Success": () => response.status === 302,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostSubmitRevBodyEditReqSuccessful) {
+    //   console.error(
+    //     `Post Submit Review Body Edit Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // const redirectUrl = response.url;
+    // response = http.get(`${redirectUrl}`, getHeaders);
+    // TrendSubmitRevBodyEditReqDuration.add(
+    //   response.timings.duration + redirectDuration
+    // ); //combining duration of intial request and redirect request
+    // TrendTransactionalReqDuration.add(
+    //   response.timings.duration + redirectDuration
+    // );
+    // const isGetSubmitRevBodyEditRedirectPageReqSuccessful = check(response, {
+    //   "Submit Review Body Edit Redirect Page Request Success": () =>
+    //     response.status === 200,
+    //   "Submit Review Body Edit Redirect Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetSubmitRevBodyEditRedirectPageReqSuccessful) {
+    //   console.error(
+    //     `Get Submit Review Body Edit Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // const statusReqParam = response
+    //   .html()
+    //   .find("button[type=submit][formaction]")
+    //   .first()
+    //   .attr("formaction")
+    //   .replace("/", "");
+    // const revBodyStatusPostBody =
+    //   scriptData[0][0].revBodyStatusPostBody[0].postBody;
+    // const submitRevBodyStatusPostBody = Object.assign(
+    //   {},
+    //   revBodyStatusPostBody,
+    //   {
+    //     Id: `${selectedRevBodyProfile}`,
+    //     __RequestVerificationToken: `${requestVerificationToken}`,
+    //   }
+    // );
+    // response = http.post(
+    //   `${baseURL}${statusReqParam}`,
+    //   submitRevBodyStatusPostBody,
+    //   postHeaders
+    // );
+    // TrendRevBodyStatusChangeReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // let isPostRevBodyStatusChangePageReqSuccessful = check(response, {
+    //   "Review Body Status Change Page Request Success": () =>
+    //     response.status === 200,
+    //   "Review Body Status Change Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyStatusChangeCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostRevBodyStatusChangePageReqSuccessful) {
+    //   console.error(
+    //     `Post Review Body Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // const confirmStatusReqParam = response
+    //   .html()
+    //   .find("button[type=submit][formaction]")
+    //   .first()
+    //   .attr("formaction")
+    //   .replace("/", "");
+    // const newIsActive = response
+    //   .html()
+    //   .find("input[type=hidden][id=IsActive]")
+    //   .first()
+    //   .attr("value");
+    // const revBodyConfirmStatusPostBody =
+    //   scriptData[0][0].revBodyConfirmStatusPostBody[0].postBody;
+    // const confirmRevBodyStatusPostBody = Object.assign(
+    //   {},
+    //   revBodyConfirmStatusPostBody,
+    //   {
+    //     Id: `${selectedRevBodyProfile}`,
+    //     IsActive: `${newIsActive}`,
+    //     OrganisationName: `${orgName}`,
+    //     __RequestVerificationToken: `${requestVerificationToken}`,
+    //   }
+    // );
+    // response = http.post(
+    //   `${baseURL}${confirmStatusReqParam}`,
+    //   confirmRevBodyStatusPostBody,
+    //   postHeaders
+    // );
+    // TrendRevBodyConfirmStatusChangeReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // let isPostConfirmRevBodyStatusChangePageReqSuccessful = check(response, {
+    //   "Review Body Confirm Status Change Page Request Success": () =>
+    //     response.status === 200,
+    //   "Review Body Confirm Status Change Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyConfirmStatusChangeCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostConfirmRevBodyStatusChangePageReqSuccessful) {
+    //   console.error(
+    //     `Post Review Body Confirm Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}reviewbody/view`, getHeaders);
+    // TrendRevBodyListReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // isGetRevBodyListPageReqSuccessful = check(response, {
+    //   "Review Body List Page Request Success": () => response.status === 200,
+    //   "Review Body List Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyListPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
+    //   getHeaders
+    // );
+    // TrendRevBodyListSearchReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // isGetRevBodyListSearchPageReqSuccessful = check(response, {
+    //   "Review Body List Search Request Success": () => response.status === 200,
+    //   "Review Body List Search Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyListSearchPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
+    //   getHeaders
+    // );
+    // TrendRevBodyProfileReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // isGetRevBodyProfilePageReqSuccessful = check(response, {
+    //   "Review Body Profile Page Request Success": () => response.status === 200,
+    //   "Review Body Profile Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyProfilePageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/audit-trail?reviewBodyId=${selectedRevBodyProfile}`,
+    //   getHeaders
+    // );
+    // TrendRevBodyAuditReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetRevBodyAuditPageReqSuccessful = check(response, {
+    //   "Review Body Audit Page Request Success": () => response.status === 200,
+    //   "Review Body Audit Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyAuditCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyAuditPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body Audit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
+    //   getHeaders
+    // );
+    // TrendRevBodyProfileReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // isGetRevBodyProfilePageReqSuccessful = check(response, {
+    //   "Review Body Profile Page Request Success": () => response.status === 200,
+    //   "Review Body Profile Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyProfilePageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/viewreviewbodyusers?reviewBodyId=5e28ac18-a447-42ec-b23e-0257f9e53c53`, //add selected param here when add flow complete
+    //   getHeaders
+    // );
+    // TrendRevBodyUserListReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetRevBodyUserListPageReqSuccessful = check(response, {
+    //   "Review Body User List Page Request Success": () =>
+    //     response.status === 200,
+    //   "Review Body User List Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyUserListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyUserListPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body User List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/viewreviewbodyusers?SearchQuery=qa+auto&ReviewBodyId=5e28ac18-a447-42ec-b23e-0257f9e53c53&PageSize=20`, //add selected param here when add flow complete
+    //   getHeaders
+    // );
+    // TrendRevBodyUserListSearchReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // const isGetRevBodyUserListSearchPageReqSuccessful = check(response, {
+    //   "Review Body User List Search Page Request Success": () =>
+    //     response.status === 200,
+    //   "Review Body User List Search Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyUserListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyUserListSearchPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body User List Search Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/viewadduser?reviewBodyId=${selectedRevBodyProfile}`,
+    //   getHeaders
+    // );
+    // TrendRevBodyAddUserReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetRevBodyAddUserPageReqSuccessful = check(response, {
+    //   "Review Body Add User Page Request Success": () =>
+    //     response.status === 200,
+    //   "Review Body Add User Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyAddUserCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyAddUserPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}reviewbody/viewadduser?SearchQuery=k6&ReviewBodyId=${selectedRevBodyProfile}&PageSize=20`,
+    //   getHeaders
+    // );
+    // TrendRevBodyAddUserSearchReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // const isGetRevBodyAddUserSearchPageReqSuccessful = check(response, {
+    //   "Review Body Add User Search Page Request Success": () =>
+    //     response.status === 200,
+    //   "Review Body Add User Search Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${revBodyAddUserCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetRevBodyAddUserSearchPageReqSuccessful) {
+    //   console.error(
+    //     `Get Review Body Add User Search Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // sleep(1);
   });
 
   group("Manage User Journey", function () {
-    response = http.get(`${baseURL}`, getHeaders);
-    TrendHomePageReqDuration.add(response.timings.duration);
+    // response = http.get(`${baseURL}`, getHeaders);
+    // TrendHomePageReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetHomePageReqSuccessful = check(response, {
+    //   "Home Page Request Success": () => response.status === 200,
+    //   "Home Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${homePageCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetHomePageReqSuccessful) {
+    //   console.error(
+    //     `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}systemadmin`, getHeaders);
+    // TrendSysAdminReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // const isGetSysAdminPageReqSuccessful = check(response, {
+    //   "System Admin Page Request Success": () => response.status === 200,
+    //   "System Admin Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${sysAdminCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetSysAdminPageReqSuccessful) {
+    //   console.error(
+    //     `Get System Admin Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}admin/users`, getHeaders);
+    // TrendManageUsersListReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // let isGetManagUsersListPageReqSuccessful = check(response, {
+    //   "Manage Users List Page Request Success": () => response.status === 200,
+    //   "Manage Users List Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${manageUserListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetManagUsersListPageReqSuccessful) {
+    //   console.error(
+    //     `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}admin/users/createuser`, getHeaders);
+    // TrendAddUserReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // let isGetAddUsersPageReqSuccessful = check(response, {
+    //   "Add User Page Request Success": () => response.status === 200,
+    //   "Add User Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${addUserPageCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetAddUsersPageReqSuccessful) {
+    //   console.error(
+    //     `Get Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // timestamp = Date.now();
+    // emailAdd = `${emailPrefix}${timestamp}${emailSuffix}`;
+    // const selectedUserPostBody = randomItem(userPostBodies).postBody;
+    // const confirmUserPostBody = Object.assign({}, selectedUserPostBody, {
+    //   Id: "",
+    //   OriginalEmail: "",
+    //   Email: `${emailAdd}`,
+    //   __RequestVerificationToken: `${requestVerificationToken}`,
+    // });
+    // response = http.post(
+    //   `${baseURL}admin/users/confirmusersubmission`,
+    //   confirmUserPostBody,
+    //   postHeaders
+    // );
+    // TrendConfirmAddUserReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // const isPostConfirmAddUserPageReqSuccessful = check(response, {
+    //   "Confirm Add User Page Request Success": () => response.status === 200,
+    //   "Confirm Add User Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${confirmAddUserCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostConfirmAddUserPageReqSuccessful) {
+    //   console.error(
+    //     `Post Confirm Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // const submitUserPostBody = Object.assign({}, selectedUserPostBody, {
+    //   Status: "Active",
+    //   Email: `${emailAdd}`,
+    //   __RequestVerificationToken: `${requestVerificationToken}`,
+    // });
+    // response = http.post(
+    //   `${baseURL}admin/users/submituser`,
+    //   submitUserPostBody,
+    //   postHeaders
+    // );
+    // TrendSubmitAddUserReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // const isPostSubmitAddUserPageReqSuccessful = check(response, {
+    //   "Submit Add User Page Request Success": () => response.status === 200,
+    //   "Submit Add User Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${submitAddUserCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostSubmitAddUserPageReqSuccessful) {
+    //   console.error(
+    //     `Post Submit Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}admin/users`, getHeaders);
+    // TrendManageUsersListReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // isGetManagUsersListPageReqSuccessful = check(response, {
+    //   "Manage Users List Page Request Success": () => response.status === 200,
+    //   "Manage Users List Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${manageUserListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetManagUsersListPageReqSuccessful) {
+    //   console.error(
+    //     `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}admin/users?SearchQuery=k6&PageSize=20`,
+    //   getHeaders
+    // );
+    // TrendManageUsersSearchReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // let isGetManageUsersSearchReqSuccessful = check(response, {
+    //   "Manage Users List Search Request Success": () => response.status === 200,
+    //   "Manage Users List Search Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${manageUserListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetManageUsersSearchReqSuccessful) {
+    //   console.error(
+    //     `Get Manage Users List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // const selectedUserProfile = randomItem(userProfileIds);
+    // response = http.get(
+    //   `${baseURL}admin/users/viewuser?userId=${selectedUserProfile}`,
+    //   getHeaders
+    // );
+    // TrendUserProfileReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // let isGetUserProfilePageReqSuccessful = check(response, {
+    //   "User Profile Page Request Success": () => response.status === 200,
+    //   "User Profile Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${userProfileCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetUserProfilePageReqSuccessful) {
+    //   console.error(
+    //     `Get User Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}admin/users/edituser?userId=${selectedUserProfile}`,
+    //   getHeaders
+    // );
+    // TrendUserEditReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // let isGetUserEditPageReqSuccessful = check(response, {
+    //   "User Edit Page Request Success": () => response.status === 200,
+    //   "User Edit Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${userEditCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetUserEditPageReqSuccessful) {
+    //   console.error(
+    //     `Get User Edit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // const originalEmail = response
+    //   .html()
+    //   .find("input[type=hidden][id=OriginalEmail]")
+    //   .first()
+    //   .attr("value");
+    // const status = response
+    //   .html()
+    //   .find("input[type=text][id=Status]")
+    //   .first()
+    //   .attr("value");
+    // timestamp = Date.now();
+    // const submitEditUserPostBody = Object.assign({}, selectedUserPostBody, {
+    //   Id: `${selectedUserProfile}`,
+    //   OriginalEmail: `${originalEmail}`,
+    //   Status: `${status}`,
+    //   GivenName: `${selectedUserPostBody.GivenName} ${timestamp}`,
+    //   FamilyName: `${selectedUserPostBody.FamilyName} ${timestamp}`,
+    //   Email: `${emailEditPrefix}${timestamp}${emailSuffix}`,
+    //   Organisation: `${selectedUserPostBody.Organisation} ${timestamp}`,
+    //   JobTitle: `${selectedUserPostBody.JobTitle} ${timestamp}`,
+    //   __RequestVerificationToken: `${requestVerificationToken}`,
+    // });
+    // const postHeadersUserWithRefer = Object.assign({}, postHeaders.headers, {
+    //   Referer: `${baseURL}admin/users/edituser?userId=${selectedUserProfile}`,
+    // });
+    // const postHeadersUserEdit = {
+    //   headers: postHeadersUserWithRefer,
+    //   redirects: 1,
+    // };
+    // response = http.post(
+    //   `${baseURL}admin/users/submituser`,
+    //   submitEditUserPostBody,
+    //   postHeadersUserEdit
+    // );
+    // const redirectUserEditDuration = response.timings.duration;
+    // const isPostSubmitEditUserPageReqSuccessful = check(response, {
+    //   "Submit Edit User Request Success": () => response.status === 302,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostSubmitEditUserPageReqSuccessful) {
+    //   console.error(
+    //     `Post Submit Edit User Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // const redirectEditUserUrl = response.url;
+    // response = http.get(`${redirectEditUserUrl}`, getHeaders);
+    // TrendSubmitEditUserReqDuration.add(
+    //   response.timings.duration + redirectUserEditDuration
+    // ); //combining duration of intial request and redirect request
+    // TrendTransactionalReqDuration.add(
+    //   response.timings.duration + redirectUserEditDuration
+    // );
+    // const isPostSubmitEditUserRedirectPageReqSuccessful = check(response, {
+    //   "Submit Edit User Redirect Page Request Success": () =>
+    //     response.status === 200,
+    //   "Submit Edit User Redirect Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${userProfileCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostSubmitEditUserRedirectPageReqSuccessful) {
+    //   console.error(
+    //     `Get Submit Edit User Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // const currentUserStatus = response
+    //   .html()
+    //   .find("input[type=hidden][id=Status]")
+    //   .first()
+    //   .attr("value");
+    // let statusReqParam;
+    // if (currentUserStatus == "Active") {
+    //   statusReqParam = "disableuser";
+    // } else {
+    //   statusReqParam = "enableuser";
+    // }
+    // response = http.get(
+    //   `${baseURL}admin/users/${statusReqParam}?userId=${selectedUserProfile}`,
+    //   getHeaders
+    // );
+    // TrendUserStatusChangeReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // let isGetUserStatusChangePageReqSuccessful = check(response, {
+    //   "User Status Change Page Request Success": () => response.status === 200,
+    //   "User Status Change Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${userStatusChangeCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetUserStatusChangePageReqSuccessful) {
+    //   console.error(
+    //     `Get User Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // const userStatusPostBody = scriptData[0][0].userStatusPostBody[0].postBody;
+    // const submitUserStatusPostBody = Object.assign({}, userStatusPostBody, {
+    //   Id: `${selectedUserProfile}`,
+    //   Email: `${submitEditUserPostBody.Email}`,
+    //   __RequestVerificationToken: `${requestVerificationToken}`,
+    // });
+    // response = http.post(
+    //   `${baseURL}admin/users/${statusReqParam}`,
+    //   submitUserStatusPostBody,
+    //   postHeaders
+    // );
+    // TrendSubmitUserStatusChangeReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // const isPostSubmitUserStatusChangePageReqSuccessful = check(response, {
+    //   "Submit User Status Change Page Request Success": () =>
+    //     response.status === 200,
+    //   "Submit User Status Change Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${submitUserStatusChangeCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostSubmitUserStatusChangePageReqSuccessful) {
+    //   console.error(
+    //     `Post Submit User Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(`${baseURL}admin/users`, getHeaders);
+    // TrendManageUsersListReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // isGetManagUsersListPageReqSuccessful = check(response, {
+    //   "Manage Users List Page Request Success": () => response.status === 200,
+    //   "Manage Users List Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${manageUserListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetManagUsersListPageReqSuccessful) {
+    //   console.error(
+    //     `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}admin/users?SearchQuery=k6&PageSize=20`,
+    //   getHeaders
+    // );
+    // TrendManageUsersSearchReqDuration.add(response.timings.duration);
+    // TrendTransactionalReqDuration.add(response.timings.duration);
+    // isGetManageUsersSearchReqSuccessful = check(response, {
+    //   "Manage Users List Search Request Success": () => response.status === 200,
+    //   "Manage Users List Search Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${manageUserListCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetManageUsersSearchReqSuccessful) {
+    //   console.error(
+    //     `Get Manage Users List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}admin/users/viewuser?userId=${selectedUserProfile}`,
+    //   getHeaders
+    // );
+    // TrendUserProfileReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // isGetUserProfilePageReqSuccessful = check(response, {
+    //   "User Profile Page Request Success": () => response.status === 200,
+    //   "User Profile Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${userProfileCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetUserProfilePageReqSuccessful) {
+    //   console.error(
+    //     `Get User Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // userThinkTime(2, 4);
+    // response = http.get(
+    //   `${baseURL}admin/users/useraudittrail?userId=${selectedUserProfile}`,
+    //   getHeaders
+    // );
+    // TrendUserAuditReqDuration.add(response.timings.duration);
+    // TrendNonTransactionalReqDuration.add(response.timings.duration);
+    // let isGetUserAuditPageReqSuccessful = check(response, {
+    //   "User Audit Page Request Success": () => response.status === 200,
+    //   "User Audit Page Loaded Correctly": (res) =>
+    //     res.body.indexOf(`${userAuditCheck}`) !== -1,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isGetUserAuditPageReqSuccessful) {
+    //   console.error(
+    //     `Get User Audit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // sleep(1);
+  });
+
+  group("Create Project Journey", function () {
+    // figure out why getting http fails? even though nothing appears wrong - penultimate setup req is giving 500 but downstream req still works?
+    // Use Alfreds list
+    // Add file with data
+    // Randomly select project with that data
+    // Delete that data from file after using//or mark as used
+    // After run need to delete from DB
+    // Run as is now for current ticket
+    //   response = http.get(`${baseURL}`, getHeaders);
+    //   TrendHomePageReqDuration.add(response.timings.duration);
+    //   TrendNonTransactionalReqDuration.add(response.timings.duration);
+    //   const isGetHomePageReqSuccessful = check(response, {
+    //     "Home Page Request Success": () => response.status === 200,
+    //     "Home Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${homePageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetHomePageReqSuccessful) {
+    //     console.error(
+    //       `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   userThinkTime(2, 4);
+    //   response = http.get(`${baseURL}application/welcome`, getHeaders);
+    //   TrendMyResearchPageReqDuration.add(response.timings.duration);
+    //   TrendNonTransactionalReqDuration.add(response.timings.duration);
+    //   const isGetMyResearchPageReqSuccessful = check(response, {
+    //     "My Research Page Request Success": () => response.status === 200,
+    //     "My Research Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${myResearchPageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetMyResearchPageReqSuccessful) {
+    //     console.error(
+    //       `Get My Research Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   userThinkTime(2, 4);
+    //   response = http.get(`${baseURL}application/createapplication`, getHeaders);
+    //   TrendCreateProjectRecordPageReqDuration.add(response.timings.duration);
+    //   TrendNonTransactionalReqDuration.add(response.timings.duration);
+    //   const isGetCreateProjectRecordPageReqSuccessful = check(response, {
+    //     "Create Project Record Page Request Success": () =>
+    //       response.status === 200,
+    //     "Create Project Record Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${createProjectRecordPageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetCreateProjectRecordPageReqSuccessful) {
+    //     console.error(
+    //       `Get Create Project Record Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   userThinkTime(2, 4);
+    //   response = http.get(`${baseURL}application/startproject`, getHeaders);
+    //   TrendStartProjectIrasPageReqDuration.add(response.timings.duration);
+    //   TrendNonTransactionalReqDuration.add(response.timings.duration);
+    //   const isGetStartProjectIrasPageReqSuccessful = check(response, {
+    //     "Start Project IRAS Page Request Success": () => response.status === 200,
+    //     "Start Project IRAS Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${startProjectIrasPageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetStartProjectIrasPageReqSuccessful) {
+    //     console.error(
+    //       `Get Start Project IRAS Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   userThinkTime(2, 4);
+    //   requestVerificationToken = response
+    //     .html()
+    //     .find("input[type=hidden][name=__RequestVerificationToken]")
+    //     .first()
+    //     .attr("value");
+    //   const irasId = generateIrasId(1000, 9999999);
+    //   console.log(irasId);
+    //   const irasPostBody = scriptData[0][0].startProjIrasPostBody[0].postBody;
+    //   const startProjIrasPostBody = Object.assign({}, irasPostBody, {
+    //     IrasId: `${irasId}`,
+    //     __RequestVerificationToken: `${requestVerificationToken}`,
+    //   });
+    //   const postHeadersIrasWithReferer = Object.assign({}, postHeaders.headers, {
+    //     Referer: `${baseURL}application/startproject`,
+    //   });
+    //   const postStartProjectIrasHeaders = {
+    //     headers: postHeadersIrasWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.post(
+    //     `${baseURL}application/startproject`,
+    //     startProjIrasPostBody,
+    //     postStartProjectIrasHeaders
+    //   );
+    //   let firstRedirectDuration = response.timings.duration;
+    //   const isPostStartProjIrasReqSuccessful = check(response, {
+    //     "Start Project IRAS Request Success": () => response.status === 302,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isPostStartProjIrasReqSuccessful) {
+    //     console.error(
+    //       `Post Start Project IRAS Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   let irasRedirectUrl = response.url;
+    //   const getHeadersIrasWithReferer = Object.assign({}, getHeaders.headers, {
+    //     Referer: `${baseURL}application/startproject`,
+    //   });
+    //   const getStartProjectIrasHeaders = {
+    //     headers: getHeadersIrasWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
+    //   let secondRedirectDuration = response.timings.duration;
+    //   const isGetStartProjIrasReqSuccessful = check(response, {
+    //     "Resume Start Project IRAS Redirect Request Success": () =>
+    //       response.status === 302,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetStartProjIrasReqSuccessful) {
+    //     console.error(
+    //       `Get Resume Start Project IRAS Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   irasRedirectUrl = response.url;
+    //   response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
+    //   TrendSaveStartProjectIrasPageReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+    //   ); //combining duration of intial request and redirect requests
+    //   TrendTransactionalReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+    //   );
+    //   const isGetDisplayProjDetailsReqSuccessful = check(response, {
+    //     "Display Project Details Redirect Page Request Success": () =>
+    //       response.status === 200,
+    //     "Display Project Details Redirect Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${displayProjDetailsPageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetDisplayProjDetailsReqSuccessful) {
+    //     console.error(
+    //       `Get Display Project Details Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   userThinkTime(2, 4);
+    //   requestVerificationToken = response
+    //     .html()
+    //     .find("input[type=hidden][name=__RequestVerificationToken]")
+    //     .first()
+    //     .attr("value");
+    //   const projectDetailsPostBody =
+    //     scriptData[0][0].projectDetailsPostBody[0].postBody;
+    //   const verifiedProjectDetailsPostBody = Object.assign(
+    //     {},
+    //     projectDetailsPostBody,
+    //     {
+    //       __RequestVerificationToken: `${requestVerificationToken}`,
+    //     }
+    //   );
+    //   const postHeadersProjDetailsWithReferer = Object.assign(
+    //     {},
+    //     postHeaders.headers,
+    //     {
+    //       Referer: `${irasRedirectUrl}`,
+    //     }
+    //   );
+    //   const postProjectDetailsHeaders = {
+    //     headers: postHeadersProjDetailsWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.post(
+    //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
+    //     verifiedProjectDetailsPostBody,
+    //     postProjectDetailsHeaders
+    //   );
+    //   firstRedirectDuration = response.timings.duration;
+    //   const isPostProjDetailsReqSuccessful = check(response, {
+    //     "Save Project Details Request Success": () => response.status === 302,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isPostProjDetailsReqSuccessful) {
+    //     console.error(
+    //       `Post Save Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   let projectDetailsRedirectUrl = response.url;
+    //   const getHeadersProjDetailsWithReferer = Object.assign(
+    //     {},
+    //     getHeaders.headers,
+    //     {
+    //       Referer: `${irasRedirectUrl}`,
+    //     }
+    //   );
+    //   const getProjectDetailsHeaders = {
+    //     headers: getHeadersProjDetailsWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.get(
+    //     `${projectDetailsRedirectUrl}`,
+    //     getProjectDetailsHeaders
+    //   );
+    //   secondRedirectDuration = response.timings.duration;
+    //   const isGetProjDetailsReqSuccessful = check(response, {
+    //     "Resume Project Details Redirect Request Success": () =>
+    //       response.status === 302,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetProjDetailsReqSuccessful) {
+    //     console.error(
+    //       `Get Resume Project Details Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   projectDetailsRedirectUrl = response.url;
+    //   response = http.get(
+    //     `${projectDetailsRedirectUrl}`,
+    //     getProjectDetailsHeaders
+    //   );
+    //   TrendSaveProjectDetailsPageReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+    //   ); //combining duration of intial request and redirect requests
+    //   TrendTransactionalReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+    //   );
+    //   const isGetDisplayKeyRolesReqSuccessful = check(response, {
+    //     "Display Key Roles Redirect Page Request Success": () =>
+    //       response.status === 200,
+    //     "Display Key Roles Redirect Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${displayKeyRolesPageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetDisplayKeyRolesReqSuccessful) {
+    //     console.error(
+    //       `Get Display Key Roles Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   userThinkTime(2, 4);
+    //   response = http.get(
+    //     `${baseURL}organisation/getorganisations?name=${orgSearchParam}`,
+    //     getHeaders
+    //   );
+    //   TrendSearchRtsOrgsReqDuration.add(response.timings.duration);
+    //   TrendTransactionalReqDuration.add(response.timings.duration);
+    //   const isGetRtsOrgsSearchReqSuccessful = check(response, {
+    //     "Search Rts Orgs Request Success": () => response.status === 200,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetRtsOrgsSearchReqSuccessful) {
+    //     console.error(
+    //       `Get Search Rts Orgs Request Success Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   requestVerificationToken = response
+    //     .html()
+    //     .find("input[type=hidden][name=__RequestVerificationToken]")
+    //     .first()
+    //     .attr("value");
+    //   const keyRolesPostBody = scriptData[0][0].keyRolesPostBody[0].postBody;
+    //   const verifiedKeyRolesPostBody = Object.assign({}, keyRolesPostBody, {
+    //     __RequestVerificationToken: `${requestVerificationToken}`,
+    //   });
+    //   const postHeadersKeyRolesWithReferer = Object.assign(
+    //     {},
+    //     postHeaders.headers,
+    //     {
+    //       Referer: `${projectDetailsRedirectUrl}`,
+    //     }
+    //   );
+    //   const postKeyRolesHeaders = {
+    //     headers: postHeadersKeyRolesWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.post(
+    //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
+    //     verifiedKeyRolesPostBody,
+    //     postKeyRolesHeaders
+    //   );
+    //   firstRedirectDuration = response.timings.duration;
+    //   const isPostKeyRolesReqSuccessful = check(response, {
+    //     "Save Key Roles Request Success": () => response.status === 302,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isPostKeyRolesReqSuccessful) {
+    //     console.error(
+    //       `Post Save Key Roles Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   let keyRolesRedirectUrl = response.url;
+    //   const getHeadersKeyRolesWithReferer = Object.assign(
+    //     {},
+    //     getHeaders.headers,
+    //     {
+    //       Referer: `${projectDetailsRedirectUrl}`,
+    //     }
+    //   );
+    //   const getKeyRolesHeaders = {
+    //     headers: getHeadersKeyRolesWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
+    //   secondRedirectDuration = response.timings.duration;
+    //   const isGetKeyRolesReqSuccessful = check(response, {
+    //     "Resume Key Roles Redirect Request Success": () =>
+    //       response.status === 302,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetKeyRolesReqSuccessful) {
+    //     console.error(
+    //       `Get Resume Key Roles Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   keyRolesRedirectUrl = response.url;
+    //   response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
+    //   TrendSaveKeyRolesPageReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+    //   ); //combining duration of intial request and redirect requests
+    //   TrendTransactionalReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
+    //   );
+    //   const isGetDisplayResearchLocationsReqSuccessful = check(response, {
+    //     "Display Research Locations Redirect Page Request Success": () =>
+    //       response.status === 200,
+    //     "Display Research Locations Redirect Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${displayResearchLocationsPageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetDisplayResearchLocationsReqSuccessful) {
+    //     console.error(
+    //       `Get Display Research Locations Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   userThinkTime(2, 4);
+    //   requestVerificationToken = response
+    //     .html()
+    //     .find("input[type=hidden][name=__RequestVerificationToken]")
+    //     .first()
+    //     .attr("value");
+    //   const researchLocationPostBody =
+    //     scriptData[0][0].researchLocationPostBody[0].postBody;
+    //   const verifiedResearchLocationsPostBody = Object.assign(
+    //     {},
+    //     researchLocationPostBody,
+    //     {
+    //       __RequestVerificationToken: `${requestVerificationToken}`,
+    //     }
+    //   );
+    //   const postHeadersResearchLocationsWithReferer = Object.assign(
+    //     {},
+    //     postHeaders.headers,
+    //     {
+    //       Referer: `${keyRolesRedirectUrl}`,
+    //     }
+    //   );
+    //   const postResearchLocationsHeaders = {
+    //     headers: postHeadersResearchLocationsWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.post(
+    //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
+    //     verifiedResearchLocationsPostBody,
+    //     postResearchLocationsHeaders
+    //   );
+    //   firstRedirectDuration = response.timings.duration;
+    //   const isPostResearchLocationsReqSuccessful = check(response, {
+    //     "Save Research Locations Request Success": () => response.status === 302,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isPostResearchLocationsReqSuccessful) {
+    //     console.error(
+    //       `Post Save Research Locations Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   let researchLocationsRedirectUrl = response.url;
+    //   const getResearchLocationsWithReferer = Object.assign(
+    //     {},
+    //     getHeaders.headers,
+    //     {
+    //       Referer: `${keyRolesRedirectUrl}`,
+    //     }
+    //   );
+    //   const getResearchLocationsHeaders = {
+    //     headers: getResearchLocationsWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.get(
+    //     `${researchLocationsRedirectUrl}`,
+    //     getResearchLocationsHeaders
+    //   );
+    //   TrendSaveResearchLocationsPageReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration
+    //   ); //combining duration of intial request and redirect requests
+    //   TrendTransactionalReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration
+    //   );
+    //   const isGetDisplaySubmitApplicationReqSuccessful = check(response, {
+    //     "Display Submit Application Redirect Page Request Success": () =>
+    //       response.status === 200,
+    //     "Display Submit Application Redirect Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${displaySubmitApplicationPageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetDisplaySubmitApplicationReqSuccessful) {
+    //     console.error(
+    //       `Get Display Submit Application Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   userThinkTime(2, 4);
+    //   requestVerificationToken = response
+    //     .html()
+    //     .find("input[type=hidden][name=__RequestVerificationToken]")
+    //     .first()
+    //     .attr("value");
+    //   const confirmProjDetailsPostBody =
+    //     scriptData[0][0].confirmProjDetailsPostBody[0].postBody;
+    //   const verifiedConfirmProjDetailsPostBody = Object.assign(
+    //     {},
+    //     confirmProjDetailsPostBody,
+    //     {
+    //       __RequestVerificationToken: `${requestVerificationToken}`,
+    //     }
+    //   );
+    //   const postHeadersConfirmProjDetailsWithReferer = Object.assign(
+    //     {},
+    //     postHeaders.headers,
+    //     {
+    //       Referer: `${researchLocationsRedirectUrl}`,
+    //     }
+    //   );
+    //   const postConfirmProjDetailsHeaders = {
+    //     headers: postHeadersConfirmProjDetailsWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.post(
+    //     `${baseURL}questionnaire/confirmprojectdetails`,
+    //     verifiedConfirmProjDetailsPostBody,
+    //     postConfirmProjDetailsHeaders
+    //   );
+    //   firstRedirectDuration = response.timings.duration;
+    //   const isPostConfirmProjDetailsReqSuccessful = check(response, {
+    //     "Confirm Project Details Request Success": () => response.status === 302,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isPostConfirmProjDetailsReqSuccessful) {
+    //     console.error(
+    //       `Post Confirm Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   let projectOverviewRedirectUrl = response.url;
+    //   const getProjectOverviewWithReferer = Object.assign(
+    //     {},
+    //     getHeaders.headers,
+    //     {
+    //       Referer: `${researchLocationsRedirectUrl}`,
+    //     }
+    //   );
+    //   const getProjectOverviewHeaders = {
+    //     headers: getProjectOverviewWithReferer,
+    //     redirects: 1,
+    //   };
+    //   response = http.get(
+    //     `${projectOverviewRedirectUrl}`,
+    //     getProjectOverviewHeaders
+    //   );
+    //   TrendSaveConfirmProjectReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration
+    //   ); //combining duration of intial request and redirect requests
+    //   TrendTransactionalReqDuration.add(
+    //     response.timings.duration + firstRedirectDuration
+    //   );
+    //   const isGetProjectOverviewReqSuccessful = check(response, {
+    //     "Project Overview Redirect Page Request Success": () =>
+    //       response.status === 200,
+    //     "Project Overview Redirect Page Loaded Correctly": (res) =>
+    //       res.body.indexOf(`${projectOverviewPageCheck}`) !== -1,
+    //   });
+    //   console.info(
+    //     "Request Sent: " + response.request.method + " " + response.request.url
+    //   );
+    //   if (!isGetProjectOverviewReqSuccessful) {
+    //     console.error(
+    //       `Get Project Overview Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //     );
+    //   }
+    //   sleep(1);
+  });
+
+  group("Create Modification Journey", function () {
+    // figure out why getting http fails? even though nothing appears wrong - penultimate setup req is giving 500 but downstream req still works?
+    // Use Alfreds list
+    // Add file with data
+    // Randomly select project with that data
+    // Delete that data from file after using//or mark as used
+    // After run need to delete from DB
+    const projectRecordId = "20251128144828";
+
+    response = http.get(
+      `${baseURL}projectoverview/projectdetails?projectRecordId=${projectRecordId}`,
+      getHeaders
+    );
+    // console.log(response.request.cookies);
+    userThinkTime(2, 4);
+
+    // response = http.get(`${response.headers.Location}`, {
+
+    const getHeadersCreateModWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${baseURL}projectoverview/postapproval?projectRecordId=${projectRecordId}`,
+      }
+    );
+    const getCreateModHeaders = {
+      headers: getHeadersCreateModWithReferer,
+      redirects: 1,
+    };
+
+    // console.log(getHeadersCreateModWithReferer);
+
+    response = http.get(
+      `${baseURL}modifications/createmodification`,
+      getCreateModHeaders
+    );
+    // let firstRedirectDuration = response.timings.duration; //need to use this and combine with next for Trend
+    TrendCreateModificationPageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetHomePageReqSuccessful = check(response, {
-      "Home Page Request Success": () => response.status === 200,
-      "Home Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${homePageCheck}`) !== -1,
+    const isGetCreateModificationPageReqSuccessful = check(response, {
+      "Create Modification Page Request Success": () => response.status === 302,
     });
     console.info(
       "Request Sent: " + response.request.method + " " + response.request.url
     );
-    if (!isGetHomePageReqSuccessful) {
+    if (!isGetCreateModificationPageReqSuccessful) {
       console.error(
-        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+        `Get Create Modification Page Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
-    userThinkTime(2, 4);
+    console.log(response.status);
+    console.log(response.headers.Location);
+    console.log(response.url);
+    const modificationsChangeUrl = response.url;
 
-    response = http.get(`${baseURL}systemadmin`, getHeaders);
-    TrendSysAdminReqDuration.add(response.timings.duration);
+    response = http.get(`${modificationsChangeUrl}`, getCreateModHeaders);
+    TrendCreateModificationPageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
-    const isGetSysAdminPageReqSuccessful = check(response, {
-      "System Admin Page Request Success": () => response.status === 200,
-      "System Admin Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${sysAdminCheck}`) !== -1,
+    const isGetAreaOfChangePageReqSuccessful = check(response, {
+      "Get Area of Change Page Request Success": () => response.status === 200,
+      // "Area of Change Page Loaded Correctly": (res) =>
+      //   res.body.indexOf(`${homePageCheck}`) !== -1,
     });
     console.info(
       "Request Sent: " + response.request.method + " " + response.request.url
     );
-    if (!isGetSysAdminPageReqSuccessful) {
+    if (!isGetAreaOfChangePageReqSuccessful) {
       console.error(
-        `Get System Admin Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+        `Get Area of Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
     userThinkTime(2, 4);
-
-    response = http.get(`${baseURL}admin/users`, getHeaders);
-    TrendManageUsersListReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    let isGetManagUsersListPageReqSuccessful = check(response, {
-      "Manage Users List Page Request Success": () => response.status === 200,
-      "Manage Users List Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${manageUserListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetManagUsersListPageReqSuccessful) {
-      console.error(
-        `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-
-    response = http.get(`${baseURL}admin/users/createuser`, getHeaders);
-    TrendAddUserReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    let isGetAddUsersPageReqSuccessful = check(response, {
-      "Add User Page Request Success": () => response.status === 200,
-      "Add User Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${addUserPageCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetAddUsersPageReqSuccessful) {
-      console.error(
-        `Get Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-
+    console.log(response.status);
+    console.log(response.url);
     requestVerificationToken = response
       .html()
       .find("input[type=hidden][name=__RequestVerificationToken]")
       .first()
       .attr("value");
-    timestamp = Date.now();
-    emailAdd = `${emailPrefix}${timestamp}${emailSuffix}`;
-    const selectedUserPostBody = randomItem(userPostBodies).postBody;
+    console.log(requestVerificationToken);
 
-    const confirmUserPostBody = Object.assign({}, selectedUserPostBody, {
-      Id: "",
-      OriginalEmail: "",
-      Email: `${emailAdd}`,
+    const selectChangePostBody =
+      scriptData[0][0].areaOfChangePostBody[0].postBody;
+    const areaOfChangePostBody = Object.assign({}, selectChangePostBody, {
+      //check
+      ProjectRecordId: `${projectRecordId}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
 
-    response = http.post(
-      `${baseURL}admin/users/confirmusersubmission`,
-      confirmUserPostBody,
-      postHeaders
+    const postHeadersAreaOfChangeWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${modificationsChangeUrl}`,
+      }
     );
-    TrendConfirmAddUserReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    const isPostConfirmAddUserPageReqSuccessful = check(response, {
-      "Confirm Add User Page Request Success": () => response.status === 200,
-      "Confirm Add User Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${confirmAddUserCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostConfirmAddUserPageReqSuccessful) {
-      console.error(
-        `Post Confirm Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-
-    userThinkTime(2, 4);
-
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
-
-    const submitUserPostBody = Object.assign({}, selectedUserPostBody, {
-      Status: "Active",
-      Email: `${emailAdd}`,
-      __RequestVerificationToken: `${requestVerificationToken}`,
-    });
-
-    response = http.post(
-      `${baseURL}admin/users/submituser`,
-      submitUserPostBody,
-      postHeaders
-    );
-    TrendSubmitAddUserReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    const isPostSubmitAddUserPageReqSuccessful = check(response, {
-      "Submit Add User Page Request Success": () => response.status === 200,
-      "Submit Add User Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${submitAddUserCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isPostSubmitAddUserPageReqSuccessful) {
-      console.error(
-        `Post Submit Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-
-    userThinkTime(2, 4);
-
-    response = http.get(`${baseURL}admin/users`, getHeaders);
-    TrendManageUsersListReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    isGetManagUsersListPageReqSuccessful = check(response, {
-      "Manage Users List Page Request Success": () => response.status === 200,
-      "Manage Users List Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${manageUserListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetManagUsersListPageReqSuccessful) {
-      console.error(
-        `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-
-    response = http.get(
-      `${baseURL}admin/users?SearchQuery=k6&PageSize=20`,
-      getHeaders
-    );
-    TrendManageUsersSearchReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    let isGetManageUsersSearchReqSuccessful = check(response, {
-      "Manage Users List Search Request Success": () => response.status === 200,
-      "Manage Users List Search Loaded Correctly": (res) =>
-        res.body.indexOf(`${manageUserListCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetManageUsersSearchReqSuccessful) {
-      console.error(
-        `Get Manage Users List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-
-    const selectedUserProfile = randomItem(userProfileIds);
-    response = http.get(
-      `${baseURL}admin/users/viewuser?userId=${selectedUserProfile}`,
-      getHeaders
-    );
-    TrendUserProfileReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    let isGetUserProfilePageReqSuccessful = check(response, {
-      "User Profile Page Request Success": () => response.status === 200,
-      "User Profile Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${userProfileCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetUserProfilePageReqSuccessful) {
-      console.error(
-        `Get User Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-
-    response = http.get(
-      `${baseURL}admin/users/edituser?userId=${selectedUserProfile}`,
-      getHeaders
-    );
-    TrendUserEditReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    let isGetUserEditPageReqSuccessful = check(response, {
-      "User Edit Page Request Success": () => response.status === 200,
-      "User Edit Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${userEditCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetUserEditPageReqSuccessful) {
-      console.error(
-        `Get User Edit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-
-    requestVerificationToken = response
-      .html()
-      .find("input[type=hidden][name=__RequestVerificationToken]")
-      .first()
-      .attr("value");
-    const originalEmail = response
-      .html()
-      .find("input[type=hidden][id=OriginalEmail]")
-      .first()
-      .attr("value");
-    const status = response
-      .html()
-      .find("input[type=text][id=Status]")
-      .first()
-      .attr("value");
-    timestamp = Date.now();
-
-    const submitEditUserPostBody = Object.assign({}, selectedUserPostBody, {
-      Id: `${selectedUserProfile}`,
-      OriginalEmail: `${originalEmail}`,
-      Status: `${status}`,
-      GivenName: `${selectedUserPostBody.GivenName} ${timestamp}`,
-      FamilyName: `${selectedUserPostBody.FamilyName} ${timestamp}`,
-      Email: `${emailEditPrefix}${timestamp}${emailSuffix}`,
-      Organisation: `${selectedUserPostBody.Organisation} ${timestamp}`,
-      JobTitle: `${selectedUserPostBody.JobTitle} ${timestamp}`,
-      __RequestVerificationToken: `${requestVerificationToken}`,
-    });
-
-    const postHeadersUserWithRefer = Object.assign({}, postHeaders.headers, {
-      Referer: `${baseURL}admin/users/edituser?userId=${selectedUserProfile}`,
-    });
-    const postHeadersUserEdit = {
-      headers: postHeadersUserWithRefer,
+    const postAreaOfChangeHeaders = {
+      headers: postHeadersAreaOfChangeWithReferer,
       redirects: 1,
     };
 
     response = http.post(
-      `${baseURL}admin/users/submituser`,
-      submitEditUserPostBody,
-      postHeadersUserEdit
+      `${baseURL}modifications/confirmmodificationjourney`,
+      areaOfChangePostBody,
+      postAreaOfChangeHeaders
     );
-    const redirectUserEditDuration = response.timings.duration;
-    const isPostSubmitEditUserPageReqSuccessful = check(response, {
-      "Submit Edit User Request Success": () => response.status === 302,
+    // let firstRedirectDuration = response.timings.duration;
+    const isPostAreaOfChangeReqSuccessful = check(response, {
+      "Post Area of Change Request Success": () => response.status === 302,
     });
     console.info(
       "Request Sent: " + response.request.method + " " + response.request.url
     );
-    if (!isPostSubmitEditUserPageReqSuccessful) {
+    if (!isPostAreaOfChangeReqSuccessful) {
       console.error(
-        `Post Submit Edit User Request Failed - ${response.url} \nStatus - ${response.status}` +
+        `Post Area of Change Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
-    const redirectEditUserUrl = response.url;
+    console.log(response.status);
+    console.log(response.url);
+    let freeTextTextUrl = response.url;
 
-    response = http.get(`${redirectEditUserUrl}`, getHeaders);
-    TrendSubmitEditUserReqDuration.add(
-      response.timings.duration + redirectUserEditDuration
-    ); //combining duration of intial request and redirect request
-    TrendTransactionalReqDuration.add(
-      response.timings.duration + redirectUserEditDuration
-    );
-    const isPostSubmitEditUserRedirectPageReqSuccessful = check(response, {
-      "Submit Edit User Redirect Page Request Success": () =>
+    const getFreeTextWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${modificationsChangeUrl}`,
+    });
+    const getFreeTextHeaders = {
+      headers: getFreeTextWithReferer,
+      redirects: 1,
+    };
+
+    response = http.get(`${freeTextTextUrl}`, getFreeTextHeaders);
+    let secondRedirectDuration = response.timings.duration;
+    const isGetFreeTextReqSuccessful = check(response, {
+      "Get Modification Free Text Request Success": () =>
         response.status === 200,
-      "Submit Edit User Redirect Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${userProfileCheck}`) !== -1,
     });
     console.info(
       "Request Sent: " + response.request.method + " " + response.request.url
     );
-    if (!isPostSubmitEditUserRedirectPageReqSuccessful) {
+    if (!isGetFreeTextReqSuccessful) {
       console.error(
-        `Get Submit Edit User Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+        `Get Modification Free Text Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
-    userThinkTime(2, 4);
-
-    const currentUserStatus = response
-      .html()
-      .find("input[type=hidden][id=Status]")
-      .first()
-      .attr("value");
-    let statusReqParam;
-    if (currentUserStatus == "Active") {
-      statusReqParam = "disableuser";
-    } else {
-      statusReqParam = "enableuser";
-    }
-
-    response = http.get(
-      `${baseURL}admin/users/${statusReqParam}?userId=${selectedUserProfile}`,
-      getHeaders
-    );
-    TrendUserStatusChangeReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    let isGetUserStatusChangePageReqSuccessful = check(response, {
-      "User Status Change Page Request Success": () => response.status === 200,
-      "User Status Change Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${userStatusChangeCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetUserStatusChangePageReqSuccessful) {
-      console.error(
-        `Get User Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
-    userThinkTime(2, 4);
-
+    console.log(response.status);
     requestVerificationToken = response
       .html()
       .find("input[type=hidden][name=__RequestVerificationToken]")
       .first()
       .attr("value");
+    console.log(requestVerificationToken);
 
-    const userStatusPostBody = scriptData[0][0].userStatusPostBody[0].postBody;
-    const submitUserStatusPostBody = Object.assign({}, userStatusPostBody, {
-      Id: `${selectedUserProfile}`,
-      Email: `${submitEditUserPostBody.Email}`,
-      __RequestVerificationToken: `${requestVerificationToken}`,
-    });
+    const modifcationTextPostBody =
+      scriptData[0][0].modificationFreeTextPostBody[0].postBody;
+    const modifcationFreeTextPostBody = Object.assign(
+      {},
+      modifcationTextPostBody,
+      {
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
+
+    const postHeadersFreeTextWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${freeTextTextUrl}`,
+      }
+    );
+    const postFreeTextHeaders = {
+      headers: postHeadersFreeTextWithReferer,
+      redirects: 1,
+    };
 
     response = http.post(
-      `${baseURL}admin/users/${statusReqParam}`,
-      submitUserStatusPostBody,
-      postHeaders
+      `${baseURL}modifications/modificationchanges/saveresponses`,
+      modifcationFreeTextPostBody,
+      postFreeTextHeaders
     );
-    TrendSubmitUserStatusChangeReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    const isPostSubmitUserStatusChangePageReqSuccessful = check(response, {
-      "Submit User Status Change Page Request Success": () =>
+
+    // let firstRedirectDuration = response.timings.duration;
+    const isPostFreeTextReqSuccessful = check(response, {
+      "Post Modification Free Text Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostFreeTextReqSuccessful) {
+      console.error(
+        `Post Modification Free Text Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    // console.log(response.body);
+    console.log(response.status);
+    console.log(response.url);
+    let orgsAffectedUrl = response.url;
+
+    const getOrgsAffectedWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${freeTextTextUrl}`,
+    });
+    const getOrgsAffectedHeaders = {
+      headers: getOrgsAffectedWithReferer,
+      redirects: 1,
+    };
+
+    response = http.get(`${orgsAffectedUrl}`, getOrgsAffectedHeaders);
+    // let secondRedirectDuration = response.timings.duration;
+    const isGetOrgsAffectedReqSuccessful = check(response, {
+      "Get Organisations Affected Request Success": () =>
         response.status === 200,
-      "Submit User Status Change Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${submitUserStatusChangeCheck}`) !== -1,
     });
     console.info(
       "Request Sent: " + response.request.method + " " + response.request.url
     );
-    if (!isPostSubmitUserStatusChangePageReqSuccessful) {
+    if (!isGetOrgsAffectedReqSuccessful) {
       console.error(
-        `Post Submit User Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+        `Get Organisations Affected Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
+    console.log(response.status);
+    console.log(response.url);
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+    console.log(requestVerificationToken);
 
-    userThinkTime(2, 4);
+    const orgsAffectedPostBody =
+      scriptData[0][0].orgsAffectedPostBody[0].postBody;
+    const organisationsAffectedPostBody = Object.assign(
+      {},
+      orgsAffectedPostBody,
+      {
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
 
-    response = http.get(`${baseURL}admin/users`, getHeaders);
-    TrendManageUsersListReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    isGetManagUsersListPageReqSuccessful = check(response, {
-      "Manage Users List Page Request Success": () => response.status === 200,
-      "Manage Users List Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${manageUserListCheck}`) !== -1,
+    const postHeadersOrgsAffectedWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${orgsAffectedUrl}`,
+      }
+    );
+    const postOrgsAffectedHeaders = {
+      headers: postHeadersOrgsAffectedWithReferer,
+      redirects: 1,
+    };
+
+    response = http.post(
+      `${baseURL}modifications/modificationchanges/saveresponses`,
+      organisationsAffectedPostBody,
+      postOrgsAffectedHeaders
+    );
+
+    // let firstRedirectDuration = response.timings.duration;
+    const isPostOrgsAffectedReqSuccessful = check(response, {
+      "Post Organisations Affected Request Success": () =>
+        response.status === 302,
     });
     console.info(
       "Request Sent: " + response.request.method + " " + response.request.url
     );
-    if (!isGetManagUsersListPageReqSuccessful) {
+    if (!isPostOrgsAffectedReqSuccessful) {
       console.error(
-        `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+        `Post Organisations Affected Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
-    userThinkTime(2, 4);
+    // console.log(response.body);
+    console.log(response.status);
+    console.log(response.url);
+    let orgsAffectedReviewAnswersUrl = response.url;
+
+    const getOrgsAffectedReviewWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${orgsAffectedUrl}`,
+      }
+    );
+    const getOrgsAffectedReviewAnswersHeaders = {
+      headers: getOrgsAffectedReviewWithReferer,
+      redirects: 1,
+    };
 
     response = http.get(
-      `${baseURL}admin/users?SearchQuery=k6&PageSize=20`,
-      getHeaders
+      `${orgsAffectedReviewAnswersUrl}`,
+      getOrgsAffectedReviewAnswersHeaders
     );
-    TrendManageUsersSearchReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
-    isGetManageUsersSearchReqSuccessful = check(response, {
-      "Manage Users List Search Request Success": () => response.status === 200,
-      "Manage Users List Search Loaded Correctly": (res) =>
-        res.body.indexOf(`${manageUserListCheck}`) !== -1,
+    // let secondRedirectDuration = response.timings.duration;
+    const isGetOrgsAffectedReviewAnswerReqSuccessful = check(response, {
+      "Get Orgs Affected Review Answers Request Success": () =>
+        response.status === 200,
     });
     console.info(
       "Request Sent: " + response.request.method + " " + response.request.url
     );
-    if (!isGetManageUsersSearchReqSuccessful) {
+    if (!isGetOrgsAffectedReviewAnswerReqSuccessful) {
       console.error(
-        `Get Manage Users List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
+        `Get Orgs Affected Review Answers Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
-    userThinkTime(2, 4);
+    console.log(response.status);
+    console.log(response.url);
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+    console.log(requestVerificationToken);
+
+    const orgsAffectedReviewPostBody =
+      scriptData[0][0].orgsAffectedReviewPostBody[0].postBody;
+    const orgsAffectedReviewAnswersPostBody = Object.assign(
+      {},
+      orgsAffectedReviewPostBody,
+      {
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
+
+    const postHeadersOrgsAffectedReviewWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${orgsAffectedReviewAnswersUrl}`,
+      }
+    );
+    const postOrgsAffectedReviewAnswersHeaders = {
+      headers: postHeadersOrgsAffectedReviewWithReferer,
+      redirects: 1,
+    };
+
+    response = http.post(
+      `${baseURL}modifications/modificationchanges/saveresponses`,
+      orgsAffectedReviewAnswersPostBody,
+      postOrgsAffectedReviewAnswersHeaders
+    );
+
+    // let firstRedirectDuration = response.timings.duration;
+    const isPostOrgsAffectedReviewReqSuccessful = check(response, {
+      "Post Orgs Affected Review Answers Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostOrgsAffectedReviewReqSuccessful) {
+      console.error(
+        `Post Orgs Affected Review Answers Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    // console.log(response.body);
+    console.log(response.status);
+    console.log(response.url);
+    let modificationReviewAnswersUrl = response.url;
+
+    const getModificationReviewWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${orgsAffectedReviewAnswersUrl}`,
+      }
+    );
+    const getModificationReviewAnswersHeaders = {
+      headers: getModificationReviewWithReferer,
+      redirects: 1,
+    };
 
     response = http.get(
-      `${baseURL}admin/users/viewuser?userId=${selectedUserProfile}`,
-      getHeaders
+      `${modificationReviewAnswersUrl}`,
+      getModificationReviewAnswersHeaders
     );
-    TrendUserProfileReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    isGetUserProfilePageReqSuccessful = check(response, {
-      "User Profile Page Request Success": () => response.status === 200,
-      "User Profile Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${userProfileCheck}`) !== -1,
+    // let secondRedirectDuration = response.timings.duration;
+    const isModificationReviewAnswerReqSuccessful = check(response, {
+      "Get Modification Review Answers Request Success": () =>
+        response.status === 200,
     });
     console.info(
       "Request Sent: " + response.request.method + " " + response.request.url
     );
-    if (!isGetUserProfilePageReqSuccessful) {
+    if (!isModificationReviewAnswerReqSuccessful) {
       console.error(
-        `Get User Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+        `Get Modification Review Answers Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }
-    userThinkTime(2, 4);
+    console.log(response.status);
+    console.log(response.url);
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+    console.log(requestVerificationToken);
 
-    response = http.get(
-      `${baseURL}admin/users/useraudittrail?userId=${selectedUserProfile}`,
-      getHeaders
-    );
-    TrendUserAuditReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
-    let isGetUserAuditPageReqSuccessful = check(response, {
-      "User Audit Page Request Success": () => response.status === 200,
-      "User Audit Page Loaded Correctly": (res) =>
-        res.body.indexOf(`${userAuditCheck}`) !== -1,
-    });
-    console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
-    );
-    if (!isGetUserAuditPageReqSuccessful) {
-      console.error(
-        `Get User Audit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-      );
-    }
+    //// Start here for next
+    // const orgsAffectedReviewPostBody =
+    //   scriptData[0][0].orgsAffectedReviewPostBody[0].postBody;
+    // const orgsAffectedReviewAnswersPostBody = Object.assign(
+    //   {},
+    //   orgsAffectedReviewPostBody,
+    //   {
+    //     __RequestVerificationToken: `${requestVerificationToken}`,
+    //   }
+    // );
+
+    // const postHeadersOrgsAffectedReviewWithReferer = Object.assign(
+    //   {},
+    //   postHeaders.headers,
+    //   {
+    //     Referer: `${orgsAffectedReviewAnswersUrl}`,
+    //   }
+    // );
+    // const postOrgsAffectedReviewAnswersHeaders = {
+    //   headers: postHeadersOrgsAffectedReviewWithReferer,
+    //   redirects: 1,
+    // };
+
+    // response = http.post(
+    //   `${baseURL}modifications/modificationchanges/saveresponses`,
+    //   orgsAffectedReviewAnswersPostBody,
+    //   postOrgsAffectedReviewAnswersHeaders
+    // );
+
+    // // let firstRedirectDuration = response.timings.duration;
+    // const isPostOrgsAffectedReviewReqSuccessful = check(response, {
+    //   "Post Orgs Affected Review Answers Request Success": () =>
+    //     response.status === 302,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isPostOrgsAffectedReviewReqSuccessful) {
+    //   console.error(
+    //     `Post Orgs Affected Review Answers Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // // console.log(response.body);
+    // console.log(response.status);
+    // console.log(response.url);
+    // let modificationReviewAnswersUrl = response.url;
+
+    // const getModificationReviewWithReferer = Object.assign(
+    //   {},
+    //   getHeaders.headers,
+    //   {
+    //     Referer: `${orgsAffectedReviewAnswersUrl}`,
+    //   }
+    // );
+    // const getModificationReviewAnswersHeaders = {
+    //   headers: getModificationReviewWithReferer,
+    //   redirects: 1,
+    // };
+
+    // response = http.get(
+    //   `${modificationReviewAnswersUrl}`,
+    //   getModificationReviewAnswersHeaders
+    // );
+    // // let secondRedirectDuration = response.timings.duration;
+    // const isModificationReviewAnswerReqSuccessful = check(response, {
+    //   "Get Modification Review Answers Request Success": () =>
+    //     response.status === 200,
+    // });
+    // console.info(
+    //   "Request Sent: " + response.request.method + " " + response.request.url
+    // );
+    // if (!isModificationReviewAnswerReqSuccessful) {
+    //   console.error(
+    //     `Get Modification Review Answers Request Failed - ${response.url} \nStatus - ${response.status}` +
+    //       `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+    //   );
+    // }
+    // console.log(response.status);
+    // console.log(response.url);
+    // requestVerificationToken = response
+    //   .html()
+    //   .find("input[type=hidden][name=__RequestVerificationToken]")
+    //   .first()
+    //   .attr("value");
+    // console.log(requestVerificationToken);
+
+    //Add Trends for above reqs
+    //Add Checks for get reqs that return 200
     sleep(1);
   });
-
-  // group("Create Project Journey", function () {
-  // figure out why getting http fails? even though nothing appears wrong - penultimate setup req is giving 500 but downstream req still works?
-  // Use Alfreds list
-  // Add file with data
-  // Randomly select project with that data
-  // Delete that data from file after using//or mark as used
-  // After run need to delete from DB
-  // Run as is now for current ticket
-  //   response = http.get(`${baseURL}`, getHeaders);
-  //   TrendHomePageReqDuration.add(response.timings.duration);
-  //   TrendNonTransactionalReqDuration.add(response.timings.duration);
-  //   const isGetHomePageReqSuccessful = check(response, {
-  //     "Home Page Request Success": () => response.status === 200,
-  //     "Home Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${homePageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetHomePageReqSuccessful) {
-  //     console.error(
-  //       `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   userThinkTime(2, 4);
-
-  //   response = http.get(`${baseURL}application/welcome`, getHeaders);
-  //   TrendMyResearchPageReqDuration.add(response.timings.duration);
-  //   TrendNonTransactionalReqDuration.add(response.timings.duration);
-  //   const isGetMyResearchPageReqSuccessful = check(response, {
-  //     "My Research Page Request Success": () => response.status === 200,
-  //     "My Research Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${myResearchPageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetMyResearchPageReqSuccessful) {
-  //     console.error(
-  //       `Get My Research Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   userThinkTime(2, 4);
-
-  //   response = http.get(`${baseURL}application/createapplication`, getHeaders);
-  //   TrendCreateProjectRecordPageReqDuration.add(response.timings.duration);
-  //   TrendNonTransactionalReqDuration.add(response.timings.duration);
-  //   const isGetCreateProjectRecordPageReqSuccessful = check(response, {
-  //     "Create Project Record Page Request Success": () =>
-  //       response.status === 200,
-  //     "Create Project Record Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${createProjectRecordPageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetCreateProjectRecordPageReqSuccessful) {
-  //     console.error(
-  //       `Get Create Project Record Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   userThinkTime(2, 4);
-
-  //   response = http.get(`${baseURL}application/startproject`, getHeaders);
-  //   TrendStartProjectIrasPageReqDuration.add(response.timings.duration);
-  //   TrendNonTransactionalReqDuration.add(response.timings.duration);
-  //   const isGetStartProjectIrasPageReqSuccessful = check(response, {
-  //     "Start Project IRAS Page Request Success": () => response.status === 200,
-  //     "Start Project IRAS Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${startProjectIrasPageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetStartProjectIrasPageReqSuccessful) {
-  //     console.error(
-  //       `Get Start Project IRAS Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   userThinkTime(2, 4);
-
-  //   requestVerificationToken = response
-  //     .html()
-  //     .find("input[type=hidden][name=__RequestVerificationToken]")
-  //     .first()
-  //     .attr("value");
-  //   const irasId = generateIrasId(1000, 9999999);
-  //   console.log(irasId);
-
-  //   const irasPostBody = scriptData[0][0].startProjIrasPostBody[0].postBody;
-  //   const startProjIrasPostBody = Object.assign({}, irasPostBody, {
-  //     IrasId: `${irasId}`,
-  //     __RequestVerificationToken: `${requestVerificationToken}`,
-  //   });
-
-  //   const postHeadersIrasWithReferer = Object.assign({}, postHeaders.headers, {
-  //     Referer: `${baseURL}application/startproject`,
-  //   });
-  //   const postStartProjectIrasHeaders = {
-  //     headers: postHeadersIrasWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.post(
-  //     `${baseURL}application/startproject`,
-  //     startProjIrasPostBody,
-  //     postStartProjectIrasHeaders
-  //   );
-  //   let firstRedirectDuration = response.timings.duration;
-  //   const isPostStartProjIrasReqSuccessful = check(response, {
-  //     "Start Project IRAS Request Success": () => response.status === 302,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isPostStartProjIrasReqSuccessful) {
-  //     console.error(
-  //       `Post Start Project IRAS Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   let irasRedirectUrl = response.url;
-  //   const getHeadersIrasWithReferer = Object.assign({}, getHeaders.headers, {
-  //     Referer: `${baseURL}application/startproject`,
-  //   });
-  //   const getStartProjectIrasHeaders = {
-  //     headers: getHeadersIrasWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
-  //   let secondRedirectDuration = response.timings.duration;
-  //   const isGetStartProjIrasReqSuccessful = check(response, {
-  //     "Resume Start Project IRAS Redirect Request Success": () =>
-  //       response.status === 302,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetStartProjIrasReqSuccessful) {
-  //     console.error(
-  //       `Get Resume Start Project IRAS Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   irasRedirectUrl = response.url;
-
-  //   response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
-  //   TrendSaveStartProjectIrasPageReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
-  //   ); //combining duration of intial request and redirect requests
-  //   TrendTransactionalReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
-  //   );
-  //   const isGetDisplayProjDetailsReqSuccessful = check(response, {
-  //     "Display Project Details Redirect Page Request Success": () =>
-  //       response.status === 200,
-  //     "Display Project Details Redirect Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${displayProjDetailsPageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetDisplayProjDetailsReqSuccessful) {
-  //     console.error(
-  //       `Get Display Project Details Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   userThinkTime(2, 4);
-
-  //   requestVerificationToken = response
-  //     .html()
-  //     .find("input[type=hidden][name=__RequestVerificationToken]")
-  //     .first()
-  //     .attr("value");
-
-  //   const projectDetailsPostBody =
-  //     scriptData[0][0].projectDetailsPostBody[0].postBody;
-  //   const verifiedProjectDetailsPostBody = Object.assign(
-  //     {},
-  //     projectDetailsPostBody,
-  //     {
-  //       __RequestVerificationToken: `${requestVerificationToken}`,
-  //     }
-  //   );
-
-  //   const postHeadersProjDetailsWithReferer = Object.assign(
-  //     {},
-  //     postHeaders.headers,
-  //     {
-  //       Referer: `${irasRedirectUrl}`,
-  //     }
-  //   );
-  //   const postProjectDetailsHeaders = {
-  //     headers: postHeadersProjDetailsWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.post(
-  //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
-  //     verifiedProjectDetailsPostBody,
-  //     postProjectDetailsHeaders
-  //   );
-  //   firstRedirectDuration = response.timings.duration;
-  //   const isPostProjDetailsReqSuccessful = check(response, {
-  //     "Save Project Details Request Success": () => response.status === 302,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isPostProjDetailsReqSuccessful) {
-  //     console.error(
-  //       `Post Save Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   let projectDetailsRedirectUrl = response.url;
-  //   const getHeadersProjDetailsWithReferer = Object.assign(
-  //     {},
-  //     getHeaders.headers,
-  //     {
-  //       Referer: `${irasRedirectUrl}`,
-  //     }
-  //   );
-  //   const getProjectDetailsHeaders = {
-  //     headers: getHeadersProjDetailsWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.get(
-  //     `${projectDetailsRedirectUrl}`,
-  //     getProjectDetailsHeaders
-  //   );
-  //   secondRedirectDuration = response.timings.duration;
-  //   const isGetProjDetailsReqSuccessful = check(response, {
-  //     "Resume Project Details Redirect Request Success": () =>
-  //       response.status === 302,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetProjDetailsReqSuccessful) {
-  //     console.error(
-  //       `Get Resume Project Details Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   projectDetailsRedirectUrl = response.url;
-
-  //   response = http.get(
-  //     `${projectDetailsRedirectUrl}`,
-  //     getProjectDetailsHeaders
-  //   );
-  //   TrendSaveProjectDetailsPageReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
-  //   ); //combining duration of intial request and redirect requests
-  //   TrendTransactionalReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
-  //   );
-  //   const isGetDisplayKeyRolesReqSuccessful = check(response, {
-  //     "Display Key Roles Redirect Page Request Success": () =>
-  //       response.status === 200,
-  //     "Display Key Roles Redirect Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${displayKeyRolesPageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetDisplayKeyRolesReqSuccessful) {
-  //     console.error(
-  //       `Get Display Key Roles Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   userThinkTime(2, 4);
-
-  //   response = http.get(
-  //     `${baseURL}organisation/getorganisations?name=${orgSearchParam}`,
-  //     getHeaders
-  //   );
-  //   TrendSearchRtsOrgsReqDuration.add(response.timings.duration);
-  //   TrendTransactionalReqDuration.add(response.timings.duration);
-  //   const isGetRtsOrgsSearchReqSuccessful = check(response, {
-  //     "Search Rts Orgs Request Success": () => response.status === 200,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetRtsOrgsSearchReqSuccessful) {
-  //     console.error(
-  //       `Get Search Rts Orgs Request Success Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-
-  //   requestVerificationToken = response
-  //     .html()
-  //     .find("input[type=hidden][name=__RequestVerificationToken]")
-  //     .first()
-  //     .attr("value");
-
-  //   const keyRolesPostBody = scriptData[0][0].keyRolesPostBody[0].postBody;
-  //   const verifiedKeyRolesPostBody = Object.assign({}, keyRolesPostBody, {
-  //     __RequestVerificationToken: `${requestVerificationToken}`,
-  //   });
-
-  //   const postHeadersKeyRolesWithReferer = Object.assign(
-  //     {},
-  //     postHeaders.headers,
-  //     {
-  //       Referer: `${projectDetailsRedirectUrl}`,
-  //     }
-  //   );
-  //   const postKeyRolesHeaders = {
-  //     headers: postHeadersKeyRolesWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.post(
-  //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
-  //     verifiedKeyRolesPostBody,
-  //     postKeyRolesHeaders
-  //   );
-  //   firstRedirectDuration = response.timings.duration;
-  //   const isPostKeyRolesReqSuccessful = check(response, {
-  //     "Save Key Roles Request Success": () => response.status === 302,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isPostKeyRolesReqSuccessful) {
-  //     console.error(
-  //       `Post Save Key Roles Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   let keyRolesRedirectUrl = response.url;
-  //   const getHeadersKeyRolesWithReferer = Object.assign(
-  //     {},
-  //     getHeaders.headers,
-  //     {
-  //       Referer: `${projectDetailsRedirectUrl}`,
-  //     }
-  //   );
-  //   const getKeyRolesHeaders = {
-  //     headers: getHeadersKeyRolesWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
-  //   secondRedirectDuration = response.timings.duration;
-  //   const isGetKeyRolesReqSuccessful = check(response, {
-  //     "Resume Key Roles Redirect Request Success": () =>
-  //       response.status === 302,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetKeyRolesReqSuccessful) {
-  //     console.error(
-  //       `Get Resume Key Roles Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   keyRolesRedirectUrl = response.url;
-
-  //   response = http.get(`${keyRolesRedirectUrl}`, getKeyRolesHeaders);
-  //   TrendSaveKeyRolesPageReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
-  //   ); //combining duration of intial request and redirect requests
-  //   TrendTransactionalReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration + secondRedirectDuration
-  //   );
-  //   const isGetDisplayResearchLocationsReqSuccessful = check(response, {
-  //     "Display Research Locations Redirect Page Request Success": () =>
-  //       response.status === 200,
-  //     "Display Research Locations Redirect Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${displayResearchLocationsPageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetDisplayResearchLocationsReqSuccessful) {
-  //     console.error(
-  //       `Get Display Research Locations Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   userThinkTime(2, 4);
-
-  //   requestVerificationToken = response
-  //     .html()
-  //     .find("input[type=hidden][name=__RequestVerificationToken]")
-  //     .first()
-  //     .attr("value");
-
-  //   const researchLocationPostBody =
-  //     scriptData[0][0].researchLocationPostBody[0].postBody;
-  //   const verifiedResearchLocationsPostBody = Object.assign(
-  //     {},
-  //     researchLocationPostBody,
-  //     {
-  //       __RequestVerificationToken: `${requestVerificationToken}`,
-  //     }
-  //   );
-
-  //   const postHeadersResearchLocationsWithReferer = Object.assign(
-  //     {},
-  //     postHeaders.headers,
-  //     {
-  //       Referer: `${keyRolesRedirectUrl}`,
-  //     }
-  //   );
-  //   const postResearchLocationsHeaders = {
-  //     headers: postHeadersResearchLocationsWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.post(
-  //     `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
-  //     verifiedResearchLocationsPostBody,
-  //     postResearchLocationsHeaders
-  //   );
-  //   firstRedirectDuration = response.timings.duration;
-  //   const isPostResearchLocationsReqSuccessful = check(response, {
-  //     "Save Research Locations Request Success": () => response.status === 302,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isPostResearchLocationsReqSuccessful) {
-  //     console.error(
-  //       `Post Save Research Locations Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   let researchLocationsRedirectUrl = response.url;
-  //   const getResearchLocationsWithReferer = Object.assign(
-  //     {},
-  //     getHeaders.headers,
-  //     {
-  //       Referer: `${keyRolesRedirectUrl}`,
-  //     }
-  //   );
-  //   const getResearchLocationsHeaders = {
-  //     headers: getResearchLocationsWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.get(
-  //     `${researchLocationsRedirectUrl}`,
-  //     getResearchLocationsHeaders
-  //   );
-  //   TrendSaveResearchLocationsPageReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration
-  //   ); //combining duration of intial request and redirect requests
-  //   TrendTransactionalReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration
-  //   );
-  //   const isGetDisplaySubmitApplicationReqSuccessful = check(response, {
-  //     "Display Submit Application Redirect Page Request Success": () =>
-  //       response.status === 200,
-  //     "Display Submit Application Redirect Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${displaySubmitApplicationPageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetDisplaySubmitApplicationReqSuccessful) {
-  //     console.error(
-  //       `Get Display Submit Application Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   userThinkTime(2, 4);
-
-  //   requestVerificationToken = response
-  //     .html()
-  //     .find("input[type=hidden][name=__RequestVerificationToken]")
-  //     .first()
-  //     .attr("value");
-
-  //   const confirmProjDetailsPostBody =
-  //     scriptData[0][0].confirmProjDetailsPostBody[0].postBody;
-  //   const verifiedConfirmProjDetailsPostBody = Object.assign(
-  //     {},
-  //     confirmProjDetailsPostBody,
-  //     {
-  //       __RequestVerificationToken: `${requestVerificationToken}`,
-  //     }
-  //   );
-
-  //   const postHeadersConfirmProjDetailsWithReferer = Object.assign(
-  //     {},
-  //     postHeaders.headers,
-  //     {
-  //       Referer: `${researchLocationsRedirectUrl}`,
-  //     }
-  //   );
-  //   const postConfirmProjDetailsHeaders = {
-  //     headers: postHeadersConfirmProjDetailsWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.post(
-  //     `${baseURL}questionnaire/confirmprojectdetails`,
-  //     verifiedConfirmProjDetailsPostBody,
-  //     postConfirmProjDetailsHeaders
-  //   );
-  //   firstRedirectDuration = response.timings.duration;
-  //   const isPostConfirmProjDetailsReqSuccessful = check(response, {
-  //     "Confirm Project Details Request Success": () => response.status === 302,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isPostConfirmProjDetailsReqSuccessful) {
-  //     console.error(
-  //       `Post Confirm Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   let projectOverviewRedirectUrl = response.url;
-  //   const getProjectOverviewWithReferer = Object.assign(
-  //     {},
-  //     getHeaders.headers,
-  //     {
-  //       Referer: `${researchLocationsRedirectUrl}`,
-  //     }
-  //   );
-  //   const getProjectOverviewHeaders = {
-  //     headers: getProjectOverviewWithReferer,
-  //     redirects: 1,
-  //   };
-
-  //   response = http.get(
-  //     `${projectOverviewRedirectUrl}`,
-  //     getProjectOverviewHeaders
-  //   );
-  //   TrendSaveConfirmProjectReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration
-  //   ); //combining duration of intial request and redirect requests
-  //   TrendTransactionalReqDuration.add(
-  //     response.timings.duration + firstRedirectDuration
-  //   );
-  //   const isGetProjectOverviewReqSuccessful = check(response, {
-  //     "Project Overview Redirect Page Request Success": () =>
-  //       response.status === 200,
-  //     "Project Overview Redirect Page Loaded Correctly": (res) =>
-  //       res.body.indexOf(`${projectOverviewPageCheck}`) !== -1,
-  //   });
-  //   console.info(
-  //     "Request Sent: " + response.request.method + " " + response.request.url
-  //   );
-  //   if (!isGetProjectOverviewReqSuccessful) {
-  //     console.error(
-  //       `Get Project Overview Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-  //         `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
-  //     );
-  //   }
-  //   sleep(1);
-  // });
 }
 
 export function handleSummary(data) {

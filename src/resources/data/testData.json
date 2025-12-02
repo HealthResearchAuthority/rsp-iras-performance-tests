@@ -284,6 +284,147 @@
               "__RequestVerificationToken": ""
             }
           }
+        ],
+        "areaOfChangePostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "AreaOfChangeId": "cfbd546a-6687-41b7-9036-bbea116264ef",
+              "SpecificChangeId": "a01bebd0-85bb-4b0f-82e1-6a4a30e0dff6",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "modificationFreeTextPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "prm-reviewable-free-text",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0700",
+              "Questions[0].Category": "Reviewable+free+text",
+              "Questions[0].SectionId": "prm-reviewable-free-text",
+              "Questions[0].Section": "Reviewable+free+text",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Enter+details+here+describing+this+change",
+              "Questions[0].ShortQuestionText": "Details+describing+this+change",
+              "Questions[0].QuestionType": "Text",
+              "Questions[0].DataType": "Text+Area",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].AnswerText": "This+is+a+free+text+change+for+Other+significant+change+to+participant+procedures.",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "orgsAffectedPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pem-reviewable-affected-organisations",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0500",
+              "Questions[0].Category": "Reviewable+free+text",
+              "Questions[0].SectionId": "pem-reviewable-affected-organisations",
+              "Questions[0].Section": "affecting+organisations+type",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Which+organisation+types+does+this+change+affect?",
+              "Questions[0].ShortQuestionText": "Affected+organisation+types",
+              "Questions[0].QuestionType": "Look-up+list",
+              "Questions[0].DataType": "Checkbox",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].Answers[0].AnswerText": "NHS/HSC",
+              "Questions[0].Answers[0].AnswerId": "OPT0325",
+              "Questions[0].Answers[0].IsSelected": "true",
+              "Questions[0].Answers[1].AnswerText": "Non-NHS/HSC",
+              "Questions[0].Answers[1].AnswerId": "OPT0326",
+              "Questions[0].Answers[1].IsSelected": "true",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "orgsAffectedReviewPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pem-reviewable-affecting-organisations",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0501",
+              "Questions[0].Category": "Reviewable+free+text",
+              "Questions[0].SectionId": "pem-reviewable-affecting-organisations",
+              "Questions[0].Section": "affecting+organisations+meta+data",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Where+are+the+participating+NHS/HSC+organisations+that+will+be+affected+by+this+change?",
+              "Questions[0].ShortQuestionText": "Affected+NHS/HSC+organisation+locations",
+              "Questions[0].QuestionType": "Look-up+list",
+              "Questions[0].DataType": "Checkbox",
+              "Questions[0].IsMandatory": "False",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].Answers[0].AnswerText": "England",
+              "Questions[0].Answers[0].AnswerId": "OPT0018",
+              "Questions[0].Answers[0].IsSelected": "true",
+              "Questions[0].Answers[1].AnswerText": "Northern+Ireland",
+              "Questions[0].Answers[1].AnswerId": "OPT0019",
+              "Questions[0].Answers[2].AnswerText": "Scotland",
+              "Questions[0].Answers[2].AnswerId": "OPT0020",
+              "Questions[0].Answers[3].AnswerText": "Wales",
+              "Questions[0].Answers[3].AnswerId": "OPT0021",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0502",
+              "Questions[1].Category": "Reviewable+free+text",
+              "Questions[1].SectionId": "pem-reviewable-affecting-organisations",
+              "Questions[1].Section": "affecting+organisations+meta+data",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Will+some+or+all+of+the+participating+organisations+be+affected?",
+              "Questions[1].ShortQuestionText": "Portion+of+NHS/HSC+organisations+affected",
+              "Questions[1].QuestionType": "Look-up+list",
+              "Questions[1].DataType": "Radio+button",
+              "Questions[1].IsMandatory": "False",
+              "Questions[1].IsOptional": "False",
+              "Questions[1].SelectedOption": "OPT0323",
+              "Questions[1].Answers[0].AnswerId": "OPT0323",
+              "Questions[1].Answers[0].AnswerText": "All",
+              "Questions[1].Answers[1].AnswerId": "OPT0324",
+              "Questions[1].Answers[1].AnswerText": "Some",
+              "Questions[2].Index": "2",
+              "Questions[2].QuestionId": "IQA0503",
+              "Questions[2].Category": "Reviewable+free+text",
+              "Questions[2].SectionId": "pem-reviewable-affecting-organisations",
+              "Questions[2].Section": "affecting+organisations+meta+data",
+              "Questions[2].Heading": "3",
+              "Questions[2].QuestionText": "Will+participating+NHS/HSC+organisations+require+additional+resources+to+implement+this+change?",
+              "Questions[2].ShortQuestionText": "Additional+resource+implications",
+              "Questions[2].QuestionType": "Look-up+list",
+              "Questions[2].DataType": "Radio+button",
+              "Questions[2].IsMandatory": "False",
+              "Questions[2].IsOptional": "False",
+              "Questions[2].SelectedOption": "OPT0004",
+              "Questions[2].Answers[0].AnswerId": "OPT0004",
+              "Questions[2].Answers[0].AnswerText": "Yes",
+              "Questions[2].Answers[1].AnswerId": "OPT0005",
+              "Questions[2].Answers[1].AnswerText": "No",
+              "Questions[3].Index": "3",
+              "Questions[3].QuestionId": "IQA0504",
+              "Questions[3].Category": "Reviewable+free+text",
+              "Questions[3].SectionId": "pem-reviewable-affecting-organisations",
+              "Questions[3].Section": "affecting+organisations+meta+data",
+              "Questions[3].Heading": "4",
+              "Questions[3].QuestionText": "Where+are+the+participating+non-NHS/HSC+organisations+that+will+be+affected+by+this+change?",
+              "Questions[3].ShortQuestionText": "Affected+non-NHS/HSC+locations",
+              "Questions[3].QuestionType": "Look-up+list",
+              "Questions[3].DataType": "Checkbox",
+              "Questions[3].IsMandatory": "False",
+              "Questions[3].IsOptional": "False",
+              "Questions[3].Answers[0].AnswerText": "England",
+              "Questions[3].Answers[0].AnswerId": "OPT0018",
+              "Questions[3].Answers[0].IsSelected": "true",
+              "Questions[3].Answers[1].AnswerText": "Northern+Ireland",
+              "Questions[3].Answers[1].AnswerId": "OPT0019",
+              "Questions[3].Answers[2].AnswerText": "Scotland",
+              "Questions[3].Answers[2].AnswerId": "OPT0020",
+              "Questions[3].Answers[3].AnswerText": "Wales",
+              "Questions[3].Answers[3].AnswerId": "OPT0021",
+              "__RequestVerificationToken": ""
+            }
+          }
         ]
       },
       {
@@ -292,13 +433,35 @@
         "createdBy": "",
         "updatedBy": "",
         "isActive": "True",
-        "revBodyProfileIds": ["Add active Review Body Id's here 10+"],
+        "revBodyProfileIds": [
+          "5e28ac18-a447-42ec-b23e-0257f9e53c53",
+          "a255cc83-fe3c-461f-ad0c-0c934e70e8ec",
+          "150a3a6c-f7a0-44ed-ae5c-11cc8de04a42",
+          "2368ce91-c893-4b0e-aa80-4613d678e9e6",
+          "b3a3625f-519e-4edc-af85-4f88ac5b8d01",
+          "f7d5610a-9ae5-4769-8cc2-5ba3df0df7cb",
+          "08169270-863c-448a-8cdb-6ccf98d3e472",
+          "1424b92a-1015-4181-a0d0-7eeb6adde364",
+          "d7db8610-f8da-40bf-805e-b0a5c4501355",
+          "56aa9e45-b263-4178-8c44-c22b50939886"
+        ],
         "editCreatedBy": "FutureIRAS",
         "editUpdatedBy": "FutureIRAS",
         "emailPrefix": "qaauto_k6_test_email_",
         "emailEditPrefix": "qaauto_k6_test_edit_email_",
         "emailSuffix": "@hra.nhs.uk",
-        "userProfileIds": ["Add active User Id's here 10+"],
+        "userProfileIds": [
+          "0c04206c-bb27-4685-bbcb-e314e8d694b1",
+          "1c12f041-714a-44a7-bc5d-66e4592d6cc6",
+          "32db0b27-ee82-4a2c-8a38-e135969162fb",
+          "3f2692e8-2685-42f3-8352-e3db0691c924",
+          "46905877-f0a0-4e36-af9c-0505aafd7099",
+          "5fef0fb0-adc6-498c-81a6-5278ea81412d",
+          "6ba41e3f-ea72-4a46-b68a-04e6238f1eff",
+          "750ccada-9fa3-4df0-815a-623da2ec9e60",
+          "bc6599be-ac5b-499f-8146-c561847ba298",
+          "ee0bf538-21fb-4cd9-9efa-1e44b89ea85a"
+        ],
         "orgSearchParam": "worth"
       },
       {
