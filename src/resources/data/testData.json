@@ -311,7 +311,7 @@
               "Questions[0].DataType": "Text+Area",
               "Questions[0].IsMandatory": "True",
               "Questions[0].IsOptional": "False",
-              "Questions[0].AnswerText": "This+is+a+free+text+change+for+Other+significant+change+to+participant+procedures.",
+              "Questions[0].AnswerText": "This is a free text change for Other significant change to participant procedures.",
               "__RequestVerificationToken": ""
             }
           }
@@ -425,6 +425,63 @@
               "__RequestVerificationToken": ""
             }
           }
+        ],
+        "saveSponsorRefPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pm-sponsor-reference",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA505",
+              "Questions[0].Category": "Sponsor+reference",
+              "Questions[0].SectionId": "pm-sponsor-reference",
+              "Questions[0].Section": "Sponsor+details",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Sponsor+modification+reference+(optional)",
+              "Questions[0].ShortQuestionText": "Sponsor+reference+(optional)",
+              "Questions[0].QuestionType": "Text",
+              "Questions[0].DataType": "Text",
+              "Questions[0].IsMandatory": "False",
+              "Questions[0].IsOptional": "True",
+              "Questions[0].AnswerText": "(NSA#20):165-774.21/89, pharmaceutical conditon_IB",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA506",
+              "Questions[1].Category": "Sponsor+reference",
+              "Questions[1].SectionId": "pm-sponsor-reference",
+              "Questions[1].Section": "Sponsor+details",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Sponsor+modification+date+(optional)",
+              "Questions[1].ShortQuestionText": "Date+(optional)",
+              "Questions[1].QuestionType": "Date",
+              "Questions[1].DataType": "Date",
+              "Questions[1].IsMandatory": "False",
+              "Questions[1].IsOptional": "True",
+              "Questions[1].Day": "01",
+              "Questions[1].Month": "1",
+              "Questions[1].Year": "2025",
+              "Questions[2].Index": "2",
+              "Questions[2].QuestionId": "IQA507",
+              "Questions[2].Category": "Sponsor+reference",
+              "Questions[2].SectionId": "pm-sponsor-reference",
+              "Questions[2].Section": "Sponsor+details",
+              "Questions[2].Heading": "3",
+              "Questions[2].QuestionText": "Briefly+summarise+in+lay+language+the+main+changes+proposed+in+this+modification",
+              "Questions[2].ShortQuestionText": "Brief+summary+of+changes",
+              "Questions[2].QuestionType": "Text",
+              "Questions[2].DataType": "Text+Area",
+              "Questions[2].IsMandatory": "True",
+              "Questions[2].IsOptional": "False",
+              "Questions[2].AnswerText": "On behalf of the study Sponsor, HRA Inc, we would like to resubmit a substantial amendment application previous ethics (11/HRA/HDR5 and 16/HP/0219) to Study FR-WEAD-ED: 1.",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "sendToSponsorPostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
         ]
       },
       {
@@ -518,7 +575,17 @@
       "displayKeyRolesPageCheck": "Key project roles",
       "displayResearchLocationsPageCheck": "Research locations",
       "displaySubmitApplicationPageCheck": "Review your answers",
-      "projectOverviewPageCheck": "Project overview"
+      "projectOverviewPageCheck": "Project overview",
+      "postApprovalCheck": "Project modifications",
+      "areaOfChangeCheck": "Select area of change",
+      "modificationFreeTextCheck": "Enter details here describing this change",
+      "orgsAffectedCheck": "Which organisation types does this change affect?",
+      "orgsAffectedReviewAnswersCheck": "Where are the participating NHS/HSC organisations that will be affected by this change?",
+      "modReviewChangesCheck": "Review changes",
+      "modificationDetailsCheck": "Modification details",
+      "sponsorReferenceCheck": "Add sponsor reference, date and brief summary of changes",
+      "getReviewAllChangeCheck": "Review all changes",
+      "sentToSponsorCheck": "Modification sent to sponsor"
     }
   ]
 }
