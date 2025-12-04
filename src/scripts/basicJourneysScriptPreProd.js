@@ -84,6 +84,14 @@ const modificationDetailsCheck = scriptData[2].modificationDetailsCheck;
 const sponsorReferenceCheck = scriptData[2].sponsorReferenceCheck;
 const getReviewAllChangeCheck = scriptData[2].getReviewAllChangeCheck;
 const sentToSponsorCheck = scriptData[2].sentToSponsorCheck;
+const sponsorWorkspaceCheck = scriptData[2].sponsorWorkspaceCheck;
+const sponsorAuthorisationsCheck = scriptData[2].sponsorAuthorisationsCheck;
+const checkAuthoriseCheck = scriptData[2].checkAuthoriseCheck;
+const getSponsorAuthCheck = scriptData[2].getSponsorAuthCheck;
+const approvalsWorkspaceCheck = scriptData[2].approvalsWorkspaceCheck;
+const modificationsTasklistCheck = scriptData[2].modificationsTasklistCheck;
+const selectReviewerCheck = scriptData[2].selectReviewerCheck;
+const getModAssignSuccessCheck = scriptData[2].getModAssignSuccessCheck;
 
 export async function getPassword() {
   if (`${__ENV.ENCRYPTED_DATA}`.toString() !== "undefined") {
@@ -120,8 +128,9 @@ export const options = {
         // { target: 10, duration: "1m" },
         // { target: 10, duration: "8m" },
         // { target: 0, duration: "1m" },
-        { target: 1, duration: "10s" },
-        { target: 0, duration: "10s" },
+        { target: 1, duration: "1m" }, //50s
+        { target: 1, duration: "1m" },
+        { target: 0, duration: "1m" }, //20s
       ],
       gracefulRampDown: "30s",
       exec: "basicJourneysScript",
@@ -326,6 +335,46 @@ export const TrendSendToSponsorPageReqDuration = new Trend(
   "send_to_sponsor_page_response_time",
   true
 );
+export const TrendSponsorWorkspacePageReqDuration = new Trend(
+  "load_sponsor_workspace_page_response_time",
+  true
+);
+export const TrendSponsorAuthorisationsPageReqDuration = new Trend(
+  "load_sponsor_authorisations_page_response_time",
+  true
+);
+export const TrendSearchSponsorAuthPageReqDuration = new Trend(
+  "search_sponsor_authorisations_page_response_time",
+  true
+);
+export const TrendCheckAuthorisePageReqDuration = new Trend(
+  "load_sponsor_check_authorise_page_response_time",
+  true
+);
+export const TrendSponsorAuthConfirmPageReqDuration = new Trend(
+  "save_sponsor_auth_confirm_page_response_time",
+  true
+);
+export const TrendApprovalsWorkspacePageReqDuration = new Trend(
+  "load_approvals_workspace_page_response_time",
+  true
+);
+export const TrendModificationTasklistPageReqDuration = new Trend(
+  "load_modification_tasklist_page_response_time",
+  true
+);
+export const TrendSearchModTasklistPageReqDuration = new Trend(
+  "search_modification_tasklist_page_response_time",
+  true
+);
+export const TrendSelectReviewerPageReqDuration = new Trend(
+  "load_select_reviewer_page_response_time",
+  true
+);
+export const TrendModificationAssignedPageReqDuration = new Trend(
+  "save_modification_assigned_page_response_time",
+  true
+);
 
 export async function setup() {
   let response;
@@ -475,6 +524,9 @@ export function basicJourneysScript(data) {
   let timestamp;
   let orgName;
   let emailAdd;
+  let irasId;
+  let shortTitle;
+  let modificationId;
   const cookies = data[0];
 
   const getHeadersWithCookies = Object.assign({}, baseGetHeaders.headers, {
@@ -501,7 +553,7 @@ export function basicJourneysScript(data) {
     // TrendHomePageReqDuration.add(response.timings.duration);
     // TrendNonTransactionalReqDuration.add(response.timings.duration);
     // const isGetHomePageReqSuccessful = check(response, {
-    //   "Home Page Request Success": () => response.status === 200,
+    //   "Get Home Page Request Success": () => response.status === 200,
     //   "Home Page Loaded Correctly": (res) =>
     //     res.body.indexOf(`${homePageCheck}`) !== -1,
     // });
@@ -1076,7 +1128,7 @@ export function basicJourneysScript(data) {
     // TrendHomePageReqDuration.add(response.timings.duration);
     // TrendNonTransactionalReqDuration.add(response.timings.duration);
     // const isGetHomePageReqSuccessful = check(response, {
-    //   "Home Page Request Success": () => response.status === 200,
+    //   "Get Home Page Request Success": () => response.status === 200,
     //   "Home Page Loaded Correctly": (res) =>
     //     res.body.indexOf(`${homePageCheck}`) !== -1,
     // });
@@ -1531,7 +1583,7 @@ export function basicJourneysScript(data) {
     //   TrendHomePageReqDuration.add(response.timings.duration);
     //   TrendNonTransactionalReqDuration.add(response.timings.duration);
     //   const isGetHomePageReqSuccessful = check(response, {
-    //     "Home Page Request Success": () => response.status === 200,
+    //     "Get Home Page Request Success": () => response.status === 200,
     //     "Home Page Loaded Correctly": (res) =>
     //       res.body.indexOf(`${homePageCheck}`) !== -1,
     //   });
@@ -2056,16 +2108,9 @@ export function basicJourneysScript(data) {
   });
 
   group("Create Modification Journey", function () {
-    // figure out why getting http fails? even though nothing appears wrong - penultimate setup req is giving 500 but downstream req still works?
-    //Redirect have to be set to 0 now in Auto?
-    // Use Alfreds list
-    // Add file with data
-    // Randomly select project with that data
-    // Delete that data from file after using//or mark as used
-    // After run need to delete from DB
-    const projectRecordId = "20251203020938";
+    const projectRecordId = "20251204105433";
     // 20251203020938 auto // 20251203134543 pre-prod
-    const postApprovalTabUrl = `${baseURL}projectoverview/postapproval?projectRecordId=${projectRecordId}&backRoute=projectrecordsearch`;
+    const postApprovalTabUrl = `${baseURL}projectoverview/postapproval?projectRecordId=${projectRecordId}`;
     userThinkTime(2, 4);
 
     response = http.get(`${postApprovalTabUrl}`, getHeaders);
@@ -2588,7 +2633,7 @@ export function basicJourneysScript(data) {
   });
 
   group("Send Modification to Sponsor Journey", function () {
-    const projectRecordId = "20251203020938"; //probably global once sorted
+    const projectRecordId = "20251204105433"; //probably global once sorted
     // 20251203020938 auto // 20251203134543 preprod
     const postApprovalTabUrl = `${baseURL}projectoverview/postapproval?projectRecordId=${projectRecordId}`; //possible global
 
@@ -2710,7 +2755,17 @@ export function basicJourneysScript(data) {
       .find("input[type=hidden][name=__RequestVerificationToken]")
       .first()
       .attr("value");
-    const modificationId = response // Might need to make this global
+    irasId = response // Might need to make this global
+      .html()
+      .find("input[name=irasId]")
+      .first()
+      .attr("value");
+    shortTitle = response // Might need to make this global
+      .html()
+      .find("input[name=shortTitle]")
+      .first()
+      .attr("value");
+    modificationId = response // Might need to make this global
       .html()
       .find("input[name=projectModificationId]")
       .first()
@@ -2780,6 +2835,615 @@ export function basicJourneysScript(data) {
     if (!isGetPostApprovalReqSuccessful) {
       console.error(
         `Get Post Approval Tab Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+  });
+
+  group("Modification Authorised by Sponsor Journey", function () {
+    const projectRecordId = "20251204105433"; //probably global once sorted
+    // 20251203020938 auto + new for sponsor 20251204105433 // 20251203134543 preprod
+    const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac"; // in auto
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}sponsorworkspace`, getHeaders);
+    TrendSponsorWorkspacePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSponsorWorkspacePageReqSuccessful = check(response, {
+      "Get Sponsor Workspace Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Workspace Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorWorkspaceCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetSponsorWorkspacePageReqSuccessful) {
+      console.error(
+        `Get Sponsor Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSponsorAuthUrl = `${baseURL}sponsorworkspace/authorisations?sponsorOrganisationUserId=${sponsorOrgId}`;
+
+    response = http.get(`${getSponsorAuthUrl}`, getHeaders);
+    TrendSponsorAuthorisationsPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetSponsorAuthorisationsPageReqSuccessful = check(response, {
+      "Get Sponsor Authorisations Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Authorisations Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorAuthorisationsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetSponsorAuthorisationsPageReqSuccessful) {
+      console.error(
+        `Get Sponsor Authorisations Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const searchSponsorAuthPostBody =
+      scriptData[0][0].searchSponsorAuthPostBody[0].postBody;
+
+    const searchSponsorAuthorisationsPostBody = Object.assign(
+      {},
+      searchSponsorAuthPostBody,
+      {
+        "Search.SearchTerm": `${irasId}`,
+        SponsorOrganisationUserId: `${sponsorOrgId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
+
+    const postHeadersSearchSponsorAuthWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getSponsorAuthUrl}`,
+      }
+    );
+
+    const postSearchSponsorAuthHeaders = {
+      headers: postHeadersSearchSponsorAuthWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsorworkspace/applyfilters`,
+      searchSponsorAuthorisationsPostBody,
+      postSearchSponsorAuthHeaders
+    );
+    let firstRedirectDuration = response.timings.duration;
+    const isPostSearchSponsorAuthReqSuccessful = check(response, {
+      "Post Search Sponsor Authorisations Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostSearchSponsorAuthReqSuccessful) {
+      console.error(
+        `Post Search Sponsor Authorisations Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+
+    const getSponsorAuthWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${getSponsorAuthUrl}`,
+    });
+    const getSponsorAuthRedirectHeaders = {
+      headers: getSponsorAuthWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(`${getSponsorAuthUrl}`, getSponsorAuthRedirectHeaders);
+    TrendSearchSponsorAuthPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    );
+    isGetSponsorAuthorisationsPageReqSuccessful = check(response, {
+      "Get Sponsor Authorisations Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Authorisations Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorAuthorisationsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetSponsorAuthorisationsPageReqSuccessful) {
+      console.error(
+        `Get Sponsor Authorisations Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSponsorCheckWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${getSponsorAuthUrl}`,
+    });
+    const getSponsorCheckAuthHeaders = {
+      headers: getSponsorCheckWithReferer,
+      redirects: 0,
+    };
+    const sponsorCheckAuthUrl = `${baseURL}sponsorworkspace/checkandauthorise?projectRecordId=${projectRecordId}&irasId=${irasId}&projectModificationId=${modificationId}&sponsorOrganisationUserId=${sponsorOrgId}`;
+
+    response = http.get(`${sponsorCheckAuthUrl}`, getSponsorCheckAuthHeaders);
+    TrendCheckAuthorisePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetCheckAuthorisePageReqSuccessful = check(response, {
+      "Get Sponsor Check Authorise Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Check Authorise Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${checkAuthoriseCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetCheckAuthorisePageReqSuccessful) {
+      console.error(
+        `Get Sponsor Check Authorise Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const sponsorAuthPostBody =
+      scriptData[0][0].sponsorAuthPostBody[0].postBody;
+    const saveSponsorAuthorisationPostBody = Object.assign(
+      {},
+      sponsorAuthPostBody,
+      {
+        ProjectRecordId: `${projectRecordId}`,
+        IrasId: `${irasId}`,
+        ShortTitle: `${shortTitle}`,
+        ModificationId: `${modificationId}`,
+        SponsorOrganisationUserId: `${sponsorOrgId}`,
+        ProjectModificationId: `${modificationId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
+
+    const postHeadersSponsorAuthWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${sponsorCheckAuthUrl}`,
+      }
+    );
+
+    const postSaveSponsorAuthorisationHeaders = {
+      headers: postHeadersSponsorAuthWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsorworkspace/checkandauthorise`,
+      saveSponsorAuthorisationPostBody,
+      postSaveSponsorAuthorisationHeaders
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostSaveSponsorRefReqSuccessful = check(response, {
+      "Post Save Sponsor Authorisation Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostSaveSponsorRefReqSuccessful) {
+      console.error(
+        `Post Save Sponsor Authorisation Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    const sponsorAuthConfirmUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      ""
+    )}`;
+
+    const getSponsorConfirmWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${sponsorCheckAuthUrl}`,
+    });
+    const getSponsorAuthConfirmHeaders = {
+      headers: getSponsorConfirmWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${sponsorAuthConfirmUrl}`,
+      getSponsorAuthConfirmHeaders
+    );
+    TrendSponsorAuthConfirmPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    );
+    const isSponsorAuthConfirmReqSuccessful = check(response, {
+      "Get Sponsor Auth Confirm Request Success": () => response.status === 200,
+      "Sponsor Auth Confirm Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${getSponsorAuthCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isSponsorAuthConfirmReqSuccessful) {
+      console.error(
+        `Get Sponsor Auth Confirm Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSponsorAuthReturnWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${getSponsorAuthUrl}`,
+      }
+    );
+    const getSponsorAuthReturnHeaders = {
+      headers: getSponsorAuthReturnWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(`${getSponsorAuthUrl}`, getSponsorAuthReturnHeaders);
+    TrendSponsorAuthorisationsPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    isGetSponsorAuthorisationsPageReqSuccessful = check(response, {
+      "Get Sponsor Authorisations Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Authorisations Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorAuthorisationsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetSponsorAuthorisationsPageReqSuccessful) {
+      console.error(
+        `Get Sponsor Authorisations Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+  });
+
+  group("Modification Assignment Journey", function () {
+    // 20251203020938 auto + new for sponsor 20251204105433 // 20251203134543 preprod
+    const reviwerId = "72396ad5-97e4-4662-b1fd-5f6b49af95e9"; // sys admin user id in auto
+    // console.log(irasId);
+    // console.log(shortTitle);
+    // console.log(modificationId);
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}approvalsmenu`, getHeaders);
+    TrendApprovalsWorkspacePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetApprovalsWorkspacePageReqSuccessful = check(response, {
+      "Get Approvals Workspace Page Request Success": () =>
+        response.status === 200,
+      "Approvals Workspace Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${approvalsWorkspaceCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetApprovalsWorkspacePageReqSuccessful) {
+      console.error(
+        `Get Approvals Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    const modificationTasklistUrl = `${baseURL}modificationstasklist/index`;
+
+    response = http.get(`${modificationTasklistUrl}`, getHeaders);
+    TrendModificationTasklistPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetModTasklistPageReqSuccessful = check(response, {
+      "Get Modification Tasklist Page Request Success": () =>
+        response.status === 200,
+      "Modification Tasklist Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${modificationsTasklistCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetModTasklistPageReqSuccessful) {
+      console.error(
+        `Get Modification Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const searchModTasklistPostBody =
+      scriptData[0][0].searchModTasklistPostBody[0].postBody;
+
+    const searchModificationTasklistPostBody = Object.assign(
+      {},
+      searchModTasklistPostBody,
+      {
+        "Search.IrasId": `${irasId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
+
+    const postHeadersSearchModTasklistWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${modificationTasklistUrl}`,
+      }
+    );
+
+    const postSearchModTasklistHeaders = {
+      headers: postHeadersSearchModTasklistWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}modificationstasklist/applyfilters`,
+      searchModificationTasklistPostBody,
+      postSearchModTasklistHeaders
+    );
+    let firstRedirectDuration = response.timings.duration;
+    const isPostSearchModTasklistReqSuccessful = check(response, {
+      "Post Search Modification Tasklist Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostSearchModTasklistReqSuccessful) {
+      console.error(
+        `Post Search Modification Tasklist Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+
+    const getModificationTasklistWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${modificationTasklistUrl}`,
+      }
+    );
+    const getModTasklistRedirectHeaders = {
+      headers: getModificationTasklistWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${modificationTasklistUrl}`,
+      getModTasklistRedirectHeaders
+    );
+    TrendSearchModTasklistPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    );
+    isGetModTasklistPageReqSuccessful = check(response, {
+      "Get Modification Tasklist Page Request Success": () =>
+        response.status === 200,
+      "Modification Tasklist Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${modificationsTasklistCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetModTasklistPageReqSuccessful) {
+      console.error(
+        `Get Modification Tasklist Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    const selectReviewerAssignModUrl = `${baseURL}modificationstasklist/assignmodifications?selectedModificationIds=${modificationId}`;
+
+    response = http.get(`${selectReviewerAssignModUrl}`, getHeaders);
+    TrendSelectReviewerPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetSelectReviewerPageReqSuccessful = check(response, {
+      "Get Select a Reviewer Page Request Success": () =>
+        response.status === 200,
+      "Select a Reviewer Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${selectReviewerCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetSelectReviewerPageReqSuccessful) {
+      console.error(
+        `Get Select a Reviewer Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const modAssignPostBody = scriptData[0][0].modAssignPostBody[0].postBody;
+    const modificationAssignPostBody = Object.assign({}, modAssignPostBody, {
+      ModificationIds: `${modificationId}`,
+      ReviewerId: `${reviwerId}`,
+      __RequestVerificationToken: `${requestVerificationToken}`,
+    });
+
+    const postHeadersModAssignWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${selectReviewerAssignModUrl}`,
+      }
+    );
+
+    const postModificationAssignHeaders = {
+      headers: postHeadersModAssignWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}modificationstasklist/assignmodifications`,
+      modificationAssignPostBody,
+      postModificationAssignHeaders
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostModificationAssignReqSuccessful = check(response, {
+      "Post Modification Assign Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostModificationAssignReqSuccessful) {
+      console.error(
+        `Post Modification Assign Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    const modAssignSuccessUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      ""
+    )}`;
+
+    const getModAssignSuccessWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${selectReviewerAssignModUrl}`,
+      }
+    );
+    const getModificationAssignSuccessHeaders = {
+      headers: getModAssignSuccessWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${modAssignSuccessUrl}`,
+      getModificationAssignSuccessHeaders
+    );
+    TrendModificationAssignedPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    );
+    const isGetModificationAssignReqSuccessful = check(response, {
+      "Get Modification Assigned Success Request Success": () =>
+        response.status === 200,
+      "Modification Assigned Success Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${getModAssignSuccessCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetModificationAssignReqSuccessful) {
+      console.error(
+        `Get Modification Assigned Success Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getModTasklistReturnWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${modAssignSuccessUrl}`,
+      }
+    );
+    const getModTasklistReturnHeaders = {
+      headers: getModTasklistReturnWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${modificationTasklistUrl}`,
+      getModTasklistReturnHeaders
+    );
+    TrendModificationTasklistPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    isGetModTasklistPageReqSuccessful = check(response, {
+      "Get Modification Tasklist Page Request Success": () =>
+        response.status === 200,
+      "Modification Tasklist Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${modificationsTasklistCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetModTasklistPageReqSuccessful) {
+      console.error(
+        `Get Modification Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
       );
     }

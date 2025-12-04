@@ -482,6 +482,58 @@
               "__RequestVerificationToken": ""
             }
           }
+        ],
+        "searchSponsorAuthPostBody": [
+          {
+            "postBody": {
+              "Search.SearchTerm": "",
+              "SponsorOrganisationUserId": "",
+              "PageSize": "20",
+              "PageNumber": "1",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "sponsorAuthPostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "IrasId": "",
+              "ShortTitle": "",
+              "ModificationId": "",
+              "SponsorOrganisationUserId": "",
+              "ProjectModificationId": "",
+              "ReviewType": "Review required",
+              "Outcome": "Authorised",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "searchModTasklistPostBody": [
+          {
+            "postBody": {
+              "Search.IrasId": "",
+              "Search.FromDay": "",
+              "Search.FromMonth": "",
+              "Search.FromYear": "",
+              "Search.ToDay": "",
+              "Search.ToMonth": "",
+              "Search.ToYear": "",
+              "Search.FromDaysSinceSubmission": "",
+              "Search.ToDaysSinceSubmission": "",
+              "Search.ShortProjectTitle": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "modAssignPostBody": [
+          {
+            "postBody": {
+              "ModificationIds": "",
+              "ReviewerId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
         ]
       },
       {
@@ -585,7 +637,15 @@
       "modificationDetailsCheck": "Modification details",
       "sponsorReferenceCheck": "Add sponsor reference, date and brief summary of changes",
       "getReviewAllChangeCheck": "Review all changes",
-      "sentToSponsorCheck": "Modification sent to sponsor"
+      "sentToSponsorCheck": "Modification sent to sponsor",
+      "sponsorWorkspaceCheck": "Sponsor workspace",
+      "sponsorAuthorisationsCheck": "Authorisations",
+      "checkAuthoriseCheck": "Check and authorise",
+      "getSponsorAuthCheck": "The modification has been authorised and submitted for review",
+      "approvalsWorkspaceCheck": "Approvals",
+      "modificationsTasklistCheck": "This page shows all the modifications that are ready for you to assign",
+      "selectReviewerCheck": "Select a reviewer",
+      "getModAssignSuccessCheck": "Modifications have been successfully assigned"
     }
   ]
 }
