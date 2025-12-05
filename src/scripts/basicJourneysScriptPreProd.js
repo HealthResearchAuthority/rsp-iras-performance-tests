@@ -92,6 +92,11 @@ const approvalsWorkspaceCheck = scriptData[2].approvalsWorkspaceCheck;
 const modificationsTasklistCheck = scriptData[2].modificationsTasklistCheck;
 const selectReviewerCheck = scriptData[2].selectReviewerCheck;
 const getModAssignSuccessCheck = scriptData[2].getModAssignSuccessCheck;
+const myTasklistCheck = scriptData[2].myTasklistCheck;
+const modReviewAllChangesCheck = scriptData[2].modReviewAllChangesCheck;
+const modReviewOutcomeCheck = scriptData[2].modReviewOutcomeCheck;
+const confirmReviewOutcomeCheck = scriptData[2].confirmReviewOutcomeCheck;
+const submittedReviewOutcomeCheck = scriptData[2].submittedReviewOutcomeCheck;
 
 export async function getPassword() {
   if (`${__ENV.ENCRYPTED_DATA}`.toString() !== "undefined") {
@@ -128,9 +133,9 @@ export const options = {
         // { target: 10, duration: "1m" },
         // { target: 10, duration: "8m" },
         // { target: 0, duration: "1m" },
-        { target: 1, duration: "1m" }, //50s
         { target: 1, duration: "1m" },
-        { target: 0, duration: "1m" }, //20s
+        { target: 1, duration: "3m" },
+        { target: 0, duration: "1m" },
       ],
       gracefulRampDown: "30s",
       exec: "basicJourneysScript",
@@ -373,6 +378,26 @@ export const TrendSelectReviewerPageReqDuration = new Trend(
 );
 export const TrendModificationAssignedPageReqDuration = new Trend(
   "save_modification_assigned_page_response_time",
+  true
+);
+export const TrendMyTasklistPageReqDuration = new Trend(
+  "load_my_tasklist_page_response_time",
+  true
+);
+export const TrendReviewAllChangesPageReqDuration = new Trend(
+  "load_review_all_changes_page_response_time",
+  true
+);
+export const TrendReviewOutcomePageReqDuration = new Trend(
+  "load_review_outcome_page_response_time",
+  true
+);
+export const TrendConfirmReviewOutcomePageReqDuration = new Trend(
+  "confirm_review_outcome_page_response_time",
+  true
+);
+export const TrendSubmitReviewOutcomePageReqDuration = new Trend(
+  "submit_review_outcome_page_response_time",
   true
 );
 
@@ -3147,11 +3172,7 @@ export function basicJourneysScript(data) {
   });
 
   group("Modification Assignment Journey", function () {
-    // 20251203020938 auto + new for sponsor 20251204105433 // 20251203134543 preprod
     const reviwerId = "72396ad5-97e4-4662-b1fd-5f6b49af95e9"; // sys admin user id in auto
-    // console.log(irasId);
-    // console.log(shortTitle);
-    // console.log(modificationId);
 
     response = http.get(`${baseURL}`, getHeaders);
     TrendHomePageReqDuration.add(response.timings.duration);
@@ -3448,6 +3469,337 @@ export function basicJourneysScript(data) {
       );
     }
     userThinkTime(2, 4);
+  });
+
+  group("Modification Outcome Journey", function () {
+    const projectRecordId = "20251204105433"; //probably global once sorted
+    // 20251203020938 auto + new for sponsor 20251204105433 // 20251203134543 preprod
+    console.log(irasId);
+    console.log(shortTitle);
+    console.log(modificationId);
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}approvalsmenu`, getHeaders);
+    TrendApprovalsWorkspacePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetApprovalsWorkspacePageReqSuccessful = check(response, {
+      "Get Approvals Workspace Page Request Success": () =>
+        response.status === 200,
+      "Approvals Workspace Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${approvalsWorkspaceCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetApprovalsWorkspacePageReqSuccessful) {
+      console.error(
+        `Get Approvals Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myTasklistUrl = `${baseURL}mytasklist/index`;
+
+    response = http.get(`${myTasklistUrl}`, getHeaders);
+    TrendMyTasklistPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetMyTasklistPageReqSuccessful = check(response, {
+      "Get My Tasklist Page Request Success": () => response.status === 200,
+      "My Tasklist Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myTasklistCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetMyTasklistPageReqSuccessful) {
+      console.error(
+        `Get My Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    // const modReviewAllChangesUrl = `${baseURL}modifications/reviewallchanges?projectRecordId=${projectRecordId}&irasId=${irasId}&shortTitle=EVALUATION%20OF%20WEEKEND%20EFFECT%20IN%20THE%20ED%20OF%20A%20DISTRICT%20GENERAL%20HOSPITAL.&projectModificationId=${modificationId}`;
+    const modReviewAllChangesUrl = `${baseURL}modifications/reviewallchanges?projectRecordId=${projectRecordId}&irasId=${irasId}&projectModificationId=${modificationId}`;
+
+    response = http.get(`${modReviewAllChangesUrl}`, getHeaders);
+    TrendReviewAllChangesPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetModReviewChangesPageReqSuccessful = check(response, {
+      "Get Modification Review All Changes Page Request Success": () =>
+        response.status === 200,
+      "Modification Review All Changes Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${modReviewAllChangesCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetModReviewChangesPageReqSuccessful) {
+      console.error(
+        `Get Modification Review All Changes Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const modReviewOutcomeUrl = `${baseURL}modifications/reviewoutcome`;
+
+    const getModRevOutcomeWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${modReviewAllChangesUrl}`,
+    });
+    const getModReviewOutcomeHeaders = {
+      headers: getModRevOutcomeWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(`${modReviewOutcomeUrl}`, getModReviewOutcomeHeaders);
+    TrendReviewOutcomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetModReviewOutcomePageReqSuccessful = check(response, {
+      "Get Modification Review Outcome Page Request Success": () =>
+        response.status === 200,
+      "Modification Review Outcome Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${modReviewOutcomeCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetModReviewOutcomePageReqSuccessful) {
+      console.error(
+        `Get Modification Review Outcome Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const reviewOutcomePostBody =
+      scriptData[0][0].reviewOutcomePostBody[0].postBody;
+
+    const modReviewOutcomePostBody = Object.assign({}, reviewOutcomePostBody, {
+      __RequestVerificationToken: `${requestVerificationToken}`,
+    });
+
+    const postHeadersReviewOutcomeWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${modReviewOutcomeUrl}`,
+      }
+    );
+
+    const postReviewOutcomeHeaders = {
+      headers: postHeadersReviewOutcomeWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${modReviewOutcomeUrl}`,
+      modReviewOutcomePostBody,
+      postReviewOutcomeHeaders
+    );
+    let firstRedirectDuration = response.timings.duration;
+    const isPostReviewOutcomeReqSuccessful = check(response, {
+      "Post Review Outcome Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostReviewOutcomeReqSuccessful) {
+      console.error(
+        `Post Review Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+
+    const modConfirmReviewOutcomeUrl = `${baseURL}modifications/confirmreviewoutcome`;
+
+    const getConfirmOutcomeWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${modReviewOutcomeUrl}`,
+    });
+    const getConfirmRevOutcomeHeaders = {
+      headers: getConfirmOutcomeWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${modConfirmReviewOutcomeUrl}`,
+      getConfirmRevOutcomeHeaders
+    );
+    TrendConfirmReviewOutcomePageReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    );
+    const isGetConfirmRevOutcomePageReqSuccessful = check(response, {
+      "Get Confirm Review Outcome Page Request Success": () =>
+        response.status === 200,
+      "Confirm Review Outcome Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${confirmReviewOutcomeCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetConfirmRevOutcomePageReqSuccessful) {
+      console.error(
+        `Get Confirm Review Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const modSubmitReviewOutcomeUrl = `${baseURL}modifications/submitreviewoutcome`;
+
+    const submitRevOutcomePostBody =
+      scriptData[0][0].confirmProjDetailsPostBody[0].postBody;
+
+    const submitReviewOutcomePostBody = Object.assign(
+      {},
+      submitRevOutcomePostBody,
+      {
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      }
+    );
+
+    const postHeadersSubmitOutcomeWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${modConfirmReviewOutcomeUrl}`,
+      }
+    );
+
+    const postSubmitReviewOutcomeHeaders = {
+      headers: postHeadersSubmitOutcomeWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${modSubmitReviewOutcomeUrl}`,
+      submitReviewOutcomePostBody,
+      postSubmitReviewOutcomeHeaders
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostSubmitOutcomeReqSuccessful = check(response, {
+      "Post Submit Review Outcome Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isPostSubmitOutcomeReqSuccessful) {
+      console.error(
+        `Post Submit Review Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    const modOutcomeSubmittedUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      ""
+    )}`;
+
+    const getRevOutcomeSubmittedWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${modConfirmReviewOutcomeUrl}`,
+      }
+    );
+    const getRevOutcomeSubmittedHeaders = {
+      headers: getRevOutcomeSubmittedWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${modOutcomeSubmittedUrl}`,
+      getRevOutcomeSubmittedHeaders
+    );
+    TrendSubmitReviewOutcomePageReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration
+    );
+    const isGetSubmitRevOutcomePageReqSuccessful = check(response, {
+      "Get Submitted Review Outcome Page Request Success": () =>
+        response.status === 200,
+      "Submitted Review Outcome Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${submittedReviewOutcomeCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetSubmitRevOutcomePageReqSuccessful) {
+      console.error(
+        `Get Submitted Review Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyTasklistWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${modOutcomeSubmittedUrl}`,
+    });
+    const getMyTasklistHeaders = {
+      headers: getMyTasklistWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(`${myTasklistUrl}`, getMyTasklistHeaders);
+    TrendMyTasklistPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    isGetMyTasklistPageReqSuccessful = check(response, {
+      "Get My Tasklist Page Request Success": () => response.status === 200,
+      "My Tasklist Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myTasklistCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url
+    );
+    if (!isGetMyTasklistPageReqSuccessful) {
+      console.error(
+        `Get My Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+      );
+    }
+    sleep(1);
   });
 }
 

@@ -534,6 +534,15 @@
               "__RequestVerificationToken": ""
             }
           }
+        ],
+        "reviewOutcomePostBody": [
+          {
+            "postBody": {
+              "Comment": "Have reviewed the modification",
+              "ReviewOutcome": "Approved",
+              "__RequestVerificationToken": ""
+            }
+          }
         ]
       },
       {
@@ -638,14 +647,19 @@
       "sponsorReferenceCheck": "Add sponsor reference, date and brief summary of changes",
       "getReviewAllChangeCheck": "Review all changes",
       "sentToSponsorCheck": "Modification sent to sponsor",
-      "sponsorWorkspaceCheck": "Sponsor workspace",
+      "sponsorWorkspaceCheck": "Sponsor",
       "sponsorAuthorisationsCheck": "Authorisations",
       "checkAuthoriseCheck": "Check and authorise",
       "getSponsorAuthCheck": "The modification has been authorised and submitted for review",
       "approvalsWorkspaceCheck": "Approvals",
       "modificationsTasklistCheck": "This page shows all the modifications that are ready for you to assign",
       "selectReviewerCheck": "Select a reviewer",
-      "getModAssignSuccessCheck": "Modifications have been successfully assigned"
+      "getModAssignSuccessCheck": "Modifications have been successfully assigned",
+      "myTasklistCheck": "My tasklist",
+      "modReviewAllChangesCheck": "Next steps",
+      "modReviewOutcomeCheck": "Review outcome",
+      "confirmReviewOutcomeCheck": "Check and send review outcome to applicant",
+      "submittedReviewOutcomeCheck": "Review outcome successfully sent to applicant"
     }
   ]
 }
