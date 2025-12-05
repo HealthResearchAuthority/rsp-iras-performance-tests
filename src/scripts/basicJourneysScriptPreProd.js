@@ -3474,9 +3474,6 @@ export function basicJourneysScript(data) {
   group("Modification Outcome Journey", function () {
     const projectRecordId = "20251204105433"; //probably global once sorted
     // 20251203020938 auto + new for sponsor 20251204105433 // 20251203134543 preprod
-    console.log(irasId);
-    console.log(shortTitle);
-    console.log(modificationId);
 
     response = http.get(`${baseURL}`, getHeaders);
     TrendHomePageReqDuration.add(response.timings.duration);
