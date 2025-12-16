@@ -2418,12 +2418,12 @@ export function basicJourneysScript(data) {
       .first()
       .attr("value");
 
-    const confirmProjDetailsPostBody =
-      scriptData[0][0].confirmProjDetailsPostBody[0].postBody;
+    const confirmDetailsPostBody =
+      scriptData[0][0].confirmDetailsPostBody[0].postBody;
 
     const confirmProjAppDetailsPostBody = Object.assign(
       {},
-      confirmProjDetailsPostBody,
+      confirmDetailsPostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
       }
@@ -2987,7 +2987,7 @@ export function basicJourneysScript(data) {
       .first()
       .attr("value");
     const confirmModificationPostBody =
-      scriptData[0][0].confirmProjDetailsPostBody[0].postBody; //change confirmProjDetailsPostBody to generic confirmDetails to re-use here and project
+      scriptData[0][0].confirmDetailsPostBody[0].postBody;
 
     const confirmModificationChangesPostBody = Object.assign(
       {},
@@ -4111,7 +4111,7 @@ export function basicJourneysScript(data) {
     const modSubmitReviewOutcomeUrl = `${baseURL}modifications/submitreviewoutcome`;
 
     const submitRevOutcomePostBody =
-      scriptData[0][0].confirmProjDetailsPostBody[0].postBody;
+      scriptData[0][0].confirmDetailsPostBody[0].postBody;
 
     const submitReviewOutcomePostBody = Object.assign(
       {},

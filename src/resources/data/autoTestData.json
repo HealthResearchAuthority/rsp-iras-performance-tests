@@ -321,7 +321,7 @@
             }
           }
         ],
-        "confirmProjDetailsPostBody": [
+        "confirmDetailsPostBody": [
           {
             "postBody": {
               "__RequestVerificationToken": ""
