@@ -9,12 +9,10 @@ import { generateTOTP } from "../utils/generateMfaKey.js";
 
 //Script Data and Variables
 const baseURL =
-  "https://fd-rsp-applications-preprod-uks-f6esbkgtfncwc4gf.a03.azurefd.net/";
+  "https://fd-rsp-applications-automationtest-uks-e7f6hkg3c5edhxex.a03.azurefd.net/";
 
 const loginDetails = new SharedArray("loginData", function () {
-  return JSON.parse(
-    open("../resources/data/preProdTestData.json")
-  ).loginDetails;
+  return JSON.parse(open("../resources/data/autoTestData.json")).loginDetails;
 });
 const usernameInput = loginDetails[0].usernameInput;
 
@@ -24,7 +22,7 @@ const irasIds = new SharedArray("irasIds", function () {
 
 const scriptData = new SharedArray("scriptData", function () {
   return JSON.parse(
-    open("../resources/data/preProdTestData.json")
+    open("../resources/data/autoTestData.json")
   ).basicJourneysScript;
 });
 const baseGetHeaders = scriptData[0][2].baseGetHeaders;
@@ -3296,7 +3294,7 @@ export function basicJourneysScript(data) {
   });
 
   group("Modification Authorised by Sponsor Journey", function () {
-    const sponsorOrgId = "fa47ef3f-56e9-44c4-a4cc-dd4598e39c02";
+    const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac";
     response = http.get(`${baseURL}`, getHeaders);
     TrendHomePageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -3603,7 +3601,7 @@ export function basicJourneysScript(data) {
   });
 
   group("Modification Assignment Journey", function () {
-    const reviwerId = "cd01b6ab-6fe4-4fa0-94ac-c2bd461ed035";
+    const reviwerId = "72396ad5-97e4-4662-b1fd-5f6b49af95e9";
 
     response = http.get(`${baseURL}`, getHeaders);
     TrendHomePageReqDuration.add(response.timings.duration);

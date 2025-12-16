@@ -1,0 +1,884 @@
+{
+  "apiScript": [
+    {
+      "petNames": ["Percy", "Penelope", "Polly", "Paul", "Phil"],
+      "petCategories": ["Pig", "Python", "Parrot", "Porcupine", "Porpoise"]
+    }
+  ],
+  "uiScript": [
+    {
+      "username": "admin",
+      "password": "123"
+    }
+  ],
+  "loginDetails": [
+    {
+      "usernameInput": "FutureIRAS.SysAdmin@hra.nhs.uk"
+    }
+  ],
+  "basicJourneysScript": [
+    [
+      {
+        "revBodyPostBodies": [
+          {
+            "postBody": {
+              "RegulatoryBodyName": "",
+              "Countries": ["England", "Northern Ireland"],
+              "EmailAddress": "qaauto_k6_healthresearchauthority@reviewbodies.com",
+              "Description": "qaauto__k6_Responsible for confirmation of research governance compliance",
+              "__RequestVerificationToken": ""
+            }
+          },
+          {
+            "postBody": {
+              "RegulatoryBodyName": "",
+              "Countries": ["Scotland", "Wales"],
+              "EmailAddress": "qaauto_k6_enquiriesteam@hfea.gov.uk",
+              "Description": "qaauto__k6_The Human Fertilisation and Embryology Authority (HFEA) oversees the use of gametes and embryos in fertility treatment and research. It licenses fertility clinics and centres carrying out in vitro fertilisation (IVF), other assisted conception procedures and human embryo research.",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "revBodyStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "revBodyConfirmStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "IsActive": "",
+              "OrganisationName": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "userPostBodies": [
+          {
+            "postBody": {
+              "Status": "",
+              "Title": "Mr",
+              "GivenName": "Qa_auto_k6_first",
+              "FamilyName": "Qa_auto_k6_last",
+              "Email": "",
+              "Telephone": "66778899001",
+              "Organisation": "K6 Test",
+              "JobTitle": "K6 User",
+              "UserRoles[0].Name": "applicant",
+              "UserRoles[0].Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
+              "UserRoles[0].IsSelected": "true",
+              "UserRoles[1].Name": "study-wide_reviewer",
+              "UserRoles[1].Id": "043aca8e-f88e-473e-974c-262f846285ea",
+              "UserRoles[2].Name": "system_administrator",
+              "UserRoles[2].Id": "ddac109a-e4ad-4572-a175-7795f81ec0e7",
+              "UserRoles[3].Name": "team_manager",
+              "UserRoles[3].Id": "952697e4-3d60-4172-b7bf-ee5ed6a7a1c3",
+              "UserRoles[4].Name": "workflow_co-ordinator",
+              "UserRoles[4].Id": "97977acf-0bd5-48c2-9cf5-bc3fd215e5bb",
+              "__RequestVerificationToken": ""
+            }
+          },
+          {
+            "postBody": {
+              "Status": "",
+              "Title": "Miss",
+              "GivenName": "Qa_auto_k6_first",
+              "FamilyName": "Qa_auto_k6_last",
+              "Email": "",
+              "Telephone": "00112233445",
+              "Organisation": "K6 Inc",
+              "JobTitle": "K6 Admin",
+              "UserRoles[0].Name": "applicant",
+              "UserRoles[0].Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
+              "UserRoles[1].Name": "study-wide_reviewer",
+              "UserRoles[1].Id": "043aca8e-f88e-473e-974c-262f846285ea",
+              "UserRoles[2].Name": "system_administrator",
+              "UserRoles[2].Id": "ddac109a-e4ad-4572-a175-7795f81ec0e7",
+              "UserRoles[2].IsSelected": "true",
+              "UserRoles[3].Name": "team_manager",
+              "UserRoles[3].Id": "952697e4-3d60-4172-b7bf-ee5ed6a7a1c3",
+              "UserRoles[4].Name": "workflow_co-ordinator",
+              "UserRoles[4].Id": "97977acf-0bd5-48c2-9cf5-bc3fd215e5bb",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "userStatusPostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "Email": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "startProjIrasPostBody": [
+          {
+            "postBody": {
+              "IrasId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "projectRecordPostBody": [
+          {
+            "postBody": {
+              "IrasId": "",
+              "ShortProjectTitle": "",
+              "FullProjectTitle": "",
+              "SectionId": "pr-confirm-project-details",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0002",
+              "Questions[0].Category": "Project Record",
+              "Questions[0].SectionId": "pr-confirm-project-details",
+              "Questions[0].Section": "Project details",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Short project title",
+              "Questions[0].ShortQuestionText": "",
+              "Questions[0].QuestionType": "Text",
+              "Questions[0].DataType": "Text",
+              "Questions[0].IsMandatory": "False",
+              "Questions[0].IsOptional": "True",
+              "Questions[0].AnswerText": "",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0789",
+              "Questions[1].Category": "Project Record",
+              "Questions[1].SectionId": "pr-confirm-project-details",
+              "Questions[1].Section": "Project details",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Full project title",
+              "Questions[1].ShortQuestionText": "Full project title",
+              "Questions[1].QuestionType": "Text",
+              "Questions[1].DataType": "Text",
+              "Questions[1].IsMandatory": "False",
+              "Questions[1].IsOptional": "True",
+              "Questions[1].AnswerText": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "projectIdentifiersPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pr-project-identifiers",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0312",
+              "Questions[0].Category": "Project Record",
+              "Questions[0].SectionId": "pr-project-identifiers",
+              "Questions[0].Section": "Project identifiers",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Primary sponsor organisation",
+              "Questions[0].ShortQuestionText": "",
+              "Questions[0].QuestionType": "Rts:org_lookup",
+              "Questions[0].DataType": "Text",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "input-autocomplete": "Ministry of Defence - Defence Science Technology Laboratory",
+              "Questions[0].AnswerText": "86354",
+              "autoSearchEnabled": "true",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "endDatePostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pr-planned-end-date",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0003",
+              "Questions[0].Category": "Project Record",
+              "Questions[0].SectionId": "pr-planned-end-date",
+              "Questions[0].Section": "Planned project end date",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Planned project end date",
+              "Questions[0].ShortQuestionText": "Planned project end date",
+              "Questions[0].QuestionType": "Date",
+              "Questions[0].DataType": "Date",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].Day": "01",
+              "Questions[0].Month": "1",
+              "Questions[0].Year": "2030",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "chiefInvstgtrPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pr-chief-investigator",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0309",
+              "Questions[0].Category": "Project Record",
+              "Questions[0].SectionId": "pr-chief-investigator",
+              "Questions[0].Section": "Chief investigator",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "First name",
+              "Questions[0].ShortQuestionText": "Chief Investigator first name",
+              "Questions[0].QuestionType": "Text",
+              "Questions[0].DataType": "Text",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].AnswerText": "Chief",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0310",
+              "Questions[1].Category": "Project Record",
+              "Questions[1].SectionId": "pr-chief-investigator",
+              "Questions[1].Section": "Chief investigator",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Last name",
+              "Questions[1].ShortQuestionText": "Chief Investigator last name",
+              "Questions[1].QuestionType": "Text",
+              "Questions[1].DataType": "Text",
+              "Questions[1].IsMandatory": "True",
+              "Questions[1].IsOptional": "False",
+              "Questions[1].AnswerText": "Investigator",
+              "Questions[2].Index": "2",
+              "Questions[2].QuestionId": "IQA0311",
+              "Questions[2].Category": "Project Record",
+              "Questions[2].SectionId": "pr-chief-investigator",
+              "Questions[2].Section": "Chief investigator",
+              "Questions[2].Heading": "3",
+              "Questions[2].QuestionText": "Email",
+              "Questions[2].ShortQuestionText": "Chief Investigator email",
+              "Questions[2].QuestionType": "Text",
+              "Questions[2].DataType": "Email",
+              "Questions[2].IsMandatory": "True",
+              "Questions[2].IsOptional": "False",
+              "Questions[2].AnswerText": "ci_test@test.com",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "locationsPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pr-research-locations",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0032",
+              "Questions[0].Category": "Project Record",
+              "Questions[0].SectionId": "pr-research-locations",
+              "Questions[0].Section": "Research locations",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Which nations are participating in your project?",
+              "Questions[0].ShortQuestionText": "Participating nations",
+              "Questions[0].QuestionType": "Look-up list",
+              "Questions[0].DataType": "Checkbox",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].Answers[0].AnswerText": "England",
+              "Questions[0].Answers[0].AnswerId": "OPT0018",
+              "Questions[0].Answers[0].IsSelected": "true",
+              "Questions[0].Answers[1].AnswerText": "Scotland",
+              "Questions[0].Answers[1].AnswerId": "OPT0020",
+              "Questions[0].Answers[2].AnswerText": "Northern Ireland",
+              "Questions[0].Answers[2].AnswerId": "OPT0019",
+              "Questions[0].Answers[3].AnswerText": "Wales",
+              "Questions[0].Answers[3].AnswerId": "OPT0021",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0004",
+              "Questions[1].Category": "Project Record",
+              "Questions[1].SectionId": "pr-research-locations",
+              "Questions[1].Section": "Research locations",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Is the project taking place at any NHS/HSC organisations?",
+              "Questions[1].ShortQuestionText": "NHS/HSC organisations",
+              "Questions[1].QuestionType": "Boolean",
+              "Questions[1].DataType": "Boolean",
+              "Questions[1].IsMandatory": "True",
+              "Questions[1].IsOptional": "False",
+              "Questions[1].SelectedOption": "OPT0004",
+              "Questions[1].Answers[0].AnswerId": "OPT0004",
+              "Questions[1].Answers[0].AnswerText": "Yes",
+              "Questions[1].Answers[1].AnswerId": "OPT0005",
+              "Questions[1].Answers[1].AnswerText": "No",
+              "Questions[2].Index": "2",
+              "Questions[2].QuestionId": "IQA0005",
+              "Questions[2].Category": "Project Record",
+              "Questions[2].SectionId": "pr-research-locations",
+              "Questions[2].Section": "Research locations",
+              "Questions[2].Heading": "3",
+              "Questions[2].QuestionText": "What is the lead nation for the project?",
+              "Questions[2].ShortQuestionText": "Lead nation",
+              "Questions[2].QuestionType": "Look-up list",
+              "Questions[2].DataType": "Radio button",
+              "Questions[2].IsMandatory": "False",
+              "Questions[2].IsOptional": "False",
+              "Questions[2].SelectedOption": "OPT0018",
+              "Questions[2].Answers[0].AnswerId": "OPT0018",
+              "Questions[2].Answers[0].AnswerText": "England",
+              "Questions[2].Answers[1].AnswerId": "OPT0020",
+              "Questions[2].Answers[1].AnswerText": "Scotland",
+              "Questions[2].Answers[2].AnswerId": "OPT0019",
+              "Questions[2].Answers[2].AnswerText": "Northern Ireland",
+              "Questions[2].Answers[3].AnswerId": "OPT0021",
+              "Questions[2].Answers[3].AnswerText": "Wales",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "confirmProjDetailsPostBody": [
+          {
+            "postBody": {
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "areaOfChangePostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "AreaOfChangeId": "cfbd546a-6687-41b7-9036-bbea116264ef",
+              "SpecificChangeId": "a01bebd0-85bb-4b0f-82e1-6a4a30e0dff6",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "modificationFreeTextPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "prm-reviewable-free-text",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0700",
+              "Questions[0].Category": "Reviewable+free+text",
+              "Questions[0].SectionId": "prm-reviewable-free-text",
+              "Questions[0].Section": "Reviewable+free+text",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Enter+details+here+describing+this+change",
+              "Questions[0].ShortQuestionText": "Details+describing+this+change",
+              "Questions[0].QuestionType": "Text",
+              "Questions[0].DataType": "Text+Area",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].AnswerText": "This is a free text change for Other significant change to participant procedures.",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "orgsAffectedPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pem-reviewable-affected-organisations",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0500",
+              "Questions[0].Category": "Reviewable+free+text",
+              "Questions[0].SectionId": "pem-reviewable-affected-organisations",
+              "Questions[0].Section": "affecting+organisations+type",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Which+organisation+types+does+this+change+affect?",
+              "Questions[0].ShortQuestionText": "Affected+organisation+types",
+              "Questions[0].QuestionType": "Look-up+list",
+              "Questions[0].DataType": "Checkbox",
+              "Questions[0].IsMandatory": "True",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].Answers[0].AnswerText": "NHS/HSC",
+              "Questions[0].Answers[0].AnswerId": "OPT0325",
+              "Questions[0].Answers[0].IsSelected": "true",
+              "Questions[0].Answers[1].AnswerText": "Non-NHS/HSC",
+              "Questions[0].Answers[1].AnswerId": "OPT0326",
+              "Questions[0].Answers[1].IsSelected": "true",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "orgsAffectedReviewPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pem-reviewable-affecting-organisations",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA0501",
+              "Questions[0].Category": "Reviewable+free+text",
+              "Questions[0].SectionId": "pem-reviewable-affecting-organisations",
+              "Questions[0].Section": "affecting+organisations+meta+data",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Where+are+the+participating+NHS/HSC+organisations+that+will+be+affected+by+this+change?",
+              "Questions[0].ShortQuestionText": "Affected+NHS/HSC+organisation+locations",
+              "Questions[0].QuestionType": "Look-up+list",
+              "Questions[0].DataType": "Checkbox",
+              "Questions[0].IsMandatory": "False",
+              "Questions[0].IsOptional": "False",
+              "Questions[0].Answers[0].AnswerText": "England",
+              "Questions[0].Answers[0].AnswerId": "OPT0018",
+              "Questions[0].Answers[0].IsSelected": "true",
+              "Questions[0].Answers[1].AnswerText": "Northern+Ireland",
+              "Questions[0].Answers[1].AnswerId": "OPT0019",
+              "Questions[0].Answers[2].AnswerText": "Scotland",
+              "Questions[0].Answers[2].AnswerId": "OPT0020",
+              "Questions[0].Answers[3].AnswerText": "Wales",
+              "Questions[0].Answers[3].AnswerId": "OPT0021",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA0502",
+              "Questions[1].Category": "Reviewable+free+text",
+              "Questions[1].SectionId": "pem-reviewable-affecting-organisations",
+              "Questions[1].Section": "affecting+organisations+meta+data",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Will+some+or+all+of+the+participating+organisations+be+affected?",
+              "Questions[1].ShortQuestionText": "Portion+of+NHS/HSC+organisations+affected",
+              "Questions[1].QuestionType": "Look-up+list",
+              "Questions[1].DataType": "Radio+button",
+              "Questions[1].IsMandatory": "False",
+              "Questions[1].IsOptional": "False",
+              "Questions[1].SelectedOption": "OPT0323",
+              "Questions[1].Answers[0].AnswerId": "OPT0323",
+              "Questions[1].Answers[0].AnswerText": "All",
+              "Questions[1].Answers[1].AnswerId": "OPT0324",
+              "Questions[1].Answers[1].AnswerText": "Some",
+              "Questions[2].Index": "2",
+              "Questions[2].QuestionId": "IQA0503",
+              "Questions[2].Category": "Reviewable+free+text",
+              "Questions[2].SectionId": "pem-reviewable-affecting-organisations",
+              "Questions[2].Section": "affecting+organisations+meta+data",
+              "Questions[2].Heading": "3",
+              "Questions[2].QuestionText": "Will+participating+NHS/HSC+organisations+require+additional+resources+to+implement+this+change?",
+              "Questions[2].ShortQuestionText": "Additional+resource+implications",
+              "Questions[2].QuestionType": "Look-up+list",
+              "Questions[2].DataType": "Radio+button",
+              "Questions[2].IsMandatory": "False",
+              "Questions[2].IsOptional": "False",
+              "Questions[2].SelectedOption": "OPT0004",
+              "Questions[2].Answers[0].AnswerId": "OPT0004",
+              "Questions[2].Answers[0].AnswerText": "Yes",
+              "Questions[2].Answers[1].AnswerId": "OPT0005",
+              "Questions[2].Answers[1].AnswerText": "No",
+              "Questions[3].Index": "3",
+              "Questions[3].QuestionId": "IQA0504",
+              "Questions[3].Category": "Reviewable+free+text",
+              "Questions[3].SectionId": "pem-reviewable-affecting-organisations",
+              "Questions[3].Section": "affecting+organisations+meta+data",
+              "Questions[3].Heading": "4",
+              "Questions[3].QuestionText": "Where+are+the+participating+non-NHS/HSC+organisations+that+will+be+affected+by+this+change?",
+              "Questions[3].ShortQuestionText": "Affected+non-NHS/HSC+locations",
+              "Questions[3].QuestionType": "Look-up+list",
+              "Questions[3].DataType": "Checkbox",
+              "Questions[3].IsMandatory": "False",
+              "Questions[3].IsOptional": "False",
+              "Questions[3].Answers[0].AnswerText": "England",
+              "Questions[3].Answers[0].AnswerId": "OPT0018",
+              "Questions[3].Answers[0].IsSelected": "true",
+              "Questions[3].Answers[1].AnswerText": "Northern+Ireland",
+              "Questions[3].Answers[1].AnswerId": "OPT0019",
+              "Questions[3].Answers[2].AnswerText": "Scotland",
+              "Questions[3].Answers[2].AnswerId": "OPT0020",
+              "Questions[3].Answers[3].AnswerText": "Wales",
+              "Questions[3].Answers[3].AnswerId": "OPT0021",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "saveSponsorRefPostBody": [
+          {
+            "postBody": {
+              "CurrentStage": "pm-sponsor-reference",
+              "Questions[0].Index": "0",
+              "Questions[0].QuestionId": "IQA505",
+              "Questions[0].Category": "Sponsor+reference",
+              "Questions[0].SectionId": "pm-sponsor-reference",
+              "Questions[0].Section": "Sponsor+details",
+              "Questions[0].Heading": "1",
+              "Questions[0].QuestionText": "Sponsor+modification+reference+(optional)",
+              "Questions[0].ShortQuestionText": "Sponsor+reference+(optional)",
+              "Questions[0].QuestionType": "Text",
+              "Questions[0].DataType": "Text",
+              "Questions[0].IsMandatory": "False",
+              "Questions[0].IsOptional": "True",
+              "Questions[0].AnswerText": "(NSA#20):165-774.21/89, pharmaceutical conditon_IB",
+              "Questions[1].Index": "1",
+              "Questions[1].QuestionId": "IQA506",
+              "Questions[1].Category": "Sponsor+reference",
+              "Questions[1].SectionId": "pm-sponsor-reference",
+              "Questions[1].Section": "Sponsor+details",
+              "Questions[1].Heading": "2",
+              "Questions[1].QuestionText": "Sponsor+modification+date+(optional)",
+              "Questions[1].ShortQuestionText": "Date+(optional)",
+              "Questions[1].QuestionType": "Date",
+              "Questions[1].DataType": "Date",
+              "Questions[1].IsMandatory": "False",
+              "Questions[1].IsOptional": "True",
+              "Questions[1].Day": "01",
+              "Questions[1].Month": "1",
+              "Questions[1].Year": "2025",
+              "Questions[2].Index": "2",
+              "Questions[2].QuestionId": "IQA507",
+              "Questions[2].Category": "Sponsor+reference",
+              "Questions[2].SectionId": "pm-sponsor-reference",
+              "Questions[2].Section": "Sponsor+details",
+              "Questions[2].Heading": "3",
+              "Questions[2].QuestionText": "Briefly+summarise+in+lay+language+the+main+changes+proposed+in+this+modification",
+              "Questions[2].ShortQuestionText": "Brief+summary+of+changes",
+              "Questions[2].QuestionType": "Text",
+              "Questions[2].DataType": "Text+Area",
+              "Questions[2].IsMandatory": "True",
+              "Questions[2].IsOptional": "False",
+              "Questions[2].AnswerText": "On behalf of the study Sponsor, HRA Inc, we would like to resubmit a substantial amendment application previous ethics (11/HRA/HDR5 and 16/HP/0219) to Study FR-WEAD-ED: 1.",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "sendToSponsorPostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "searchSponsorAuthPostBody": [
+          {
+            "postBody": {
+              "Search.SearchTerm": "",
+              "SponsorOrganisationUserId": "",
+              "PageSize": "20",
+              "PageNumber": "1",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "sponsorAuthPostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "IrasId": "",
+              "ShortTitle": "",
+              "ModificationId": "",
+              "SponsorOrganisationUserId": "",
+              "ProjectModificationId": "",
+              "ReviewType": "Review required",
+              "Outcome": "Authorised",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "searchModTasklistPostBody": [
+          {
+            "postBody": {
+              "Search.IrasId": "",
+              "Search.FromDay": "",
+              "Search.FromMonth": "",
+              "Search.FromYear": "",
+              "Search.ToDay": "",
+              "Search.ToMonth": "",
+              "Search.ToYear": "",
+              "Search.FromDaysSinceSubmission": "",
+              "Search.ToDaysSinceSubmission": "",
+              "Search.ShortProjectTitle": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "modAssignPostBody": [
+          {
+            "postBody": {
+              "ModificationIds": "",
+              "ReviewerId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "reviewOutcomePostBody": [
+          {
+            "postBody": {
+              "Comment": "Have reviewed the modification",
+              "ReviewOutcome": "Approved",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ]
+      },
+      {
+        "organisationName": "QA Automation_K6 Health Research Authority (HRA) ",
+        "id": "00000000-0000-0000-0000-000000000000",
+        "createdBy": "",
+        "updatedBy": "",
+        "isActive": "True",
+        "revBodyProfileIds": [
+          "8b1e1760-b45d-4c1d-ab65-04c1d80e8c68",
+          "47f074ec-75f2-4164-b091-05992a832423",
+          "68b28215-f9e2-44a9-8d73-082c8942a969",
+          "994425c6-534f-499b-b055-1438a2e9b024",
+          "46843128-fda0-48ba-8b7b-1546d3f28c97",
+          "3ff3367e-cafd-476d-a544-195f62eb00ff",
+          "82595733-77d9-42fe-adfb-1d80fcec43b8",
+          "3e421e7f-20a6-4fd0-acb3-1e7e69788fe8",
+          "42d4a221-1900-4f5e-8a4b-22ee3b53fe05",
+          "0e8e2d05-6292-4ede-bc7e-2752378fa09b",
+          "ab54aef8-9516-4728-900d-277caea1f429",
+          "5d405747-1b0d-44f1-9870-2b2205f0100a",
+          "08bafb4d-a2e3-4a8e-a071-324a1d65cb62",
+          "36394a4d-0033-4484-865d-32d94380611e",
+          "71927b1c-a3a9-42ac-a500-3633d6943570",
+          "852e1d57-1630-45c0-a1b9-40ac90100183",
+          "b8b511a9-78c9-4f84-b7e3-47729d18e034",
+          "8d84a814-7155-41a5-9071-48d126e4b394",
+          "49254f9f-78f1-4d76-8e54-48dc9786df4c",
+          "2924b17c-ccef-4548-beff-5016b7dbf63a",
+          "b8a52ffb-ad36-4bfc-a943-528ec7690474",
+          "fa5176fc-3915-44f5-a09b-52c62c3340c1",
+          "bc0b68da-c43f-407c-a695-581c3a166b39",
+          "9c148acf-eff4-408d-b36e-585dbefcfa77",
+          "9e659357-0275-4345-b8dd-5a5069c8d08d",
+          "7e0646c8-0a51-455f-842c-5e5adaef8ca2",
+          "be5e1e31-ae58-413f-9879-5f05cd2334d9",
+          "0fb5b4b6-16f0-49c2-a183-65e77e15cf8b",
+          "f508abdc-39c1-44ec-a506-6c2d1e63e6d9",
+          "ad9704d2-447a-43ff-991a-72eb3d9c7776",
+          "62c50dce-815d-45cd-8aac-736ec1aef354",
+          "78645f1c-0d8d-4269-9fb4-7a5a64f01b3e",
+          "9121a6e8-8ff2-4abb-8950-7d390d60f353",
+          "c6ea980f-65af-429d-96ce-83915ca70689",
+          "7d3c9fc3-1275-434e-9894-86255c6b9de5",
+          "21594fb6-9792-4157-a5ea-879713af0cba",
+          "6f93075c-cb65-4545-9677-88a2c3e367d8",
+          "2e6aede2-5811-44b5-a178-8a72a7bc8ab8",
+          "46ecfbc9-07b5-4f3b-8f4f-8f4b301f0f30",
+          "a7b769ce-18f5-4e84-80b7-90a97c43d192",
+          "6faf799f-64e5-42fc-8ca0-979329d51d68",
+          "b416ccbf-96e3-417f-a732-9fae4f8bcaa1",
+          "a303e8de-57e4-431c-9366-a2a25a783a60",
+          "fe66ac01-bba0-486e-a85a-a48eed4ac403",
+          "5c923c07-3f25-4ae4-837a-abc1e675ecc0",
+          "342578ff-001f-459a-ba3d-ac83ce7e7301",
+          "56202fec-b202-4e6a-85ff-b83dbfd9587e",
+          "b659fcce-6393-4279-b29b-bba420d53be3",
+          "10464f7d-7cef-478b-bf0f-bcfca00fb700",
+          "79e93a9e-c5b6-4bee-b9a4-bdd8e9e4e4f4",
+          "654d2f23-30bd-4f93-8625-bee5e7ed7f69",
+          "64a568f9-91d0-449c-8fa9-bf1e250adeb5",
+          "edc3817d-90e9-4def-93c0-c000fafb6dc2",
+          "3e7b273e-ae2f-4d0d-a463-cc17ca8469d5",
+          "feb03f46-d0e6-4e8a-8be7-ce631b239836",
+          "01480bbe-3d1d-4677-b2d6-cf1e8f7fa29d",
+          "b3018a8e-61de-41fc-bccf-cf7b7c48030b",
+          "83c8265a-d144-458f-880b-d005c8447320",
+          "889875ed-d2cd-4685-82a1-d28019dc3977",
+          "dbe2292c-12ff-42ae-b5cc-d5569a89c04b",
+          "7b0e4823-aed6-4130-8242-d8005ac2bd63",
+          "ec61c48f-f97a-4105-bd37-da7a204b5eed",
+          "8a9410da-6722-4c5f-87ae-dddd25a438b0",
+          "70c5da6c-ab5a-4d90-984c-e9e851ce91fb",
+          "e02cdbc5-dbcd-495d-ada8-ef7154bcd797",
+          "0014f525-99df-45d6-8d25-f89858cfdb7e",
+          "9616a260-d433-4f0b-8427-fa67659ceb75",
+          "10c1ac06-7c1f-41a4-a252-fa85d2e62521",
+          "80104067-0e50-4357-ae99-fb1aa0b648ad",
+          "a2cb0dfc-a96a-4dcd-9d9e-fd421009a729",
+          "987912d9-843f-467a-97b3-ff73abe0221d"
+        ],
+        "revBodyProfileIdsWithUsers": [
+          "8b1e1760-b45d-4c1d-ab65-04c1d80e8c68",
+          "47f074ec-75f2-4164-b091-05992a832423",
+          "68b28215-f9e2-44a9-8d73-082c8942a969",
+          "994425c6-534f-499b-b055-1438a2e9b024",
+          "46843128-fda0-48ba-8b7b-1546d3f28c97",
+          "3ff3367e-cafd-476d-a544-195f62eb00ff",
+          "82595733-77d9-42fe-adfb-1d80fcec43b8",
+          "3e421e7f-20a6-4fd0-acb3-1e7e69788fe8",
+          "42d4a221-1900-4f5e-8a4b-22ee3b53fe05",
+          "0e8e2d05-6292-4ede-bc7e-2752378fa09b",
+          "ab54aef8-9516-4728-900d-277caea1f429",
+          "5d405747-1b0d-44f1-9870-2b2205f0100a",
+          "08bafb4d-a2e3-4a8e-a071-324a1d65cb62",
+          "36394a4d-0033-4484-865d-32d94380611e",
+          "71927b1c-a3a9-42ac-a500-3633d6943570",
+          "852e1d57-1630-45c0-a1b9-40ac90100183",
+          "b8b511a9-78c9-4f84-b7e3-47729d18e034",
+          "8d84a814-7155-41a5-9071-48d126e4b394",
+          "49254f9f-78f1-4d76-8e54-48dc9786df4c",
+          "2924b17c-ccef-4548-beff-5016b7dbf63a"
+        ],
+        "editCreatedBy": "System Admin",
+        "editUpdatedBy": "System Admin",
+        "emailPrefix": "qaauto_k6_test_email_",
+        "emailEditPrefix": "qaauto_k6_test_edit_email_",
+        "emailSuffix": "@hra.nhs.uk",
+        "userProfileIds": [
+          "020c2eff-5383-4c9c-a807-ef58a6eeacea",
+          "049ed436-62f7-4b34-a4ef-a252674d26ae",
+          "04d7eba7-5ef6-4126-a1fd-2deb34da589c",
+          "08294301-85d8-43f1-9542-3e4cd5ee3aab",
+          "0c04206c-bb27-4685-bbcb-e314e8d694b1",
+          "122ba330-5e0e-402f-9fac-e5c63873e226",
+          "123a9b45-5220-4f46-b7bc-9ae6a5f020d1",
+          "125f097d-ada6-498c-8ee4-a01412d0d52b",
+          "1261a92f-32f3-4bc1-b11c-78de289ff368",
+          "13718186-4368-4961-a06b-b9f8dbcb1a4d",
+          "167e0f22-59be-4328-ac99-57fb6240f0ed",
+          "1bdc6d87-3731-457e-a21d-ed463f7dd852",
+          "1c12f041-714a-44a7-bc5d-66e4592d6cc6",
+          "1d518427-ee35-4423-9629-cdd6eb47f91d",
+          "1e7e0488-1ad2-4e3f-b3fd-b9bb7e5bb1b8",
+          "22997a95-9425-4459-ae98-764fcc4854d1",
+          "246288ec-9ca0-4302-b82a-ba8e788bf64b",
+          "31427dcd-efaf-446b-a61c-22d7df0170ba",
+          "314c680c-5e4b-4f8f-9fdf-e75c76fff9d1",
+          "32db0b27-ee82-4a2c-8a38-e135969162fb",
+          "35ea8a75-c134-4767-8fd0-7b8fac1549c1",
+          "3cb91ac0-1302-4e1a-ad2b-1c9f3c4d28de",
+          "3f2692e8-2685-42f3-8352-e3db0691c924",
+          "417d1db6-aa12-44cb-a530-20ae6d6b9773",
+          "4247a985-91cc-4dd4-bf1e-caabee619245",
+          "43eb3f55-6ca1-4f89-a2e4-d5a42282d03c",
+          "45835471-2ea3-474d-994d-d5f4ee70bb86",
+          "45afbf21-3c71-42d3-98e7-e484b4d5b7ff",
+          "46905877-f0a0-4e36-af9c-0505aafd7099",
+          "4e8a71ca-256d-4499-818a-b710007ed63b",
+          "4f0b76a5-1573-4911-992e-7e2e8a93c461",
+          "4fc54aef-8e9a-4b32-bc35-844a9e83d964",
+          "51cd5914-0b4c-497a-b8bc-cef20c058270",
+          "53246c63-ec6e-459e-9850-5f08eb4e5fbe",
+          "53d9cd04-d0cf-48d4-a12c-da65dc69b90e",
+          "563328d6-e5fb-4df6-bbaf-42cc23f1b4ee",
+          "5b526401-e7ac-4bbc-9b48-39eedfd2e1c1",
+          "5f4ff6c4-abd2-4b77-934a-60875e15be2a",
+          "5f681ce5-fdde-4c62-8e1b-15b124fcad38",
+          "5fef0fb0-adc6-498c-81a6-5278ea81412d",
+          "61f1eca1-5c5c-4178-8503-8280cbd29342",
+          "642261db-025a-43fa-925e-1644986367ff",
+          "6534d783-0ab9-4cbd-b374-4b448bc3ca76",
+          "66c38fef-7a63-49a3-aaa4-3451b8f7cf44",
+          "68fb94f0-e2cc-40bd-8434-33dc2907739e",
+          "6a40c40c-f6df-4038-a340-0c0d2552e021",
+          "6b711b80-40bb-44cf-a40f-d4a1121a2884",
+          "6ba41e3f-ea72-4a46-b68a-04e6238f1eff",
+          "70438e39-507c-419a-8531-9d620829de73",
+          "750ccada-9fa3-4df0-815a-623da2ec9e60",
+          "7cf7516e-83f5-46b0-8dae-d079e51d71e5",
+          "7d123611-fdcf-413c-a3d6-5b8cde01094d",
+          "7e8eb69a-18cd-45b4-a0dd-fdc9dd5e335d",
+          "80dced7f-b480-4ba1-a7d1-8f9ec150854a",
+          "841dcd17-69fc-4cd7-bc88-b5646e52e97e",
+          "8860b110-97cb-409f-b90e-7c79b6b59cdd",
+          "8c611bb4-1197-4986-9693-fe151239cd6c",
+          "8d482a67-81a9-44af-a930-76fb0bdcf9c2",
+          "8f1a918a-8545-40bd-bea7-01bff8f52f19",
+          "907843d8-b508-400e-bae5-2b04d4a3941c",
+          "921f7991-44fd-4655-b8a2-1d082635cf53",
+          "94b618c9-5315-4c00-ab64-46c16879767b",
+          "9545f960-c379-45ec-90f0-85ff7af293a5",
+          "969676e7-58f1-4843-82be-42dec91f0a36",
+          "9e8113e9-e9a7-4745-8859-0175a1be28f9",
+          "a0d6470e-5422-42e6-a552-964e508bdf30",
+          "a11a1758-9710-4b61-9ed4-c56de1b58d2d",
+          "a1fd2429-09fc-43d0-9f71-c3fa35c33f22",
+          "a423503c-c308-46e4-b96b-697cf6a1934b",
+          "a67e0cf7-d33e-4281-bc8c-886149bf766f",
+          "ac535731-89b8-4d31-91d8-6eba98ae6200",
+          "ac723c50-520f-4952-a040-4beea014d721",
+          "adc1a220-a3fb-46d5-8332-d57141441418",
+          "adcd3028-f0f4-47e4-ac23-49045f1c30ea",
+          "b09545c4-eaee-4f5c-bf10-0ab70421422c",
+          "b09d7ab4-128a-4212-a467-d5d7ca8104ac",
+          "b0bb99fb-1e0f-4c27-b901-f9458ff33a91",
+          "b0d452cd-0d8c-4f44-8f8d-d75799b81028",
+          "b33cd2a5-85c8-474a-a112-ccea182b8398",
+          "ba2d084c-198a-4e0a-a211-80093cd9a732",
+          "bc6599be-ac5b-499f-8146-c561847ba298",
+          "bddacbf3-25ec-43e6-9b6e-3b4e2378e470",
+          "be31d1d0-0cab-419a-aed8-267958c00713",
+          "c184afc4-8277-4a89-8a38-730ee56fc421",
+          "c1b7f0db-371f-4f47-a7b4-e52965f3fea8",
+          "c1edda68-dcbe-422e-8833-c14bf334215f",
+          "c416464c-625c-4b04-8730-70e3d54f0683",
+          "c572cc22-fa80-494f-bdcc-472b3d98d8de",
+          "cc39a30c-b0d8-4f17-aa09-a42298fea4e9",
+          "dfd0aaad-ac73-4589-af70-95ad71b4e54a",
+          "e00458db-078b-4f5b-9fef-5605424cce35",
+          "ee0bf538-21fb-4cd9-9efa-1e44b89ea85a",
+          "ee407bb1-511e-4b04-b651-36d36c3dcde4",
+          "f18595dd-cfbf-4a07-ab66-5843da2f1a80",
+          "f6ed269a-d37f-41f7-a6c2-cdfe174419e1",
+          "f7f25a94-d5be-4a6f-886e-18f7ab302ba2",
+          "f96d6f3e-c1f0-461e-bfcb-b55f4f339433",
+          "fe1f61af-1802-4812-87f9-9373a4dc8b35",
+          "ff4fc70d-463f-4594-be5e-a4ef73006c1c",
+          "fffaea31-284a-4b55-9b92-020a8bc24484"
+        ],
+        "orgSearchParam": "worth"
+      },
+      {
+        "baseGetHeaders": {
+          "headers": {
+            "Accept": "text/html,application/xhtml+xml,application/xml;",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-GB,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Cookie": []
+          }
+        },
+        "basePostHeaders": {
+          "headers": {
+            "Accept": "text/html,application/xhtml+xml,application/xml;",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US;",
+            "Cache-Control": "max-age=0",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Origin": "https://fd-rsp-applications-automationtest-uks-e7f6hkg3c5edhxex.a03.azurefd.net",
+            "Cookie": []
+          }
+        }
+      }
+    ],
+    ["String Data For Post Project Filter Req Will Go Here"],
+    {
+      "homePageCheck": "This is your account homepage where you can access your workspaces",
+      "sysAdminCheck": "View, add, disable or edit review body records.",
+      "revBodyListCheck": "Find a review body",
+      "addRevBodyCheck": "Add a new review body",
+      "confirmRevBodyChangeCheck": "Check the information here is correct before creating the profile.",
+      "submitRevBodyCheck": "Review body has been successfully added",
+      "revBodyProfileCheck": "Review body profile:",
+      "revBodyEditCheck": "Edit review body details",
+      "revBodyStatusChangeCheck": "Confirm that you want to",
+      "revBodyConfirmStatusChangeCheck": "to confirm that their profile has been",
+      "revBodyAuditCheck": "Audit history:",
+      "revBodyUserListCheck": "Search, assign or remove users from this review body",
+      "revBodyAddUserCheck": "Search for user to add to review body",
+      "manageUserListCheck": "Manage users",
+      "addUserPageCheck": "Add a new user profile record",
+      "confirmAddUserCheck": "Check and create user profile",
+      "submitAddUserCheck": "User has been successfully added",
+      "userProfileCheck": "User profile:",
+      "userEditCheck": "Edit user profile record",
+      "userStatusChangeCheck": "Confirm that you want to",
+      "submitUserStatusChangeCheck": "to confirm that their record has been",
+      "userAuditCheck": "Audit history:",
+      "myResearchPageCheck": "My research",
+      "createProjectRecordPageCheck": "Create a project record",
+      "startProjectIrasPageCheck": "This is the 4 to 7 digit ID generated when you created your initial application",
+      "displayProjDetailsPageCheck": "Confirm project details",
+      "displayProjIdentifiersPageCheck": "Project identifiers",
+      "displayPlannedEndDatePageCheck": "Planned project end date",
+      "displayChiefInvestigatorPageCheck": "Chief investigator",
+      "displayResearchLocationsPageCheck": "Research locations",
+      "reviewAppAnswersCheck": "Review your answers",
+      "projectCreatedCheck": "Project record created",
+      "projectOverviewPageCheck": "Project overview",
+      "postApprovalCheck": "Project modifications",
+      "areaOfChangeCheck": "Select area of change",
+      "modificationFreeTextCheck": "Enter details here describing this change",
+      "orgsAffectedCheck": "Which organisation types does this change affect?",
+      "orgsAffectedReviewAnswersCheck": "Where are the participating NHS/HSC organisations that will be affected by this change?",
+      "modReviewChangesCheck": "Review changes",
+      "modificationDetailsCheck": "Modification details",
+      "sponsorReferenceCheck": "Add sponsor reference, date and brief summary of changes",
+      "getReviewAllChangeCheck": "Review all changes",
+      "sentToSponsorCheck": "Modification sent to sponsor",
+      "sponsorWorkspaceCheck": "Sponsor",
+      "sponsorAuthorisationsCheck": "Authorisations",
+      "checkAuthoriseCheck": "Check and authorise",
+      "getSponsorAuthCheck": "The modification has been authorised and submitted for review",
+      "approvalsWorkspaceCheck": "Approvals",
+      "modificationsTasklistCheck": "This page shows all the modifications that are ready for you to assign",
+      "selectReviewerCheck": "Select a reviewer",
+      "getModAssignSuccessCheck": "Modifications have been successfully assigned",
+      "myTasklistCheck": "My tasklist",
+      "modReviewAllChangesCheck": "Next steps",
+      "modReviewOutcomeCheck": "Review outcome",
+      "confirmReviewOutcomeCheck": "Check and send review outcome to applicant",
+      "submittedReviewOutcomeCheck": "Review outcome successfully sent to applicant"
+    }
+  ]
+}
