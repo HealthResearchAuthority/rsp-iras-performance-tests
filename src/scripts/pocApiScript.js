@@ -4,6 +4,7 @@ import { Trend } from "k6/metrics";
 import { randomItem } from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.1/index.js";
 import { SharedArray } from "k6/data";
+import { decryptData } from "../utils/decryptData.js";
 
 const baseURL = "https://petstore.swagger.io/v2";
 
@@ -50,8 +51,24 @@ export const TrendDeletePetReqDuration = new Trend(
   true
 );
 
-export function pocK6ApiJourney() {
+export async function getPassword() {
+  if (`${__ENV.ENCRYPTED_DATA}`.toString() !== "undefined") {
+    // the local env variable is defined
+    const decrypted = await decryptData(`${__ENV.ENCRYPTED_DATA}`);
+    return decrypted;
+  } else if (`${__ENV.SECRET_DATA}`.toString() !== "undefined") {
+    // the remote env variable is defined
+    return `${__ENV.SECRET_DATA}`;
+  } else {
+    // no env variable is defined
+    fail("No ENV Argument Set");
+  }
+}
+
+export async function pocK6ApiJourney() {
   let response;
+
+  console.log(await getPassword());
 
   function userThinkTime() {
     sleep(Math.random() * 2 + 2);
