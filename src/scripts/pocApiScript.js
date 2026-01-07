@@ -10,7 +10,7 @@ const baseURL = "https://petstore.swagger.io/v2";
 
 //Request Params to Select From
 const petValues = new SharedArray("petValues", function () {
-  return JSON.parse(open("../resources/data/testData.json")).apiScript;
+  return JSON.parse(open("../resources/data/autoTestData.json")).apiScript;
 });
 
 export const options = {
