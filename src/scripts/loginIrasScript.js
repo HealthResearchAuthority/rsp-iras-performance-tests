@@ -153,7 +153,7 @@ export async function setup() {
       "Accept-Language": "en-GB,en;q=0.9",
       "Cache-Control": "no-cache",
     },
-    redirects: 1,
+    redirects: 0,
   });
 
   response = http.get(`${response.url}`, {
@@ -163,7 +163,7 @@ export async function setup() {
       "Accept-Language": "en-GB,en;q=0.9",
       "Cache-Control": "no-cache",
     },
-    redirects: 1,
+    redirects: 0,
   });
 
   response = http.get(`${baseURL}`, {
