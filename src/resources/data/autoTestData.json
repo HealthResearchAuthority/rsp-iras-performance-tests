@@ -1,16 +1,4 @@
 {
-  "apiScript": [
-    {
-      "petNames": ["Percy", "Penelope", "Polly", "Paul", "Phil"],
-      "petCategories": ["Pig", "Python", "Parrot", "Porcupine", "Porpoise"]
-    }
-  ],
-  "uiScript": [
-    {
-      "username": "admin",
-      "password": "123"
-    }
-  ],
   "loginDetails": [
     {
       "usernameInput": "FutureIRAS.SysAdmin@hra.nhs.uk"
