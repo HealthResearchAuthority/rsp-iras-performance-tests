@@ -3,7 +3,7 @@
 //    Ensure reviewerId in script below is still valid for FutureIRAS.SysAdmin@hra.nhs.uk in this env
 // 2. Check FutureIRAS.SysAdmin@hra.nhs.uk user is assigned as a sponsor for the review body Ministry of Defence - Defence Science Technology Laboratory, assign if necessary
 //    Ensure sponsorOrgId in script below is still valid for Ministry of Defence - Defence Science Technology Laboratory in this env
-// 3. Ensure revBodyProfileIds and userProfileIds arrays in preProdTestData.json are filled with valid values for Test Review bodies (minimum 50, the more the better)
+// 3. Ensure revBodyProfileIds and userProfileIds arrays in preProdTestData.json are filled with valid values for k6 Test Review bodies and Users (minimum 50, the more the better)
 //    If necessary generate them quickly by first running the script using only on the Create Review Body and Create User requests
 //    Then fetch the Id's from the DB by searching for review bodies with k6 in the RegulatoryBodyName
 //    NOTE: DO NOT USE ID's OF ESTABLISHED REVIEW BODIES E.G. Health Research Authority
