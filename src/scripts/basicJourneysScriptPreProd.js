@@ -1,3 +1,15 @@
+// NOTE: PRIOR TO RUNNING You MUST COMPLETE THIS TODO LIST
+// 1. Ensure FutureIRAS.SysAdmin@hra.nhs.uk user has System Admin, Study-wide Reviewer and Sponsor roles
+//    Ensure reviewerId in script below is still valid for FutureIRAS.SysAdmin@hra.nhs.uk in this env
+// 2. Check FutureIRAS.SysAdmin@hra.nhs.uk user is assigned as a sponsor for the review body Ministry of Defence - Defence Science Technology Laboratory, assign if necessary
+//    Ensure sponsorOrgId in script below is still valid for Ministry of Defence - Defence Science Technology Laboratory in this env
+// 3. Ensure revBodyProfileIds and userProfileIds arrays in preProdTestData.json are filled with valid values for Test Review bodies (minimum 50, the more the better)
+//    If necessary generate them quickly by first running the script using only on the Create Review Body and Create User requests
+//    Then fetch the Id's from the DB by searching for review bodies with k6 in the RegulatoryBodyName
+//    NOTE: DO NOT USE ID's OF ESTABLISHED REVIEW BODIES E.G. Health Research Authority
+// 4. Ensure revBodyProfileIdsWithUsers array in preProdTestData.json is filled with valid values with Test Review bodies that have users associated with them (minimum 20)
+//    Reuse Id's from revBodyProfileIds and manually add 1-5 users for each Id you are using if necessary
+// 5. Before and After test run that includes the Create Project flows you will need to delete all projects from the DB
 import { sleep, group, fail, check } from "k6";
 import http from "k6/http";
 import { Trend } from "k6/metrics";
@@ -577,6 +589,8 @@ export function basicJourneysScript(data) {
   function userThinkTime(min, max) {
     return sleep(Math.random() * (max - min) + min);
   }
+  // TEST BASIC PREPROD RUN IN PIPELINE, NEED TO SETUP TEAM 2 DATA FIRST
+  // add setup notes for user and test data
 
   group("Manage Review Body Journey", function () {
     response = http.get(`${baseURL}`, getHeaders);
@@ -1678,7 +1692,6 @@ export function basicJourneysScript(data) {
   });
 
   group("Create Project Journey", function () {
-    // After run need to delete from DB
     const projectRecord = randomItem(irasIds);
     irasId = projectRecord.IRAS_ID;
     shortTitle = projectRecord.Short_Project_Title;
@@ -3603,7 +3616,7 @@ export function basicJourneysScript(data) {
   });
 
   group("Modification Assignment Journey", function () {
-    const reviwerId = "cd01b6ab-6fe4-4fa0-94ac-c2bd461ed035";
+    const reviewerId = "cd01b6ab-6fe4-4fa0-94ac-c2bd461ed035";
 
     response = http.get(`${baseURL}`, getHeaders);
     TrendHomePageReqDuration.add(response.timings.duration);
@@ -3789,7 +3802,7 @@ export function basicJourneysScript(data) {
 
     const modificationAssignPostBody = Object.assign({}, modAssignPostBody, {
       ModificationIds: `${modificationId}`,
-      ReviewerId: `${reviwerId}`,
+      ReviewerId: `${reviewerId}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
 
