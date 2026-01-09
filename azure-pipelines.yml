@@ -1,14 +1,13 @@
-# Run k6 POC Performance Tests
+# Run k6 Performance Tests
 
 parameters:
   - name: testScript
     displayName: Select a Test Script
     type: string
-    default: pocApiScript
+    default: basicJourneysScriptPreProd
     values:
-      - pocApiScript
-      - pocUiScript
-      - pocAuthSetupScript
+      - basicJourneysScriptAuto
+      - basicJourneysScriptPreProd
 
 trigger: none
 
