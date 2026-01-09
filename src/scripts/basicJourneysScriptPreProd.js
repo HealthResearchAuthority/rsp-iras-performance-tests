@@ -1,4 +1,4 @@
-// NOTE: PRIOR TO RUNNING You MUST COMPLETE THIS TODO LIST
+// NOTE: PRIOR TO RUNNING YOU MUST COMPLETE THIS TODO LIST
 // 1. Ensure FutureIRAS.SysAdmin@hra.nhs.uk user has System Admin, Study-wide Reviewer and Sponsor roles
 //    Ensure reviewerId in script below is still valid for FutureIRAS.SysAdmin@hra.nhs.uk in this env
 // 2. Check FutureIRAS.SysAdmin@hra.nhs.uk user is assigned as a sponsor for the review body Ministry of Defence - Defence Science Technology Laboratory, assign if necessary
@@ -10,6 +10,8 @@
 // 4. Ensure revBodyProfileIdsWithUsers array in preProdTestData.json is filled with valid values with Test Review bodies that have users associated with them (minimum 20)
 //    Reuse Id's from revBodyProfileIds and manually add 1-5 users for each Id you are using if necessary
 // 5. Before and After test run that includes the Create Project flows you will need to delete all projects from the DB
+// POST TEST RUN ACTIONS
+// 6. Consider data cleanup for the k6 review bodies and users created, particularly if testing is complete and there are no immmediate plans for further tests
 import { sleep, group, fail, check } from "k6";
 import http from "k6/http";
 import { Trend } from "k6/metrics";

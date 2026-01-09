@@ -11,6 +11,8 @@
 //    Reuse Id's from revBodyProfileIds and manually add 1-5 users for each Id you are using if necessary
 // 5. Before and After test run that includes the Create Project flows you will need to delete all projects from the DB
 //    Co-ordinate with test team when running in this env as it will clash with the automation test and the IRAS projects spreadsheet
+// POST TEST RUN ACTIONS
+// 6. Consider data cleanup for the k6 review bodies and users created, particularly if testing is complete and there are no immmediate plans for further tests
 import { sleep, group, fail, check } from "k6";
 import http from "k6/http";
 import { Trend } from "k6/metrics";
