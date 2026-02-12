@@ -166,7 +166,7 @@
               "Questions[0].IsMandatory": "True",
               "Questions[0].IsOptional": "False",
               "input-autocomplete": "Ministry of Defence - Defence Science Technology Laboratory",
-              "Questions[0].AnswerText": "86354",
+              "Questions[0].AnswerText": "98684",
               "autoSearchEnabled": "true",
               "__RequestVerificationToken": ""
             }
@@ -574,6 +574,58 @@
               "__RequestVerificationToken": ""
             }
           }
+        ],
+        "confirmClosurePostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "IrasId": "",
+              "ShortProjectTitle": "",
+              "PlannedProjectEndDate": "01 January 2030",
+              "ActualClosureDateDay": "1",
+              "ActualClosureDateMonth": "1",
+              "ActualClosureDateYear": "2026",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "searchMyResearchPostBody": [
+          {
+            "postBody": {
+              "Search.SearchTitleTerm": "",
+              "PageSize": "20",
+              "PageNumber": "1",
+              "Search.FromDay": "",
+              "Search.FromMonth": "",
+              "Search.FromYear": "",
+              "Search.ToDay": "",
+              "Search.ToMonth": "",
+              "Search.ToYear": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "checkAuthClosurePostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "SponsorOrganisationUserId": "",
+              "IrasId": "",
+              "ShortProjectTitle": "",
+              "Outcome": "Authorised",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "confirmAuthClosurePostBody": [
+          {
+            "postBody": {
+              "ProjectRecordId": "",
+              "SponsorOrganisationUserId": "",
+              "Outcome": "Authorised",
+              "__RequestVerificationToken": ""
+            }
+          }
         ]
       },
       {
@@ -860,6 +912,8 @@
       "sponsorAuthorisationsCheck": "Authorisations",
       "checkAuthoriseCheck": "Check and authorise",
       "getSponsorAuthCheck": "The modification has been authorised and submitted for review",
+      "sponsorClosuresCheck": "Date closed",
+      "checkAuthProjClosureCheck": "Check and authorise project closure",
       "approvalsWorkspaceCheck": "Approvals",
       "modificationsTasklistCheck": "This page shows all the modifications that are ready for you to assign",
       "selectReviewerCheck": "Select a reviewer",
@@ -868,7 +922,11 @@
       "modReviewAllChangesCheck": "Next steps",
       "modReviewOutcomeCheck": "Review outcome",
       "confirmReviewOutcomeCheck": "Check and send review outcome to applicant",
-      "submittedReviewOutcomeCheck": "Review outcome successfully sent to applicant"
+      "submittedReviewOutcomeCheck": "Review outcome successfully sent to applicant",
+      "closeProjectCheck": "Close Project",
+      "projectClosureCheck": "Closure sent to sponsor",
+      "closurePreAuthCheck": "Are you sure you want to close the project?",
+      "confirmClosureOutcomeCheck": "Project closed"
     }
   ]
 }
