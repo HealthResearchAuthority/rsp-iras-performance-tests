@@ -2,12 +2,12 @@
 // 1. Ensure FutureIRAS.SysAdmin@hra.nhs.uk user has System Admin, Study-wide Reviewer and Sponsor roles
 //    Ensure reviewerId in script below is still valid for FutureIRAS.SysAdmin@hra.nhs.uk in this env
 // 2. Check FutureIRAS.SysAdmin@hra.nhs.uk user is assigned as a sponsor for the review body Ministry of Defence - Defence Science Technology Laboratory, assign if necessary
-//    Ensure sponsorOrgId in script below is still valid for Ministry of Defence - Defence Science Technology Laboratory in this env
+//    Ensure sponsorOrgId and rtsId in script below is still valid for Ministry of Defence - Defence Science Technology Laboratory in this env
 // 3. Ensure revBodyProfileIds and userProfileIds arrays in preProdTestData.json are filled with valid values for k6 Test Review bodies and Users (minimum 50, the more the better)
 //    If necessary generate them quickly by first running the script using only on the Create Review Body and Create User requests
 //    Then fetch the Id's from the DB by searching for review bodies with k6 in the RegulatoryBodyName
 //    NOTE: DO NOT USE ID's OF ESTABLISHED REVIEW BODIES E.G. Health Research Authority
-// 4. Ensure revBodyProfileIdsWithUsers array in preProdTestData.json is filled with valid values with Test Review bodies that have users associated with them (minimum 20)
+// 4. Ensure revBodyProfileIdsWithUsers array in autoTestData.json is filled with valid values with Test Review bodies that have users associated with them (minimum 20)
 //    Reuse Id's from revBodyProfileIds and manually add 1-5 users for each Id you are using if necessary
 // 5. Before and After test run that includes the Create Project flows you will need to delete all projects from the DB
 // POST TEST RUN ACTIONS
@@ -56,6 +56,7 @@ const emailPrefix = scriptData[0][1].emailPrefix;
 const emailEditPrefix = scriptData[0][1].emailEditPrefix;
 const emailSuffix = scriptData[0][1].emailSuffix;
 const userProfileIds = scriptData[0][1].userProfileIds;
+const sponsorAuthPermission = scriptData[0][1].sponsorAuthPermission;
 
 const homePageCheck = scriptData[2].homePageCheck;
 const sysAdminCheck = scriptData[2].sysAdminCheck;
@@ -80,6 +81,27 @@ const userEditCheck = scriptData[2].userEditCheck;
 const userStatusChangeCheck = scriptData[2].userStatusChangeCheck;
 const submitUserStatusChangeCheck = scriptData[2].submitUserStatusChangeCheck;
 const userAuditCheck = scriptData[2].userAuditCheck;
+const manageSponsorOrgsCheck = scriptData[2].manageSponsorOrgsCheck;
+const sponsorOrgProfilePageCheck = scriptData[2].sponsorOrgProfilePageCheck;
+const sponsorOrgUsersPageCheck = scriptData[2].sponsorOrgUsersPageCheck;
+const addSponsorUsersPageCheck = scriptData[2].addSponsorUsersPageCheck;
+const searchAddSponsorUsersPageCheck =
+  scriptData[2].searchAddSponsorUsersPageCheck;
+const addSponsorUserRolePageCheck = scriptData[2].addSponsorUserRolePageCheck;
+const checkAddSponsorUserCheck = scriptData[2].checkAddSponsorUserCheck;
+const sponsorOrgUserProfilePageCheck =
+  scriptData[2].sponsorOrgUserProfilePageCheck;
+const disableSponsorUserPageCheck = scriptData[2].disableSponsorUserPageCheck;
+const myOrgsCheck = scriptData[2].myOrgsCheck;
+const myOrgProfileCheck = scriptData[2].myOrgProfileCheck;
+const myOrgUsersCheck = scriptData[2].myOrgUsersCheck;
+const myOrgAddUserCheck = scriptData[2].myOrgAddUserCheck;
+const myOrgAddUserRoleCheck = scriptData[2].myOrgAddUserRoleCheck;
+const myOrgAddUserPermissionCheck = scriptData[2].myOrgAddUserPermissionCheck;
+const myOrgCheckAddUserCheck = scriptData[2].myOrgCheckAddUserCheck;
+const myOrgSearchUsersCheck = scriptData[2].myOrgSearchUsersCheck;
+const myOrgUserProfileCheck = scriptData[2].myOrgUserProfileCheck;
+const myOrgDisableUserCheck = scriptData[2].myOrgDisableUserCheck;
 const myResearchPageCheck = scriptData[2].myResearchPageCheck;
 const createProjectRecordPageCheck = scriptData[2].createProjectRecordPageCheck;
 const startProjectIrasPageCheck = scriptData[2].startProjectIrasPageCheck;
@@ -287,6 +309,102 @@ export const TrendSubmitUserStatusChangeReqDuration = new Trend(
 );
 export const TrendUserAuditReqDuration = new Trend(
   "load_user_audit_page_response_time",
+  true,
+);
+export const TrendManageSponsorOrgsReqDuration = new Trend(
+  "load_manage_sponsor_orgs_page_response_time",
+  true,
+);
+export const TrendSearchManageSponsorOrgPageReqDuration = new Trend(
+  "search_manage_sponsor_orgs_page_response_time",
+  true,
+);
+export const TrendSponsorOrgProfileReqDuration = new Trend(
+  "load_sponsor_org_profile_page_response_time",
+  true,
+);
+export const TrendViewSponsorUsersReqDuration = new Trend(
+  "load_view_sponsor_users_page_response_time",
+  true,
+);
+export const TrendAddSponsorUsersReqDuration = new Trend(
+  "load_add_sponsor_users_page_response_time",
+  true,
+);
+export const TrendSearchAddSponsorUserReqDuration = new Trend(
+  "search_add_sponsor_users_page_response_time",
+  true,
+);
+export const TrendAddSponsorUserRoleReqDuration = new Trend(
+  "load_add_sponsor_user_role_page_response_time",
+  true,
+);
+export const TrendSaveUserRolePageReqDuration = new Trend(
+  "save_sponsor_user_role_page_response_time",
+  true,
+);
+export const TrendSubmitAddSponsorUserReqDuration = new Trend(
+  "submit_add_sponsor_user_page_response_time",
+  true,
+);
+export const TrendSponsorOrgUserProfileReqDuration = new Trend(
+  "load_sponsor_user_profile_page_response_time",
+  true,
+);
+export const TrendDisableSponsorUserReqDuration = new Trend(
+  "load_disable_sponsor_user_page_response_time",
+  true,
+);
+export const TrendConfirmDisableSponsorUserReqDuration = new Trend(
+  "confirm_disable_sponsor_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationsReqDuration = new Trend(
+  "load_my_organisations_page_response_time",
+  true,
+);
+export const TrendMyOrganisationProfileReqDuration = new Trend(
+  "load_my_organisation_profile_page_response_time",
+  true,
+);
+export const TrendMyOrganisationUsersReqDuration = new Trend(
+  "load_my_organisation_users_page_response_time",
+  true,
+);
+export const TrendMyOrganisationAddUserReqDuration = new Trend(
+  "load_my_organisation_add_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationAddUserRolePageReqDuration = new Trend(
+  "load_my_organisation_add_user_role_page_response_time",
+  true,
+);
+export const TrendMyOrganisationAddUserPermissionPageReqDuration = new Trend(
+  "load_my_organisation_add_user_permission_page_response_time",
+  true,
+);
+export const TrendMyOrganisationCheckAddUserPageReqDuration = new Trend(
+  "load_my_organisation_check_add_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationConfirmAddUserPageReqDuration = new Trend(
+  "confirm_my_organisation_add_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationSearchUsersPageReqDuration = new Trend(
+  "search_my_organisation_users_page_response_time",
+  true,
+);
+export const TrendMyOrganisationUserProfilePageReqDuration = new Trend(
+  "load_my_organisation_user_profile_page_response_time",
+  true,
+);
+export const TrendMyOrganisationDisableUserPageReqDuration = new Trend(
+  "load_my_organisation_disable_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationConfirmDisableUserPageReqDuration = new Trend(
+  "confirm_my_organisation_disable_user_page_response_time",
   true,
 );
 export const TrendMyResearchPageReqDuration = new Trend(
@@ -601,6 +719,8 @@ export function basicJourneysScript(data) {
   let timestamp;
   let orgName;
   let emailAdd;
+  let sponsorAddUserId;
+  let sponsorAddUserEmail;
   let projectRecordId;
   let irasId;
   let shortTitle;
@@ -4282,6 +4402,1281 @@ export function basicJourneysScript(data) {
     if (!isGetMyTasklistPageReqSuccessful) {
       console.error(
         `Get My Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    sleep(1);
+  });
+
+  group("Manage Sponsor Journey", function () {
+    const rtsId = "98684";
+    const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac";
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}systemadmin`, getHeaders);
+    TrendSysAdminReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSysAdminPageReqSuccessful = check(response, {
+      "System Admin Page Request Success": () => response.status === 200,
+      "System Admin Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sysAdminCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSysAdminPageReqSuccessful) {
+      console.error(
+        `Get System Admin Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const manageSponsorOrgsUrl = `${baseURL}sponsororganisations`;
+    response = http.get(`${manageSponsorOrgsUrl}`, getHeaders);
+    TrendManageSponsorOrgsReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetManageSponsorOrgsPageReqSuccessful = check(response, {
+      "Get Manage Sponsor Orgs Page Request Success": () =>
+        response.status === 200,
+      "Manage Sponsor Orgs Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${manageSponsorOrgsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetManageSponsorOrgsPageReqSuccessful) {
+      console.error(
+        `Get Manage Sponsor Orgs Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const searchSponsorOrgsPostBody =
+      scriptData[0][0].searchSponsorOrgsPostBody[0].postBody;
+
+    const searchSponsorOrgsPagePostBody = Object.assign(
+      {},
+      searchSponsorOrgsPostBody,
+      {
+        "Search.SearchQuery": `${shortTitle}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeadersSearchManageSponsorOrgsWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${manageSponsorOrgsUrl}`,
+      },
+    );
+
+    const postSearchManageSponsorOrgsHeaders = {
+      headers: postHeadersSearchManageSponsorOrgsWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsororganisations/applyfilters`,
+      searchSponsorOrgsPagePostBody,
+      postSearchManageSponsorOrgsHeaders,
+    );
+    let firstRedirectDuration = response.timings.duration;
+    const isPostSearchManageSponsorReqSuccessful = check(response, {
+      "Post Search Manage Sponsor Orgs Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostSearchManageSponsorReqSuccessful) {
+      console.error(
+        `Post Search Manage Sponsor Orgs Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const searchedManageSponsorUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    const getManageSponsorOrgsWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${manageSponsorOrgsUrl}`,
+      },
+    );
+
+    const getManageSponsorRedirectHeaders = {
+      headers: getManageSponsorOrgsWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${searchedManageSponsorUrl}`,
+      getManageSponsorRedirectHeaders,
+    );
+    TrendSearchManageSponsorOrgPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetManageSponsorOrgsPageReqSuccessful = check(response, {
+      "Get Manage Sponsor Orgs Page Request Success": () =>
+        response.status === 200,
+      "Manage Sponsor Orgs Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${manageSponsorOrgsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetManageSponsorOrgsPageReqSuccessful) {
+      console.error(
+        `Get Manage Sponsor Orgs Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}sponsororganisations/view?rtsId=${rtsId}`,
+      getHeaders,
+    );
+    TrendSponsorOrgProfileReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetSponsorOrgProfilePageReqSuccessful = check(response, {
+      "Get View Sponsor Org Profile Page Request Success": () =>
+        response.status === 200,
+      "View Sponsor Org Profile Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgProfilePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgProfilePageReqSuccessful) {
+      console.error(
+        `Get View Sponsor Org Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewusers?rtsId=${rtsId}`,
+      getHeaders,
+    );
+    TrendViewSponsorUsersReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetSponsorOrgUsersPageReqSuccessful = check(response, {
+      "Get View Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "View Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get View Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewadduser?rtsId=${rtsId}`,
+      getHeaders,
+    );
+    TrendAddSponsorUsersReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetAddSponsorUsersPageReqSuccessful = check(response, {
+      "Get Add Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "Add Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${addSponsorUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetAddSponsorUsersPageReqSuccessful) {
+      console.error(
+        `Get Add Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewadduser?SearchQuery=k6&RtsId=${rtsId}&PageSize=20`,
+      getHeaders,
+    );
+    TrendSearchAddSponsorUserReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSearchAddSponsorUserPageReqSuccessful = check(response, {
+      "Get Search Add Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "Search Add Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${searchAddSponsorUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSearchAddSponsorUserPageReqSuccessful) {
+      console.error(
+        `Get Search Add Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getAddUserRoleUrl = `${baseURL}${response
+      .html()
+      .find("tbody .govuk-tag--green")
+      .parents("tr")
+      .find("a[class=govuk-link]")
+      .first()
+      .attr("href")
+      .replace("/", "")}`;
+
+    const userIdStart = getAddUserRoleUrl.indexOf("userId=");
+    const userIdEnd = getAddUserRoleUrl.indexOf("&rtsId");
+    const userId = getAddUserRoleUrl
+      .substring(userIdStart, userIdEnd)
+      .replace("userId=", "");
+
+    const sponsorAddUserUrl = `${baseURL}${response
+      .html()
+      .find("tbody .govuk-tag--green")
+      .parents("tr")
+      .find("a[class=govuk-link]")
+      .last()
+      .attr("href")
+      .replace("/", "")}`;
+
+    const sponsorAddUserIdStart = sponsorAddUserUrl.indexOf("userId=");
+    const sponsorAddUserIdEnd = sponsorAddUserUrl.indexOf("&rtsId");
+    sponsorAddUserId = sponsorAddUserUrl
+      .substring(sponsorAddUserIdStart, sponsorAddUserIdEnd)
+      .replace("userId=", "");
+
+    sponsorAddUserEmail = response
+      .html()
+      .find("tbody .govuk-tag--green")
+      .parents("tr")
+      .find(".line-break-anywhere")
+      .last()
+      .text();
+
+    response = http.get(`${getAddUserRoleUrl}`, getHeaders);
+    TrendAddSponsorUserRoleReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetAddSponsorUserRolePageReqSuccessful = check(response, {
+      "Get Add Sponsor User Role Request Success": () =>
+        response.status === 200,
+      "Add Sponsor User Role Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${addSponsorUserRolePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetAddSponsorUserRolePageReqSuccessful) {
+      console.error(
+        `Get Add Sponsor User Role Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const saveUserRolePostBody =
+      scriptData[0][0].saveUserRolePostBody[0].postBody;
+
+    const saveUserSponsorRolePostBody = Object.assign(
+      {},
+      saveUserRolePostBody,
+      {
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderSaveUserRoleWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getAddUserRoleUrl}`,
+      },
+    );
+
+    const postSaveUserRoleHeaders = {
+      headers: postHeaderSaveUserRoleWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsororganisations/saveuserrole?RtsId=${rtsId}&UserId=${userId}`,
+      saveUserSponsorRolePostBody,
+      postSaveUserRoleHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostSaveUserRoleReqSuccessful = check(response, {
+      "Post Save User Role Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostSaveUserRoleReqSuccessful) {
+      console.error(
+        `Post Save User Role Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getCheckAddSponsorUserWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${getAddUserRoleUrl}`,
+      },
+    );
+
+    const getCheckAddSponsorUserHeaders = {
+      headers: getCheckAddSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    const checkAddSponsorUserUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    response = http.get(
+      `${checkAddSponsorUserUrl}`,
+      getCheckAddSponsorUserHeaders,
+    );
+    TrendSaveUserRolePageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetCheckAddSponsorUserReqSuccessful = check(response, {
+      "Get Check Add Sponsor User Page Request Success": () =>
+        response.status === 200,
+      "Check Add Sponsor User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${checkAddSponsorUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetCheckAddSponsorUserReqSuccessful) {
+      console.error(
+        `Get Check Add Sponsor User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const userTitle = response
+      .html()
+      .find("input[type=hidden][id=Title]")
+      .first()
+      .attr("value");
+
+    const userGivenName = response
+      .html()
+      .find("input[type=hidden][id=GivenName]")
+      .first()
+      .attr("value");
+
+    const userFamilyName = response
+      .html()
+      .find("input[type=hidden][id=FamilyName]")
+      .first()
+      .attr("value");
+
+    const userEmail = response
+      .html()
+      .find("input[type=hidden][id=Email]")
+      .first()
+      .attr("value");
+
+    const userTelephone = response
+      .html()
+      .find("input[type=hidden][id=Telephone]")
+      .first()
+      .attr("value");
+
+    const userOrganisation = response
+      .html()
+      .find("input[type=hidden][id=Organisation]")
+      .first()
+      .attr("value");
+
+    const userJobTitle = response
+      .html()
+      .find("input[type=hidden][id=JobTitle]")
+      .first()
+      .attr("value");
+
+    const submitAddUserPostBody =
+      scriptData[0][0].submitAddUserPostBody[0].postBody;
+
+    const submitAddSponsorUserPostBody = Object.assign(
+      {},
+      submitAddUserPostBody,
+      {
+        UserId: `${userId}`,
+        RtsId: `${rtsId}`,
+        SponsorOrganisationId: `${sponsorOrgId}`,
+        Title: `${userTitle}`,
+        GivenName: `${userGivenName}`,
+        FamilyName: `${userFamilyName}`,
+        Email: `${userEmail}`,
+        Telephone: `${userTelephone}`,
+        Organisation: `${userOrganisation}`,
+        JobTitle: `${userJobTitle}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderSubmitSponsorUserWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${checkAddSponsorUserUrl}`,
+      },
+    );
+
+    const postSubmitSponsorUserHeaders = {
+      headers: postHeaderSubmitSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsororganisations/submitadduser`,
+      submitAddSponsorUserPostBody,
+      postSubmitSponsorUserHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostSubmitSponsorUserReqSuccessful = check(response, {
+      "Post Submit Add Sponsor User Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostSubmitSponsorUserReqSuccessful) {
+      console.error(
+        `Post Submit Add Sponsor User Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    let getViewSponsorOrgUsersWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${checkAddSponsorUserUrl}`,
+      },
+    );
+
+    let getViewSponsorOrgUsersHeaders = {
+      headers: getViewSponsorOrgUsersWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewusers?rtsId=${rtsId}`,
+      getViewSponsorOrgUsersHeaders,
+    );
+    TrendSubmitAddSponsorUserReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetSponsorOrgUsersPageReqSuccessful = check(response, {
+      "Get View Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "View Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get View Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSponsorOrgUserProfileUrl = `${baseURL}sponsororganisations/viewuser?rtsId=${rtsId}&userId=${userId}`;
+    response = http.get(`${getSponsorOrgUserProfileUrl}`, getHeaders);
+    TrendSponsorOrgUserProfileReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSponsorOrgUserProfilePageReqSuccessful = check(response, {
+      "Get Sponsor Org User Profile Request Success": () =>
+        response.status === 200,
+      "Sponsor Org User Profile Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgUserProfilePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgUserProfilePageReqSuccessful) {
+      console.error(
+        `Get Sponsor Org User Profile Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const sponsorUserDisablePostBody =
+      scriptData[0][0].sponsorUserDisablePostBody[0].postBody;
+
+    const sponsorDisableUserPostBody = Object.assign(
+      {},
+      sponsorUserDisablePostBody,
+      {
+        UserId: `${userId}`,
+        RtsId: `${rtsId}`,
+        SponsorOrganisationId: `${sponsorOrgId}`,
+        Title: `${userTitle}`,
+        GivenName: `${userGivenName}`,
+        FamilyName: `${userFamilyName}`,
+        Email: `${userEmail}`,
+        Telephone: `${userTelephone}`,
+        Organisation: `${userOrganisation}`,
+        JobTitle: `${userJobTitle}`,
+        userId: `${userId}`,
+        rtsId: `${rtsId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderDisableSponsorUserWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getSponsorOrgUserProfileUrl}`,
+      },
+    );
+
+    const postDisableSponsorUserHeaders = {
+      headers: postHeaderDisableSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    const postDisableSponsorUserUrl = `${baseURL}sponsororganisations/disableuser`;
+    response = http.post(
+      `${postDisableSponsorUserUrl}`,
+      sponsorDisableUserPostBody,
+      postDisableSponsorUserHeaders,
+    );
+    TrendDisableSponsorUserReqDuration.add(response.timings.duration);
+    TrendTransactionalReqDuration.add(response.timings.duration);
+    const isPostDisableSponsorUserReqSuccessful = check(response, {
+      "Post Disable Sponsor User Request Success": () =>
+        response.status === 200,
+      "Disable Sponsor User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${disableSponsorUserPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostDisableSponsorUserReqSuccessful) {
+      console.error(
+        `Post Disable Sponsor User Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const confirmSponsorUserDisablePostBody =
+      scriptData[0][0].confirmSponsorUserDisablePostBody[0].postBody;
+
+    const confirmSponsorDisableUserPostBody = Object.assign(
+      {},
+      confirmSponsorUserDisablePostBody,
+      {
+        UserId: `${userId}`,
+        RtsId: `${rtsId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderConfirmDisableSponsorUserWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${postDisableSponsorUserUrl}`,
+      },
+    );
+
+    const postHeaderConfirmDisableSponsorUser = {
+      headers: postHeaderConfirmDisableSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsororganisations/confirmdisableuser`,
+      confirmSponsorDisableUserPostBody,
+      postHeaderConfirmDisableSponsorUser,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostConfirmDisableSponsorUserReqSuccessful = check(response, {
+      "Post Confirm Disable Sponsor User Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostConfirmDisableSponsorUserReqSuccessful) {
+      console.error(
+        `Confirm Disable Sponsor User Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    getViewSponsorOrgUsersWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${postDisableSponsorUserUrl}`,
+    });
+
+    getViewSponsorOrgUsersHeaders = {
+      headers: getViewSponsorOrgUsersWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewusers?rtsId=${rtsId}`,
+      getViewSponsorOrgUsersHeaders,
+    );
+    TrendConfirmDisableSponsorUserReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetSponsorOrgUsersPageReqSuccessful = check(response, {
+      "Get View Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "View Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get View Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    sleep(1);
+  });
+
+  group("Sponsor Workspace Manage Users Journey", function () {
+    const rtsId = "98684";
+    const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac";
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}sponsorworkspace`, getHeaders);
+    TrendSponsorWorkspacePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSponsorWorkspacePageReqSuccessful = check(response, {
+      "Get Sponsor Workspace Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Workspace Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorWorkspaceCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorWorkspacePageReqSuccessful) {
+      console.error(
+        `Get Sponsor Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myOrganisationsUrl = `${baseURL}sponsorworkspace/myorganisations?sponsorOrganisationUserId=${sponsorOrgId}`;
+    response = http.get(`${myOrganisationsUrl}`, getHeaders);
+    TrendMyOrganisationsReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgsPageReqSuccessful = check(response, {
+      "Get My Organisations Page Request Success": () =>
+        response.status === 200,
+      "My Organisations Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgsPageReqSuccessful) {
+      console.error(
+        `Get My Organisations Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myOrganisationProfileUrl = `${baseURL}sponsorworkspace/myorganisationprofile?rtsId=${rtsId}`;
+    response = http.get(`${myOrganisationProfileUrl}`, getHeaders);
+    TrendMyOrganisationProfileReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgProfilePageReqSuccessful = check(response, {
+      "Get My Organisation Profile Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Profile Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgProfileCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgProfilePageReqSuccessful) {
+      console.error(
+        `Get My Organisation Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myOrganisationUsersUrl = `${baseURL}sponsorworkspace/myorganisationusers?rtsId=${rtsId}`;
+    response = http.get(`${myOrganisationUsersUrl}`, getHeaders);
+    TrendMyOrganisationUsersReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetMyOrgUsersPageReqSuccessful = check(response, {
+      "Get My Organisation Users Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgUsersCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myOrganisationAddUserUrl = `${baseURL}sponsorworkspace/myorganisationusersadduser?rtsId=${rtsId}`;
+    response = http.get(`${myOrganisationAddUserUrl}`, getHeaders);
+    TrendMyOrganisationAddUserReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgAddUserPageReqSuccessful = check(response, {
+      "Get My Organisation Add User Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Add User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgAddUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgAddUserEmailWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserUrl}`,
+      },
+    );
+
+    const getMyOrgAddUserEmailHeaders = {
+      headers: getMyOrgAddUserEmailWithReferer,
+      redirects: 0,
+    };
+
+    const myOrganisationAddUserEmailUrl = `${baseURL}sponsorworkspace/myorganisationusersadduser?Email=${sponsorAddUserEmail}&RtsId=${rtsId}`;
+    response = http.get(
+      `${myOrganisationAddUserEmailUrl}`,
+      getMyOrgAddUserEmailHeaders,
+    );
+    let firstRedirectDuration = response.timings.duration;
+    const isGetMyOrgAddUserEmailPageReqSuccessful = check(response, {
+      "Get My Organisation Add User Email Page Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserEmailPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Email Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyOrgAddUserRoleWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserUrl}`,
+      },
+    );
+
+    const getMyOrgAddUserRoleHeaders = {
+      headers: getMyOrgAddUserRoleWithReferer,
+      redirects: 0,
+    };
+
+    const myOrganisationAddUserRoleUrl = `${baseURL}sponsorworkspace/myorganisationusersadduserrole?rtsId=${rtsId}&userId=${sponsorAddUserId}`;
+
+    response = http.get(
+      `${myOrganisationAddUserRoleUrl}`,
+      getMyOrgAddUserRoleHeaders,
+    );
+    TrendMyOrganisationAddUserRolePageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetMyOrgAddUserRoleReqSuccessful = check(response, {
+      "Get My Organisation Add User Role Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Add User Role Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgAddUserRoleCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserRoleReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Role Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgAddUserSponsorRoleWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserRoleUrl}`,
+      },
+    );
+
+    const getMyOrgAddUserSponsorRoleHeaders = {
+      headers: getMyOrgAddUserSponsorRoleWithReferer,
+      redirects: 0,
+    };
+
+    const myOrganisationAddUserSponsorRoleUrl = `${baseURL}sponsorworkspace/myorganisationusersadduserrole?role=sponsor&rtsId=${rtsId}&userId=${sponsorAddUserId}&role=&nextPage=true`;
+    response = http.get(
+      `${myOrganisationAddUserSponsorRoleUrl}`,
+      getMyOrgAddUserSponsorRoleHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isGetMyOrgAddUserSponsorRoleReqSuccessful = check(response, {
+      "Get My Organisation Add User Sponsor Role Page Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserSponsorRoleReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Sponsor Role Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyOrgAddUserPermissionWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserRoleUrl}`,
+      },
+    );
+
+    const getMyOrgAddUserPermissionHeaders = {
+      headers: getMyOrgAddUserPermissionWithReferer,
+      redirects: 0,
+    };
+
+    const myOrganisationAddUserPermissionUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    response = http.get(
+      `${myOrganisationAddUserPermissionUrl}`,
+      getMyOrgAddUserPermissionHeaders,
+    );
+    TrendMyOrganisationAddUserPermissionPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetMyOrgAddUserPermissionReqSuccessful = check(response, {
+      "Get My Organisation Add User Permission Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Add User Permission Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgAddUserPermissionCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserPermissionReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Permission Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgCheckAddUserWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserPermissionUrl}`,
+      },
+    );
+
+    const getMyOrgCheckAddUserHeaders = {
+      headers: getMyOrgCheckAddUserWithReferer,
+      redirects: 0,
+    };
+
+    const sponsorAuthPermissionValues = randomItem(sponsorAuthPermission);
+    const checkSponsorAuthPermissionValue = sponsorAuthPermissionValues.check;
+    const myOrganisationAddUserCheckUrl = `${myOrganisationAddUserPermissionUrl.replace("myorganisationusersadduserpermission?", `myorganisationuserscheckandconfirm?${checkSponsorAuthPermissionValue}`)}`;
+
+    response = http.get(
+      `${myOrganisationAddUserCheckUrl}`,
+      getMyOrgCheckAddUserHeaders,
+    );
+    TrendMyOrganisationCheckAddUserPageReqDuration.add(
+      response.timings.duration,
+    );
+    TrendTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgCheckAddUserReqSuccessful = check(response, {
+      "Get My Organisation Check Add User Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Check Add User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgCheckAddUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgCheckAddUserReqSuccessful) {
+      console.error(
+        `Get My Organisation Check Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgConfirmAddUserWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserCheckUrl}`,
+      },
+    );
+
+    const getMyOrgConfirmAddUserHeaders = {
+      headers: getMyOrgConfirmAddUserWithReferer,
+      redirects: 0,
+    };
+
+    const confirmSponsorAuthPermissionValue =
+      sponsorAuthPermissionValues.confirm;
+    const myOrganisationAddUserConfirmUrl = `${myOrganisationAddUserPermissionUrl.replace("myorganisationusersadduserpermission", "myorganisationusersconfirmadduser")}${confirmSponsorAuthPermissionValue}`;
+
+    response = http.get(
+      `${myOrganisationAddUserConfirmUrl}`,
+      getMyOrgConfirmAddUserHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isGetMyOrgConfirmAddUserReqSuccessful = check(response, {
+      "Get My Organisation Confirm Add User Page Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgConfirmAddUserReqSuccessful) {
+      console.error(
+        `Get My Organisation Confirm Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyOrgUsersWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${myOrganisationAddUserCheckUrl}`,
+    });
+
+    const getMyOrgUsersHeaders = {
+      headers: getMyOrgUsersWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(`${myOrganisationUsersUrl}`, getMyOrgUsersHeaders);
+    TrendMyOrganisationConfirmAddUserPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetMyOrgUsersPageReqSuccessful = check(response, {
+      "Get My Organisation Users Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgUsersCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSearchMyOrgUsersUrl = `${baseURL}sponsorworkspace/myorganisationusers?SearchQuery=${sponsorAddUserEmail}&RtsId=${rtsId}&PageSize=20`;
+    response = http.get(`${getSearchMyOrgUsersUrl}`, getHeaders);
+    TrendMyOrganisationSearchUsersPageReqDuration.add(
+      response.timings.duration,
+    );
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgSearchUsersPageReqSuccessful = check(response, {
+      "Get Search My Organisation Users Page Request Success": () =>
+        response.status === 200,
+      "Search My Organisation Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgSearchUsersCheck}`) == -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgSearchUsersPageReqSuccessful) {
+      console.error(
+        `Get Search My Organisation Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgUserProfileUrl = `${baseURL}sponsorworkspace/myorganisationusers/user?rtsId=${rtsId}&userId=${sponsorAddUserId}`;
+    response = http.get(`${getMyOrgUserProfileUrl}`, getHeaders);
+    TrendMyOrganisationUserProfilePageReqDuration.add(
+      response.timings.duration,
+    );
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgUserProfilePageReqSuccessful = check(response, {
+      "Get My Organisation User Profile Page Request Success": () =>
+        response.status === 200,
+      "My Organisation User Profile Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgUserProfileCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgUserProfilePageReqSuccessful) {
+      console.error(
+        `Get My Organisation User Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgDisableUserUrl = `${baseURL}sponsorworkspace/disableuser?userId=${sponsorAddUserId}&email=${sponsorAddUserEmail}`;
+    response = http.get(`${getMyOrgDisableUserUrl}`, getHeaders);
+    TrendMyOrganisationDisableUserPageReqDuration.add(
+      response.timings.duration,
+    );
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgDisableUserPageReqSuccessful = check(response, {
+      "Get My Organisation Disable User Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Disable User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgDisableUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgDisableUserPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Disable User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const myOrgUserDisablePostBody =
+      scriptData[0][0].myOrgUserDisablePostBody[0].postBody;
+
+    const myOrgDisableUserPostBody = Object.assign(
+      {},
+      myOrgUserDisablePostBody,
+      {
+        Id: `${sponsorAddUserId}`,
+        Email: `${sponsorAddUserEmail}`,
+        RtsId: `${rtsId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderMyOrgDisableSponsorUserWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getMyOrgDisableUserUrl}`,
+      },
+    );
+
+    const postHeaderMyOrgDisableSponsorUser = {
+      headers: postHeaderMyOrgDisableSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsorworkspace/disableuser`,
+      myOrgDisableUserPostBody,
+      postHeaderMyOrgDisableSponsorUser,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostMyOrgDisableSponsorUserReqSuccessful = check(response, {
+      "Post My Organisation Disable User Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostMyOrgDisableSponsorUserReqSuccessful) {
+      console.error(
+        `Post My Organisation Disable User Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyOrganisationUsersWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${getMyOrgDisableUserUrl}`,
+      },
+    );
+
+    const getMyOrganisationUsersHeaders = {
+      headers: getMyOrganisationUsersWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${myOrganisationUsersUrl}`,
+      getMyOrganisationUsersHeaders,
+    );
+    TrendMyOrganisationConfirmDisableUserPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetMyOrgUsersPageReqSuccessful = check(response, {
+      "Get My Organisation Users Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgUsersCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
           `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }

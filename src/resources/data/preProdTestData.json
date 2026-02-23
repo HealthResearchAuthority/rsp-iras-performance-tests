@@ -104,6 +104,80 @@
             }
           }
         ],
+        "searchSponsorOrgsPostBody": [
+          {
+            "postBody": {
+              "Search.SearchQuery": "",
+              "PageSize": "20",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "saveUserRolePostBody": [
+          {
+            "postBody": {
+              "SponsorRole": "organisation_administrator",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "submitAddUserPostBody": [
+          {
+            "postBody": {
+              "UserId": "",
+              "RtsId": "",
+              "SponsorOrganisationId": "",
+              "Status": "Active",
+              "Title": "",
+              "GivenName": "",
+              "FamilyName": "",
+              "Email": "",
+              "Telephone": "",
+              "Organisation": "",
+              "JobTitle": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "sponsorUserDisablePostBody": [
+          {
+            "postBody": {
+              "UserId": "",
+              "RtsId": "",
+              "SponsorOrganisationId": "",
+              "Status": "Active",
+              "Title": "",
+              "GivenName": "",
+              "FamilyName": "",
+              "Email": "",
+              "Telephone": "",
+              "Organisation": "",
+              "JobTitle": "",
+              "userId": "",
+              "rtsId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "confirmSponsorUserDisablePostBody": [
+          {
+            "postBody": {
+              "UserId": "",
+              "RtsId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "myOrgUserDisablePostBody": [
+          {
+            "postBody": {
+              "Id": "",
+              "Email": "",
+              "RtsId": "",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
         "startProjIrasPostBody": [
           {
             "postBody": {
@@ -958,7 +1032,10 @@
           "fbbeac85-b185-4328-bd01-d00c978191ef",
           "fdd76bc2-834c-4c62-b622-e1b6240908ed"
         ],
-        "orgSearchParam": "worth"
+        "sponsorAuthPermission": [
+          { "check": "", "confirm": "&CanAuthorise=false" },
+          { "check": "canAuthorise=true&", "confirm": "&CanAuthorise=true" }
+        ]
       },
       {
         "baseGetHeaders": {
@@ -1001,12 +1078,31 @@
       "manageUserListCheck": "Manage users",
       "addUserPageCheck": "Add a new user profile record",
       "confirmAddUserCheck": "Check and create user profile",
-      "submitAddUserCheck": "User has been successfully added",
+      "submitAddUserCheck": "User has been added",
       "userProfileCheck": "User profile:",
       "userEditCheck": "Edit user profile record",
       "userStatusChangeCheck": "Confirm that you want to",
       "submitUserStatusChangeCheck": "to confirm that their record has been",
       "userAuditCheck": "Audit history:",
+      "manageSponsorOrgsCheck": "Manage sponsor organisations",
+      "sponsorOrgProfilePageCheck": "Sponsor organisation profile:",
+      "sponsorOrgUsersPageCheck": "Users for",
+      "addSponsorUsersPageCheck": "Search for an existing user to add to this sponsor organisation",
+      "searchAddSponsorUsersPageCheck": "Last logged in",
+      "addSponsorUserRolePageCheck": "Add user role",
+      "checkAddSponsorUserCheck": "Check and add user",
+      "sponsorOrgUserProfilePageCheck": "View and edit user profile",
+      "disableSponsorUserPageCheck": "Confirm that you want to disable",
+      "myOrgsCheck": "My organisations",
+      "myOrgProfileCheck": "Sponsor organisations profile",
+      "myOrgUsersCheck": "Add an existing user to an organisation",
+      "myOrgAddUserCheck": "Enter the email address of the user you want to add",
+      "myOrgAddUserRoleCheck": "Add user role",
+      "myOrgAddUserPermissionCheck": "Add user permission",
+      "myOrgCheckAddUserCheck": "Check and confirm user",
+      "myOrgSearchUsersCheck": "There are no matching results",
+      "myOrgUserProfileCheck": "User profile",
+      "myOrgDisableUserCheck": "Confirm that you want to disable",
       "myResearchPageCheck": "My research",
       "createProjectRecordPageCheck": "Create a project record",
       "startProjectIrasPageCheck": "This is the 4 to 7 digit ID generated when you created your initial application",
