@@ -9,7 +9,7 @@ const baseURL =
   "https://fd-rsp-applications-automationtest-uks-e7f6hkg3c5edhxex.a03.azurefd.net/";
 
 const loginDetails = new SharedArray("postBodies", function () {
-  return JSON.parse(open("../resources/data/testData.json")).loginDetails;
+  return JSON.parse(open("../resources/data/autoTestData.json")).loginDetails;
 });
 const usernameInput = loginDetails[0].usernameInput;
 
@@ -82,7 +82,7 @@ export async function setup() {
         "content-type": "application/x-www-form-urlencoded",
         origin: "https://signin.integration.account.gov.uk",
       },
-    }
+    },
   );
 
   response = http.post(
@@ -100,7 +100,7 @@ export async function setup() {
         "content-type": "application/x-www-form-urlencoded",
         origin: "https://signin.integration.account.gov.uk",
       },
-    }
+    },
   );
 
   response = http.post(
@@ -119,7 +119,7 @@ export async function setup() {
         "content-type": "application/x-www-form-urlencoded",
         origin: "https://signin.integration.account.gov.uk",
       },
-    }
+    },
   );
 
   const secret = "ZE4S5KESHY7XYKJZTKHWW2GGFQLWJQY2";
@@ -143,7 +143,7 @@ export async function setup() {
         origin: "https://signin.integration.account.gov.uk",
       },
       redirects: 1,
-    }
+    },
   );
 
   response = http.get(`${response.headers.Location}`, {
@@ -156,7 +156,7 @@ export async function setup() {
     redirects: 0,
   });
 
-  response = http.get(`${response.url}`, {
+  response = http.get(`${response.headers.Location}`, {
     headers: {
       Accept: "text/html,application/xhtml+xml,application/xml;",
       "Accept-Encoding": "gzip, deflate, br, zstd",
@@ -177,7 +177,7 @@ export async function setup() {
 
   if (
     response.html().find("h1[class=govuk-heading-l]").first().text() !=
-    "My Account homepage"
+    "My account"
   ) {
     fail("Failure to Authorize, No Cookies Set");
   }
@@ -203,16 +203,16 @@ export function loginIras(data) {
       "Home Page Request Success": () => response.status === 200,
       "Home Page Loaded Correctly": (res) =>
         res.body.indexOf(
-          "This is your account homepage where you can access your workspaces"
+          "This is your account homepage where you can access your workspaces",
         ) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.url
+      "Request Sent: " + response.request.method + " " + response.url,
     );
     if (!isGetHomePageReqSuccessful) {
       console.error(
         `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
   });

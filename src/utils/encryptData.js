@@ -1,4 +1,3 @@
-import { crypto } from "k6/experimental/webcrypto";
 import { b64encode } from "k6/encoding";
 
 export default async function () {
@@ -27,14 +26,14 @@ const encrypt = async (key, textToEncrypt) => {
     key,
     { name: "AES-GCM", length: 256 },
     true,
-    ["encrypt"]
+    ["encrypt"],
   );
   const plaintextArray = stringToUint8Array(textToEncrypt);
 
   const encryptedBuffer = await crypto.subtle.encrypt(
     { name: "AES-GCM", iv: iv },
     importedKey,
-    plaintextArray
+    plaintextArray,
   );
 
   const encryptedArray = new Uint8Array(encryptedBuffer);
