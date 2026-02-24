@@ -2,12 +2,12 @@
 // 1. Ensure FutureIRAS.SysAdmin@hra.nhs.uk user has System Admin, Study-wide Reviewer and Sponsor roles
 //    Ensure reviewerId in script below is still valid for FutureIRAS.SysAdmin@hra.nhs.uk in this env
 // 2. Check FutureIRAS.SysAdmin@hra.nhs.uk user is assigned as a sponsor for the review body Ministry of Defence - Defence Science Technology Laboratory, assign if necessary
-//    Ensure sponsorOrgId in script below is still valid for Ministry of Defence - Defence Science Technology Laboratory in this env
+//    Ensure sponsorOrgId and rtsId in script below is still valid for Ministry of Defence - Defence Science Technology Laboratory in this env
 // 3. Ensure revBodyProfileIds and userProfileIds arrays in preProdTestData.json are filled with valid values for k6 Test Review bodies and Users (minimum 50, the more the better)
 //    If necessary generate them quickly by first running the script using only on the Create Review Body and Create User requests
 //    Then fetch the Id's from the DB by searching for review bodies with k6 in the RegulatoryBodyName
 //    NOTE: DO NOT USE ID's OF ESTABLISHED REVIEW BODIES E.G. Health Research Authority
-// 4. Ensure revBodyProfileIdsWithUsers array in preProdTestData.json is filled with valid values with Test Review bodies that have users associated with them (minimum 20)
+// 4. Ensure revBodyProfileIdsWithUsers array in autoTestData.json is filled with valid values with Test Review bodies that have users associated with them (minimum 20)
 //    Reuse Id's from revBodyProfileIds and manually add 1-5 users for each Id you are using if necessary
 // 5. Before and After test run that includes the Create Project flows you will need to delete all projects from the DB
 // POST TEST RUN ACTIONS
@@ -26,9 +26,8 @@ const baseURL =
   "https://fd-rsp-applications-preprod-uks-f6esbkgtfncwc4gf.a03.azurefd.net/";
 
 const loginDetails = new SharedArray("loginData", function () {
-  return JSON.parse(
-    open("../resources/data/preProdTestData.json")
-  ).loginDetails;
+  return JSON.parse(open("../resources/data/preProdTestData.json"))
+    .loginDetails;
 });
 const usernameInput = loginDetails[0].usernameInput;
 
@@ -37,9 +36,8 @@ const irasIds = new SharedArray("irasIds", function () {
 });
 
 const scriptData = new SharedArray("scriptData", function () {
-  return JSON.parse(
-    open("../resources/data/preProdTestData.json")
-  ).basicJourneysScript;
+  return JSON.parse(open("../resources/data/preProdTestData.json"))
+    .basicJourneysScript;
 });
 const baseGetHeaders = scriptData[0][2].baseGetHeaders;
 const basePostHeaders = scriptData[0][2].basePostHeaders;
@@ -58,6 +56,7 @@ const emailPrefix = scriptData[0][1].emailPrefix;
 const emailEditPrefix = scriptData[0][1].emailEditPrefix;
 const emailSuffix = scriptData[0][1].emailSuffix;
 const userProfileIds = scriptData[0][1].userProfileIds;
+const sponsorAuthPermission = scriptData[0][1].sponsorAuthPermission;
 
 const homePageCheck = scriptData[2].homePageCheck;
 const sysAdminCheck = scriptData[2].sysAdminCheck;
@@ -82,6 +81,27 @@ const userEditCheck = scriptData[2].userEditCheck;
 const userStatusChangeCheck = scriptData[2].userStatusChangeCheck;
 const submitUserStatusChangeCheck = scriptData[2].submitUserStatusChangeCheck;
 const userAuditCheck = scriptData[2].userAuditCheck;
+const manageSponsorOrgsCheck = scriptData[2].manageSponsorOrgsCheck;
+const sponsorOrgProfilePageCheck = scriptData[2].sponsorOrgProfilePageCheck;
+const sponsorOrgUsersPageCheck = scriptData[2].sponsorOrgUsersPageCheck;
+const addSponsorUsersPageCheck = scriptData[2].addSponsorUsersPageCheck;
+const searchAddSponsorUsersPageCheck =
+  scriptData[2].searchAddSponsorUsersPageCheck;
+const addSponsorUserRolePageCheck = scriptData[2].addSponsorUserRolePageCheck;
+const checkAddSponsorUserCheck = scriptData[2].checkAddSponsorUserCheck;
+const sponsorOrgUserProfilePageCheck =
+  scriptData[2].sponsorOrgUserProfilePageCheck;
+const disableSponsorUserPageCheck = scriptData[2].disableSponsorUserPageCheck;
+const myOrgsCheck = scriptData[2].myOrgsCheck;
+const myOrgProfileCheck = scriptData[2].myOrgProfileCheck;
+const myOrgUsersCheck = scriptData[2].myOrgUsersCheck;
+const myOrgAddUserCheck = scriptData[2].myOrgAddUserCheck;
+const myOrgAddUserRoleCheck = scriptData[2].myOrgAddUserRoleCheck;
+const myOrgAddUserPermissionCheck = scriptData[2].myOrgAddUserPermissionCheck;
+const myOrgCheckAddUserCheck = scriptData[2].myOrgCheckAddUserCheck;
+const myOrgSearchUsersCheck = scriptData[2].myOrgSearchUsersCheck;
+const myOrgUserProfileCheck = scriptData[2].myOrgUserProfileCheck;
+const myOrgDisableUserCheck = scriptData[2].myOrgDisableUserCheck;
 const myResearchPageCheck = scriptData[2].myResearchPageCheck;
 const createProjectRecordPageCheck = scriptData[2].createProjectRecordPageCheck;
 const startProjectIrasPageCheck = scriptData[2].startProjectIrasPageCheck;
@@ -112,6 +132,8 @@ const sponsorWorkspaceCheck = scriptData[2].sponsorWorkspaceCheck;
 const sponsorAuthorisationsCheck = scriptData[2].sponsorAuthorisationsCheck;
 const checkAuthoriseCheck = scriptData[2].checkAuthoriseCheck;
 const getSponsorAuthCheck = scriptData[2].getSponsorAuthCheck;
+const sponsorClosuresCheck = scriptData[2].sponsorClosuresCheck;
+const checkAuthProjClosureCheck = scriptData[2].checkAuthProjClosureCheck;
 const approvalsWorkspaceCheck = scriptData[2].approvalsWorkspaceCheck;
 const modificationsTasklistCheck = scriptData[2].modificationsTasklistCheck;
 const selectReviewerCheck = scriptData[2].selectReviewerCheck;
@@ -121,6 +143,10 @@ const modReviewAllChangesCheck = scriptData[2].modReviewAllChangesCheck;
 const modReviewOutcomeCheck = scriptData[2].modReviewOutcomeCheck;
 const confirmReviewOutcomeCheck = scriptData[2].confirmReviewOutcomeCheck;
 const submittedReviewOutcomeCheck = scriptData[2].submittedReviewOutcomeCheck;
+const closeProjectCheck = scriptData[2].closeProjectCheck;
+const projectClosureCheck = scriptData[2].projectClosureCheck;
+const closurePreAuthCheck = scriptData[2].closurePreAuthCheck;
+const confirmClosureOutcomeCheck = scriptData[2].confirmClosureOutcomeCheck;
 
 export async function getPassword() {
   if (`${__ENV.ENCRYPTED_DATA}`.toString() !== "undefined") {
@@ -167,267 +193,387 @@ export const options = {
 //Custom Metrics
 export const TrendNonTransactionalReqDuration = new Trend(
   "non_transactional_response_times",
-  true
+  true,
 );
 export const TrendTransactionalReqDuration = new Trend(
   "transactional_response_times",
-  true
+  true,
 );
 export const TrendHomePageReqDuration = new Trend(
   "load_iras_home_page_response_time",
-  true
+  true,
 );
 export const TrendSysAdminReqDuration = new Trend(
   "load_sys_admin_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyListReqDuration = new Trend(
   "load_rev_body_list_page_response_time",
-  true
+  true,
 );
 export const TrendAddRevBodyReqDuration = new Trend(
   "load_add_rev_body_page_response_time",
-  true
+  true,
 );
 export const TrendConfirmRevBodyChangesReqDuration = new Trend(
   "load_confirm_rev_body_change_page_response_time",
-  true
+  true,
 );
 export const TrendSubmitRevBodyReqDuration = new Trend(
   "load_submit_rev_body_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyListSearchReqDuration = new Trend(
   "load_rev_body_list_search_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyProfileReqDuration = new Trend(
   "load_rev_body_profile_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyEditReqDuration = new Trend(
   "load_rev_body_edit_page_response_time",
-  true
+  true,
 );
 export const TrendSubmitRevBodyEditReqDuration = new Trend(
   "load_submit_rev_body_edit_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyStatusChangeReqDuration = new Trend(
   "submit_rev_body_status_change_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyConfirmStatusChangeReqDuration = new Trend(
   "confirm_rev_body_status_change_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyAuditReqDuration = new Trend(
   "load_rev_body_audit_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyUserListReqDuration = new Trend(
   "load_rev_body_user_list_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyUserListSearchReqDuration = new Trend(
   "load_rev_body_user_list_search_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyAddUserReqDuration = new Trend(
   "load_rev_body_add_user_page_response_time",
-  true
+  true,
 );
 export const TrendRevBodyAddUserSearchReqDuration = new Trend(
   "load_rev_body_add_user_search_page_response_time",
-  true
+  true,
 );
 export const TrendManageUsersListReqDuration = new Trend(
   "load_manage_users_list_page_response_time",
-  true
+  true,
 );
 export const TrendAddUserReqDuration = new Trend(
   "load_add_user_page_response_time",
-  true
+  true,
 );
 export const TrendConfirmAddUserReqDuration = new Trend(
   "load_confirm_add_user_page_response_time",
-  true
+  true,
 );
 export const TrendSubmitAddUserReqDuration = new Trend(
   "load_submit_add_user_page_response_time",
-  true
+  true,
 );
 export const TrendManageUsersSearchReqDuration = new Trend(
   "load_manage_users_list_search_response_time",
-  true
+  true,
 );
 export const TrendUserProfileReqDuration = new Trend(
   "load_user_profile_page_response_time",
-  true
+  true,
 );
 export const TrendUserEditReqDuration = new Trend(
   "load_user_edit_page_response_time",
-  true
+  true,
 );
 export const TrendSubmitEditUserReqDuration = new Trend(
   "load_submit_edit_user_page_response_time",
-  true
+  true,
 );
 export const TrendUserStatusChangeReqDuration = new Trend(
   "load_user_status_change_page_response_time",
-  true
+  true,
 );
 export const TrendSubmitUserStatusChangeReqDuration = new Trend(
   "load_submit_user_status_change_page_response_time",
-  true
+  true,
 );
 export const TrendUserAuditReqDuration = new Trend(
   "load_user_audit_page_response_time",
-  true
+  true,
+);
+export const TrendManageSponsorOrgsReqDuration = new Trend(
+  "load_manage_sponsor_orgs_page_response_time",
+  true,
+);
+export const TrendSearchManageSponsorOrgPageReqDuration = new Trend(
+  "search_manage_sponsor_orgs_page_response_time",
+  true,
+);
+export const TrendSponsorOrgProfileReqDuration = new Trend(
+  "load_sponsor_org_profile_page_response_time",
+  true,
+);
+export const TrendViewSponsorUsersReqDuration = new Trend(
+  "load_view_sponsor_users_page_response_time",
+  true,
+);
+export const TrendAddSponsorUsersReqDuration = new Trend(
+  "load_add_sponsor_users_page_response_time",
+  true,
+);
+export const TrendSearchAddSponsorUserReqDuration = new Trend(
+  "search_add_sponsor_users_page_response_time",
+  true,
+);
+export const TrendAddSponsorUserRoleReqDuration = new Trend(
+  "load_add_sponsor_user_role_page_response_time",
+  true,
+);
+export const TrendSaveUserRolePageReqDuration = new Trend(
+  "save_sponsor_user_role_page_response_time",
+  true,
+);
+export const TrendSubmitAddSponsorUserReqDuration = new Trend(
+  "submit_add_sponsor_user_page_response_time",
+  true,
+);
+export const TrendSponsorOrgUserProfileReqDuration = new Trend(
+  "load_sponsor_user_profile_page_response_time",
+  true,
+);
+export const TrendDisableSponsorUserReqDuration = new Trend(
+  "load_disable_sponsor_user_page_response_time",
+  true,
+);
+export const TrendConfirmDisableSponsorUserReqDuration = new Trend(
+  "confirm_disable_sponsor_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationsReqDuration = new Trend(
+  "load_my_organisations_page_response_time",
+  true,
+);
+export const TrendMyOrganisationProfileReqDuration = new Trend(
+  "load_my_organisation_profile_page_response_time",
+  true,
+);
+export const TrendMyOrganisationUsersReqDuration = new Trend(
+  "load_my_organisation_users_page_response_time",
+  true,
+);
+export const TrendMyOrganisationAddUserReqDuration = new Trend(
+  "load_my_organisation_add_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationAddUserRolePageReqDuration = new Trend(
+  "load_my_organisation_add_user_role_page_response_time",
+  true,
+);
+export const TrendMyOrganisationAddUserPermissionPageReqDuration = new Trend(
+  "load_my_organisation_add_user_permission_page_response_time",
+  true,
+);
+export const TrendMyOrganisationCheckAddUserPageReqDuration = new Trend(
+  "load_my_organisation_check_add_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationConfirmAddUserPageReqDuration = new Trend(
+  "confirm_my_organisation_add_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationSearchUsersPageReqDuration = new Trend(
+  "search_my_organisation_users_page_response_time",
+  true,
+);
+export const TrendMyOrganisationUserProfilePageReqDuration = new Trend(
+  "load_my_organisation_user_profile_page_response_time",
+  true,
+);
+export const TrendMyOrganisationDisableUserPageReqDuration = new Trend(
+  "load_my_organisation_disable_user_page_response_time",
+  true,
+);
+export const TrendMyOrganisationConfirmDisableUserPageReqDuration = new Trend(
+  "confirm_my_organisation_disable_user_page_response_time",
+  true,
 );
 export const TrendMyResearchPageReqDuration = new Trend(
   "load_my_research_page_response_time",
-  true
+  true,
 );
 export const TrendCreateProjectRecordPageReqDuration = new Trend(
   "load_create_project_record_page_response_time",
-  true
+  true,
 );
 export const TrendStartProjectIrasPageReqDuration = new Trend(
   "load_start_project_iras_page_response_time",
-  true
+  true,
 );
 export const TrendSaveStartProjectIrasPageReqDuration = new Trend(
   "save_start_project_iras_page_response_time",
-  true
+  true,
 );
 export const TrendSaveProjectRecordPageReqDuration = new Trend(
   "save_project_record_page_response_time",
-  true
+  true,
 );
 export const TrendSaveProjectIdentifiersPageReqDuration = new Trend(
   "save_project_identifiers_page_response_time",
-  true
+  true,
 );
 export const TrendSavePlannedEndDatePageReqDuration = new Trend(
   "save_planned_end_date_page_response_time",
-  true
+  true,
 );
 export const TrendSaveChiefInvestigatorPageReqDuration = new Trend(
   "save_chief_investigator_page_response_time",
-  true
+  true,
 );
 export const TrendSaveResearchLocationsPageReqDuration = new Trend(
   "save_research_locations_page_response_time",
-  true
+  true,
 );
 export const TrendSaveConfirmProjectReqDuration = new Trend(
   "save_confirm_project_page_response_time",
-  true
+  true,
 );
 export const TrendProjectOverviewPageReqDuration = new Trend(
   "load_project_overview_page_response_time",
-  true
+  true,
 );
 export const TrendPostApprovalTabReqDuration = new Trend(
   "load_post_approval_tab_response_time",
-  true
+  true,
 );
 export const TrendCreateModificationPageReqDuration = new Trend(
   "load_create_modification_page_response_time",
-  true
+  true,
 );
 export const TrendSaveAreaOfChangePageReqDuration = new Trend(
   "save_area_of_change_page_response_time",
-  true
+  true,
 );
 export const TrendSaveModsFreeTextPageReqDuration = new Trend(
   "save_modification_free_text_page_response_time",
-  true
+  true,
 );
 export const TrendSaveOrgsAffectedPageReqDuration = new Trend(
   "save_organisations_affected_page_response_time",
-  true
+  true,
 );
 export const TrendSaveOrgsAffectedReviewAnswersPageReqDuration = new Trend(
   "save_organisations_affected_review_answers_page_response_time",
-  true
+  true,
 );
 export const TrendSaveModificationChangesPageReqDuration = new Trend(
   "save_modification_changes_page_response_time",
-  true
+  true,
 );
 export const TrendSponsorReferencePageReqDuration = new Trend(
   "load_sponsor_reference_page_response_time",
-  true
+  true,
 );
 export const TrendSaveSponsorReferencePageReqDuration = new Trend(
   "save_sponsor_reference_page_response_time",
-  true
+  true,
 );
 export const TrendSendToSponsorPageReqDuration = new Trend(
   "send_to_sponsor_page_response_time",
-  true
+  true,
 );
 export const TrendSponsorWorkspacePageReqDuration = new Trend(
   "load_sponsor_workspace_page_response_time",
-  true
+  true,
 );
 export const TrendSponsorAuthorisationsPageReqDuration = new Trend(
   "load_sponsor_authorisations_page_response_time",
-  true
+  true,
 );
 export const TrendSearchSponsorAuthPageReqDuration = new Trend(
   "search_sponsor_authorisations_page_response_time",
-  true
+  true,
 );
 export const TrendCheckAuthorisePageReqDuration = new Trend(
   "load_sponsor_check_authorise_page_response_time",
-  true
+  true,
 );
 export const TrendSponsorAuthConfirmPageReqDuration = new Trend(
   "save_sponsor_auth_confirm_page_response_time",
-  true
+  true,
 );
 export const TrendApprovalsWorkspacePageReqDuration = new Trend(
   "load_approvals_workspace_page_response_time",
-  true
+  true,
 );
 export const TrendModificationTasklistPageReqDuration = new Trend(
   "load_modification_tasklist_page_response_time",
-  true
+  true,
 );
 export const TrendSearchModTasklistPageReqDuration = new Trend(
   "search_modification_tasklist_page_response_time",
-  true
+  true,
 );
 export const TrendSelectReviewerPageReqDuration = new Trend(
   "load_select_reviewer_page_response_time",
-  true
+  true,
 );
 export const TrendModificationAssignedPageReqDuration = new Trend(
   "save_modification_assigned_page_response_time",
-  true
+  true,
 );
 export const TrendMyTasklistPageReqDuration = new Trend(
   "load_my_tasklist_page_response_time",
-  true
+  true,
 );
 export const TrendReviewAllChangesPageReqDuration = new Trend(
   "load_review_all_changes_page_response_time",
-  true
+  true,
 );
 export const TrendReviewOutcomePageReqDuration = new Trend(
   "load_review_outcome_page_response_time",
-  true
+  true,
 );
 export const TrendConfirmReviewOutcomePageReqDuration = new Trend(
   "confirm_review_outcome_page_response_time",
-  true
+  true,
 );
 export const TrendSubmitReviewOutcomePageReqDuration = new Trend(
   "submit_review_outcome_page_response_time",
-  true
+  true,
+);
+export const TrendCloseProjectPageReqDuration = new Trend(
+  "load_close_project_page_response_time",
+  true,
+);
+export const TrendProjectClosurePageReqDuration = new Trend(
+  "project_closure_page_response_time",
+  true,
+);
+export const TrendSearchMyResearchPageReqDuration = new Trend(
+  "search_my_research_page_response_time",
+  true,
+);
+export const TrendSponsorProjectClosuresPageReqDuration = new Trend(
+  "load_sponsor_project_closures_page_response_time",
+  true,
+);
+export const TrendClosurePreAuthPageReqDuration = new Trend(
+  "sponsor_project_closures_pre_auth_page_response_time",
+  true,
+);
+export const TrendConfirmClosureOutcomePageReqDuration = new Trend(
+  "sponsor_confirm_closure_outcome_page_response_time",
+  true,
 );
 
 export async function setup() {
@@ -463,7 +609,7 @@ export async function setup() {
         "content-type": "application/x-www-form-urlencoded",
         origin: "https://signin.integration.account.gov.uk",
       },
-    }
+    },
   );
 
   response = http.post(
@@ -481,7 +627,7 @@ export async function setup() {
         "content-type": "application/x-www-form-urlencoded",
         origin: "https://signin.integration.account.gov.uk",
       },
-    }
+    },
   );
 
   response = http.post(
@@ -500,7 +646,7 @@ export async function setup() {
         "content-type": "application/x-www-form-urlencoded",
         origin: "https://signin.integration.account.gov.uk",
       },
-    }
+    },
   );
 
   const secret = "ZE4S5KESHY7XYKJZTKHWW2GGFQLWJQY2";
@@ -524,7 +670,7 @@ export async function setup() {
         origin: "https://signin.integration.account.gov.uk",
       },
       redirects: 1,
-    }
+    },
   );
 
   response = http.get(`${response.headers.Location}`, {
@@ -558,7 +704,7 @@ export async function setup() {
 
   if (
     response.html().find("h1[class=govuk-heading-l]").first().text() !=
-    "My account homepage"
+    "My account"
   ) {
     fail("Failure to Authorize, No Cookies Set");
   }
@@ -573,6 +719,8 @@ export function basicJourneysScript(data) {
   let timestamp;
   let orgName;
   let emailAdd;
+  let sponsorAddUserId;
+  let sponsorAddUserEmail;
   let projectRecordId;
   let irasId;
   let shortTitle;
@@ -604,12 +752,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${homePageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetHomePageReqSuccessful) {
       console.error(
         `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -623,12 +771,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${sysAdminCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSysAdminPageReqSuccessful) {
       console.error(
         `Get System Admin Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -642,12 +790,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyListPageReqSuccessful) {
       console.error(
         `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -661,12 +809,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${addRevBodyCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetAddRevBodyPageReqSuccessful) {
       console.error(
         `Get Add Review Body Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -692,7 +840,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}reviewbody/confirm-changes`,
       confirmPostBody,
-      postHeaders
+      postHeaders,
     );
     TrendConfirmRevBodyChangesReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -703,12 +851,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${confirmRevBodyChangeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostConfirmRevBodyChangesPageReqSuccessful) {
       console.error(
         `Post Confirm Review Body Changes Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -725,7 +873,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}reviewbody/submit`,
       submitPostBody,
-      postHeaders
+      postHeaders,
     );
     TrendSubmitRevBodyReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -735,12 +883,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${submitRevBodyCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSubmitRevBodyPageReqSuccessful) {
       console.error(
         `Post Submit Review Body Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -754,19 +902,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyListPageReqSuccessful) {
       console.error(
         `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyListSearchReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -776,12 +924,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyListSearchPageReqSuccessful) {
       console.error(
         `Get Review Body List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -790,7 +938,7 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyProfileReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -800,12 +948,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyProfilePageReqSuccessful) {
       console.error(
         `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -821,12 +969,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyEditCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyEditPageReqSuccessful) {
       console.error(
         `Get Review Body Edit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -858,7 +1006,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}reviewbody/submit`,
       submitEditPostBody,
-      postHeadersEdit
+      postHeadersEdit,
     );
 
     const redirectDuration = response.timings.duration;
@@ -866,32 +1014,32 @@ export function basicJourneysScript(data) {
       "Submit Review Body Edit Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSubmitRevBodyEditReqSuccessful) {
       console.error(
         `Post Submit Review Body Edit Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const redirectUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
     const getSubmitRevBodyEditWithReferer = Object.assign(
       {},
       getHeaders.headers,
       {
         Referer: `${revBodyEditPageUrl}`,
-      }
+      },
     );
 
     response = http.get(`${redirectUrl}`, getSubmitRevBodyEditWithReferer);
     TrendSubmitRevBodyEditReqDuration.add(
-      response.timings.duration + redirectDuration
+      response.timings.duration + redirectDuration,
     ); //combining duration of intial request and redirect request
     TrendTransactionalReqDuration.add(
-      response.timings.duration + redirectDuration
+      response.timings.duration + redirectDuration,
     );
     const isGetSubmitRevBodyEditRedirectPageReqSuccessful = check(response, {
       "Submit Review Body Edit Redirect Page Request Success": () =>
@@ -900,12 +1048,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSubmitRevBodyEditRedirectPageReqSuccessful) {
       console.error(
         `Get Submit Review Body Edit Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -929,13 +1077,13 @@ export function basicJourneysScript(data) {
       {
         Id: `${selectedRevBodyProfile}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     response = http.post(
       `${baseURL}${statusReqParam}`,
       submitRevBodyStatusPostBody,
-      postHeaders
+      postHeaders,
     );
     TrendRevBodyStatusChangeReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -946,12 +1094,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyStatusChangeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostRevBodyStatusChangePageReqSuccessful) {
       console.error(
         `Post Review Body Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -982,13 +1130,13 @@ export function basicJourneysScript(data) {
         IsActive: `${newIsActive}`,
         OrganisationName: `${orgName}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     response = http.post(
       `${baseURL}${confirmStatusReqParam}`,
       confirmRevBodyStatusPostBody,
-      postHeaders
+      postHeaders,
     );
     TrendRevBodyConfirmStatusChangeReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -999,12 +1147,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyConfirmStatusChangeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostConfirmRevBodyStatusChangePageReqSuccessful) {
       console.error(
         `Post Review Body Confirm Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1018,19 +1166,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyListPageReqSuccessful) {
       console.error(
         `Get Review Body List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyListSearchReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1040,19 +1188,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyListSearchPageReqSuccessful) {
       console.error(
         `Get Review Body List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyProfileReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1062,19 +1210,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyProfilePageReqSuccessful) {
       console.error(
         `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}reviewbody/audit-trail?reviewBodyId=${selectedRevBodyProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyAuditReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1084,19 +1232,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyAuditCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyAuditPageReqSuccessful) {
       console.error(
         `Get Review Body Audit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}reviewbody/view/${selectedRevBodyProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyProfileReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1106,12 +1254,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyProfileCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyProfilePageReqSuccessful) {
       console.error(
         `Get Review Body Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1119,7 +1267,7 @@ export function basicJourneysScript(data) {
     const selectedRevBodyWithUsers = randomItem(revBodyProfileIdsWithUsers); //add selected param here when add flow complete
     response = http.get(
       `${baseURL}reviewbody/viewreviewbodyusers?reviewBodyId=${selectedRevBodyWithUsers}`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyUserListReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1130,19 +1278,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyUserListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyUserListPageReqSuccessful) {
       console.error(
         `Get Review Body User List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}reviewbody/viewreviewbodyusers?SearchQuery=qa+auto&ReviewBodyId=${selectedRevBodyWithUsers}&PageSize=20`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyUserListSearchReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1153,19 +1301,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyUserListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyUserListSearchPageReqSuccessful) {
       console.error(
         `Get Review Body User List Search Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}reviewbody/viewadduser?reviewBodyId=${selectedRevBodyProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyAddUserReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1176,19 +1324,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyAddUserCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyAddUserPageReqSuccessful) {
       console.error(
         `Get Review Body Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}reviewbody/viewadduser?SearchQuery=k6&ReviewBodyId=${selectedRevBodyProfile}&PageSize=20`,
-      getHeaders
+      getHeaders,
     );
     TrendRevBodyAddUserSearchReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1199,12 +1347,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${revBodyAddUserCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetRevBodyAddUserSearchPageReqSuccessful) {
       console.error(
         `Get Review Body Add User Search Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     sleep(1);
@@ -1220,12 +1368,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${homePageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetHomePageReqSuccessful) {
       console.error(
         `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1239,12 +1387,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${sysAdminCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSysAdminPageReqSuccessful) {
       console.error(
         `Get System Admin Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1258,12 +1406,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${manageUserListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetManagUsersListPageReqSuccessful) {
       console.error(
         `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1277,12 +1425,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${addUserPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetAddUsersPageReqSuccessful) {
       console.error(
         `Get Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1304,7 +1452,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}admin/users/confirmusersubmission`,
       confirmUserPostBody,
-      postHeaders
+      postHeaders,
     );
     TrendConfirmAddUserReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1314,12 +1462,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${confirmAddUserCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostConfirmAddUserPageReqSuccessful) {
       console.error(
         `Post Confirm Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1337,7 +1485,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}admin/users/submituser`,
       submitUserPostBody,
-      postHeaders
+      postHeaders,
     );
     TrendSubmitAddUserReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1347,12 +1495,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${submitAddUserCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSubmitAddUserPageReqSuccessful) {
       console.error(
         `Post Submit Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1366,19 +1514,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${manageUserListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetManagUsersListPageReqSuccessful) {
       console.error(
         `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}admin/users?SearchQuery=k6&PageSize=20`,
-      getHeaders
+      getHeaders,
     );
     TrendManageUsersSearchReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1388,12 +1536,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${manageUserListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetManageUsersSearchReqSuccessful) {
       console.error(
         `Get Manage Users List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1401,7 +1549,7 @@ export function basicJourneysScript(data) {
     const selectedUserProfile = randomItem(userProfileIds);
     response = http.get(
       `${baseURL}admin/users/viewuser?userId=${selectedUserProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendUserProfileReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1411,12 +1559,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${userProfileCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetUserProfilePageReqSuccessful) {
       console.error(
         `Get User Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1431,12 +1579,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${userEditCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetUserEditPageReqSuccessful) {
       console.error(
         `Get User Edit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1482,43 +1630,43 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}admin/users/submituser`,
       submitEditUserPostBody,
-      postHeadersUserEdit
+      postHeadersUserEdit,
     );
     const redirectUserEditDuration = response.timings.duration;
     const isPostSubmitEditUserPageReqSuccessful = check(response, {
       "Submit Edit User Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSubmitEditUserPageReqSuccessful) {
       console.error(
         `Post Submit Edit User Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
 
     const redirectEditUserUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
     const getSubmitRevBodyEditWithReferer = Object.assign(
       {},
       getHeaders.headers,
       {
         Referer: `${getUserEditPageUrl}`,
-      }
+      },
     );
 
     response = http.get(
       `${redirectEditUserUrl}`,
-      getSubmitRevBodyEditWithReferer
+      getSubmitRevBodyEditWithReferer,
     );
     TrendSubmitEditUserReqDuration.add(
-      response.timings.duration + redirectUserEditDuration
+      response.timings.duration + redirectUserEditDuration,
     ); //combining duration of intial request and redirect request
     TrendTransactionalReqDuration.add(
-      response.timings.duration + redirectUserEditDuration
+      response.timings.duration + redirectUserEditDuration,
     );
     const isPostSubmitEditUserRedirectPageReqSuccessful = check(response, {
       "Submit Edit User Redirect Page Request Success": () =>
@@ -1527,12 +1675,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${userProfileCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSubmitEditUserRedirectPageReqSuccessful) {
       console.error(
         `Get Submit Edit User Redirect Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1551,7 +1699,7 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${baseURL}admin/users/${statusReqParam}?userId=${selectedUserProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendUserStatusChangeReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1561,12 +1709,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${userStatusChangeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetUserStatusChangePageReqSuccessful) {
       console.error(
         `Get User Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1586,7 +1734,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}admin/users/${statusReqParam}`,
       submitUserStatusPostBody,
-      postHeaders
+      postHeaders,
     );
     TrendSubmitUserStatusChangeReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1597,12 +1745,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${submitUserStatusChangeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSubmitUserStatusChangePageReqSuccessful) {
       console.error(
         `Post Submit User Status Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1616,19 +1764,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${manageUserListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetManagUsersListPageReqSuccessful) {
       console.error(
         `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}admin/users?SearchQuery=k6&PageSize=20`,
-      getHeaders
+      getHeaders,
     );
     TrendManageUsersSearchReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1638,19 +1786,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${manageUserListCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetManageUsersSearchReqSuccessful) {
       console.error(
         `Get Manage Users List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}admin/users/viewuser?userId=${selectedUserProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendUserProfileReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1660,19 +1808,19 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${userProfileCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetUserProfilePageReqSuccessful) {
       console.error(
         `Get User Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
     response = http.get(
       `${baseURL}admin/users/useraudittrail?userId=${selectedUserProfile}`,
-      getHeaders
+      getHeaders,
     );
     TrendUserAuditReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1682,12 +1830,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${userAuditCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetUserAuditPageReqSuccessful) {
       console.error(
         `Get User Audit Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     sleep(1);
@@ -1708,12 +1856,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${homePageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetHomePageReqSuccessful) {
       console.error(
         `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1727,12 +1875,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${myResearchPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetMyResearchPageReqSuccessful) {
       console.error(
         `Get My Research Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1747,12 +1895,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${createProjectRecordPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetCreateProjectRecordPageReqSuccessful) {
       console.error(
         `Get Create Project Record Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1766,12 +1914,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${startProjectIrasPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetStartProjectIrasPageReqSuccessful) {
       console.error(
         `Get Start Project IRAS Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1800,24 +1948,24 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}application/startproject`,
       startProjIrasPostBody,
-      postStartProjectIrasHeaders
+      postStartProjectIrasHeaders,
     );
     let firstRedirectDuration = response.timings.duration;
     const isPostStartProjIrasReqSuccessful = check(response, {
       "Start Project IRAS Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostStartProjIrasReqSuccessful) {
       console.error(
         `Post Start Project IRAS Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const irasRedirectUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getHeadersIrasWithReferer = Object.assign({}, getHeaders.headers, {
@@ -1831,10 +1979,10 @@ export function basicJourneysScript(data) {
 
     response = http.get(`${irasRedirectUrl}`, getStartProjectIrasHeaders);
     TrendSaveStartProjectIrasPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetDisplayProjDetailsReqSuccessful = check(response, {
       "Display Confirm Project Details Page Request Success": () =>
@@ -1843,12 +1991,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${displayProjDetailsPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetDisplayProjDetailsReqSuccessful) {
       console.error(
         `Get Display Confirm Project Details Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -1872,7 +2020,7 @@ export function basicJourneysScript(data) {
         "Questions[0].AnswerText": `${shortTitle}`,
         "Questions[1].AnswerText": `${fullTitle}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersConfirmProjRecordWithReferer = Object.assign(
@@ -1880,7 +2028,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${irasRedirectUrl}`,
-      }
+      },
     );
 
     const postProjectRecordHeaders = {
@@ -1891,7 +2039,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}projectrecord/confirmprojectrecord`,
       confirmProjectRecordPostBody,
-      postProjectRecordHeaders
+      postProjectRecordHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostConfirmProjRecordReqSuccessful = check(response, {
@@ -1899,17 +2047,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostConfirmProjRecordReqSuccessful) {
       console.error(
         `Post Start Project IRAS Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const confirmProjectRecRedirectUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getHeadersConfirmProjRecWithReferer = Object.assign(
@@ -1917,7 +2065,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${irasRedirectUrl}`,
-      }
+      },
     );
 
     const getConfirmProjectRecRedirectHeaders = {
@@ -1927,7 +2075,7 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${confirmProjectRecRedirectUrl}`,
-      getConfirmProjectRecRedirectHeaders
+      getConfirmProjectRecRedirectHeaders,
     );
     let secondRedirectDuration = response.timings.duration;
     const isGetProjDetailsReqSuccessful = check(response, {
@@ -1935,17 +2083,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetProjDetailsReqSuccessful) {
       console.error(
         `Get Confirm Project Record Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const displayProjIdentifiersUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getDisplayProjIdentifiersWithReferer = Object.assign(
@@ -1953,7 +2101,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${irasRedirectUrl}`,
-      }
+      },
     );
 
     const getDisplayProjIdentifiersHeaders = {
@@ -1963,13 +2111,17 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${displayProjIdentifiersUrl}`,
-      getDisplayProjIdentifiersHeaders
+      getDisplayProjIdentifiersHeaders,
     );
     TrendSaveProjectRecordPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+      response.timings.duration +
+        firstRedirectDuration +
+        secondRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+      response.timings.duration +
+        firstRedirectDuration +
+        secondRedirectDuration,
     );
     const isGetDisplayProjIdentifiersReqSuccessful = check(response, {
       "Get Display Project Identifiers Page Request Success": () =>
@@ -1978,12 +2130,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${displayProjIdentifiersPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetDisplayProjIdentifiersReqSuccessful) {
       console.error(
         `Get Display Project Identifiers Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2002,7 +2154,7 @@ export function basicJourneysScript(data) {
       projectIdentifiersPostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersSaveProjIdentifiersWithReferer = Object.assign(
@@ -2010,7 +2162,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${displayProjIdentifiersUrl}`,
-      }
+      },
     );
 
     const postProjectIdentifiersHeaders = {
@@ -2021,7 +2173,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
       saveProjectIdentifiersPostBody,
-      postProjectIdentifiersHeaders
+      postProjectIdentifiersHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostProjDetailsReqSuccessful = check(response, {
@@ -2029,17 +2181,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostProjDetailsReqSuccessful) {
       console.error(
         `Post Save Project Identifiers Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const projIdentifiersRedirectUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getProjIdRedirectWithReferer = Object.assign({}, getHeaders.headers, {
@@ -2053,7 +2205,7 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${projIdentifiersRedirectUrl}`,
-      getProjectIdRedirectHeaders
+      getProjectIdRedirectHeaders,
     );
     secondRedirectDuration = response.timings.duration;
     const isGetProjIdRedirectReqSuccessful = check(response, {
@@ -2061,17 +2213,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetProjIdRedirectReqSuccessful) {
       console.error(
         `Get Resume Project Identifiers Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const displayPlannedEndDateUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getDisplayEndDateWithReferer = Object.assign({}, getHeaders.headers, {
@@ -2085,13 +2237,17 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${displayPlannedEndDateUrl}`,
-      getDisplayEndDateHeaders
+      getDisplayEndDateHeaders,
     );
     TrendSaveProjectIdentifiersPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+      response.timings.duration +
+        firstRedirectDuration +
+        secondRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+      response.timings.duration +
+        firstRedirectDuration +
+        secondRedirectDuration,
     );
     const isGetDisplayEndDateReqSuccessful = check(response, {
       "Get Display Planned End Date Page Request Success": () =>
@@ -2100,12 +2256,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${displayPlannedEndDatePageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetDisplayEndDateReqSuccessful) {
       console.error(
         `Get Display Planned End Date Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2127,7 +2283,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${displayPlannedEndDateUrl}`,
-      }
+      },
     );
 
     const postPlannedEndDateHeaders = {
@@ -2138,24 +2294,24 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
       plannedEndDatePostBody,
-      postPlannedEndDateHeaders
+      postPlannedEndDateHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostEndDateReqSuccessful = check(response, {
       "Post Planned End Date Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostEndDateReqSuccessful) {
       console.error(
         `Post Planned End Date Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const endDateRedirectUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getEndDateRedirectWithReferer = Object.assign(
@@ -2163,7 +2319,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${displayPlannedEndDateUrl}`,
-      }
+      },
     );
 
     const getEndDateRedirectHeaders = {
@@ -2178,17 +2334,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetEndDateRedirectReqSuccessful) {
       console.error(
         `Get Planned End Date Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const displayChiefInvestigatorUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getDisplayChiefWithReferer = Object.assign({}, getHeaders.headers, {
@@ -2202,13 +2358,17 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${displayChiefInvestigatorUrl}`,
-      getDisplayChiefInvestigatorHeaders
+      getDisplayChiefInvestigatorHeaders,
     );
     TrendSavePlannedEndDatePageReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+      response.timings.duration +
+        firstRedirectDuration +
+        secondRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+      response.timings.duration +
+        firstRedirectDuration +
+        secondRedirectDuration,
     );
     const isGetDisplayChiefReqSuccessful = check(response, {
       "Get Display Chief Investigator Page Request Success": () =>
@@ -2217,12 +2377,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${displayChiefInvestigatorPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetDisplayChiefReqSuccessful) {
       console.error(
         `Get Display Chief Investigator Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2245,7 +2405,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${displayChiefInvestigatorUrl}`,
-      }
+      },
     );
 
     const postChiefInvestigatorHeaders = {
@@ -2256,24 +2416,24 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
       chiefInvestigatorPostBody,
-      postChiefInvestigatorHeaders
+      postChiefInvestigatorHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostChiefInvestigatorReqSuccessful = check(response, {
       "Post Chief Investigator Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostChiefInvestigatorReqSuccessful) {
       console.error(
         `Post Chief Investigator Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const chiefInvestigatorRedirectUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getChiefRedirectWithReferer = Object.assign({}, getHeaders.headers, {
@@ -2287,7 +2447,7 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${chiefInvestigatorRedirectUrl}`,
-      getChiefRedirectHeaders
+      getChiefRedirectHeaders,
     );
     secondRedirectDuration = response.timings.duration;
     const isGetChiefRedirectReqSuccessful = check(response, {
@@ -2295,17 +2455,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetChiefRedirectReqSuccessful) {
       console.error(
         `Get Chief Investigator Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const displayResearchLocationsUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getDisplayLocationsWithReferer = Object.assign(
@@ -2313,7 +2473,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${displayChiefInvestigatorUrl}`,
-      }
+      },
     );
 
     const getDisplayResearchLocationsHeaders = {
@@ -2323,13 +2483,17 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${displayResearchLocationsUrl}`,
-      getDisplayResearchLocationsHeaders
+      getDisplayResearchLocationsHeaders,
     );
     TrendSaveChiefInvestigatorPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+      response.timings.duration +
+        firstRedirectDuration +
+        secondRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration + secondRedirectDuration
+      response.timings.duration +
+        firstRedirectDuration +
+        secondRedirectDuration,
     );
     const isGetDisplayLocationsReqSuccessful = check(response, {
       "Get Display Research Locations Page Request Success": () =>
@@ -2338,12 +2502,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${displayResearchLocationsPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetDisplayLocationsReqSuccessful) {
       console.error(
         `Get Display Research Locations Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2365,7 +2529,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${displayResearchLocationsUrl}`,
-      }
+      },
     );
 
     const postResearchLocationHeaders = {
@@ -2376,24 +2540,24 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}questionnaire/saveresponses?saveAndContinue=True`,
       researchLocationsPostBody,
-      postResearchLocationHeaders
+      postResearchLocationHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostResearchLocationsReqSuccessful = check(response, {
       "Post Research Locations Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostResearchLocationsReqSuccessful) {
       console.error(
         `Post Research Locations Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const reviewApplicationUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getReviewAppWithReferer = Object.assign({}, getHeaders.headers, {
@@ -2407,10 +2571,10 @@ export function basicJourneysScript(data) {
 
     response = http.get(`${reviewApplicationUrl}`, getReviewApplicationHeaders);
     TrendSaveResearchLocationsPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetReviewAppReqSuccessful = check(response, {
       "Get Review Application Answers Page Request Success": () =>
@@ -2419,12 +2583,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${reviewAppAnswersCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetReviewAppReqSuccessful) {
       console.error(
         `Get Review Application Answers Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2443,7 +2607,7 @@ export function basicJourneysScript(data) {
       confirmDetailsPostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersConfirmDetailsWithReferer = Object.assign(
@@ -2451,7 +2615,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${reviewApplicationUrl}`,
-      }
+      },
     );
 
     const postConfirmProjectDetailsHeaders = {
@@ -2462,7 +2626,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}questionnaire/confirmprojectdetails`,
       confirmProjAppDetailsPostBody,
-      postConfirmProjectDetailsHeaders
+      postConfirmProjectDetailsHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostConfirmDetailsReqSuccessful = check(response, {
@@ -2470,17 +2634,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostConfirmDetailsReqSuccessful) {
       console.error(
         `Post Confirm Project Details Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const projectCreatedUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getprojectCreatedWithReferer = Object.assign({}, getHeaders.headers, {
@@ -2494,10 +2658,10 @@ export function basicJourneysScript(data) {
 
     response = http.get(`${projectCreatedUrl}`, getProjectCreatedHeaders);
     TrendSaveConfirmProjectReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetProjectCreatedReqSuccessful = check(response, {
       "Get Project Created Page Request Success": () => response.status === 200,
@@ -2505,12 +2669,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${projectCreatedCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetProjectCreatedReqSuccessful) {
       console.error(
         `Get Project Created Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2528,7 +2692,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${projectCreatedUrl}`,
-      }
+      },
     );
 
     const getProjectOverviewHeaders = {
@@ -2538,7 +2702,7 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${baseURL}projectoverview/projectdetails?projectRecordId=${projectRecordId}`,
-      getProjectOverviewHeaders
+      getProjectOverviewHeaders,
     );
     TrendProjectOverviewPageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -2549,12 +2713,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${projectOverviewPageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetProjectOverviewReqSuccessful) {
       console.error(
         `Get Project Overview Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     sleep(1);
@@ -2572,12 +2736,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${postApprovalCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetPostApprovalReqSuccessful) {
       console.error(
         `Get Post Approval Tab Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2587,7 +2751,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${postApprovalTabUrl}`,
-      }
+      },
     );
     const getCreateModHeaders = {
       headers: getHeadersCreateModWithReferer,
@@ -2596,32 +2760,32 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${baseURL}modifications/createmodification`,
-      getCreateModHeaders
+      getCreateModHeaders,
     );
     let firstRedirectDuration = response.timings.duration;
     const isGetCreateModificationPageReqSuccessful = check(response, {
       "Create Modification Page Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetCreateModificationPageReqSuccessful) {
       console.error(
         `Get Create Modification Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const modificationsChangeUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     response = http.get(`${modificationsChangeUrl}`, getCreateModHeaders);
     TrendCreateModificationPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendNonTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetAreaOfChangePageReqSuccessful = check(response, {
       "Get Area of Change Page Request Success": () => response.status === 200,
@@ -2629,12 +2793,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${areaOfChangeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetAreaOfChangePageReqSuccessful) {
       console.error(
         `Get Area of Change Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2658,7 +2822,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${modificationsChangeUrl}`,
-      }
+      },
     );
 
     const postAreaOfChangeHeaders = {
@@ -2669,7 +2833,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}modifications/confirmmodificationjourney`,
       areaOfChangePostBody,
-      postAreaOfChangeHeaders
+      postAreaOfChangeHeaders,
     );
     firstRedirectDuration = response.timings.duration;
 
@@ -2677,18 +2841,18 @@ export function basicJourneysScript(data) {
       "Post Area of Change Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostAreaOfChangeReqSuccessful) {
       console.error(
         `Post Area of Change Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
 
-    const freeTextTextUrl = `${baseURL}${response.headers.Location.replace(
+    const freeTextUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getFreeTextWithReferer = Object.assign({}, getHeaders.headers, {
@@ -2700,12 +2864,12 @@ export function basicJourneysScript(data) {
       redirects: 0,
     };
 
-    response = http.get(`${freeTextTextUrl}`, getFreeTextHeaders);
+    response = http.get(`${freeTextUrl}`, getFreeTextHeaders);
     TrendSaveAreaOfChangePageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetFreeTextReqSuccessful = check(response, {
       "Get Modification Free Text Request Success": () =>
@@ -2714,12 +2878,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${modificationFreeTextCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetFreeTextReqSuccessful) {
       console.error(
         `Get Modification Free Text Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2738,15 +2902,15 @@ export function basicJourneysScript(data) {
       modifcationTextPostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersFreeTextWithReferer = Object.assign(
       {},
       postHeaders.headers,
       {
-        Referer: `${freeTextTextUrl}`,
-      }
+        Referer: `${freeTextUrl}`,
+      },
     );
 
     const postFreeTextHeaders = {
@@ -2757,7 +2921,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}modifications/modificationchanges/saveresponses`,
       modifcationFreeTextPostBody,
-      postFreeTextHeaders
+      postFreeTextHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostFreeTextReqSuccessful = check(response, {
@@ -2765,21 +2929,21 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostFreeTextReqSuccessful) {
       console.error(
         `Post Modification Free Text Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const orgsAffectedUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getOrgsAffectedWithReferer = Object.assign({}, getHeaders.headers, {
-      Referer: `${freeTextTextUrl}`,
+      Referer: `${freeTextUrl}`,
     });
 
     const getOrgsAffectedHeaders = {
@@ -2789,10 +2953,10 @@ export function basicJourneysScript(data) {
 
     response = http.get(`${orgsAffectedUrl}`, getOrgsAffectedHeaders);
     TrendSaveModsFreeTextPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetOrgsAffectedReqSuccessful = check(response, {
       "Get Organisations Affected Request Success": () =>
@@ -2801,12 +2965,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${orgsAffectedCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetOrgsAffectedReqSuccessful) {
       console.error(
         `Get Organisations Affected Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2824,7 +2988,7 @@ export function basicJourneysScript(data) {
       orgsAffectedPostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersOrgsAffectedWithReferer = Object.assign(
@@ -2832,7 +2996,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${orgsAffectedUrl}`,
-      }
+      },
     );
 
     const postOrgsAffectedHeaders = {
@@ -2843,7 +3007,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}modifications/modificationchanges/saveresponses`,
       organisationsAffectedPostBody,
-      postOrgsAffectedHeaders
+      postOrgsAffectedHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostOrgsAffectedReqSuccessful = check(response, {
@@ -2851,17 +3015,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostOrgsAffectedReqSuccessful) {
       console.error(
         `Post Organisations Affected Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const orgsAffectedReviewAnswersUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getOrgsAffectedReviewWithReferer = Object.assign(
@@ -2869,7 +3033,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${orgsAffectedUrl}`,
-      }
+      },
     );
 
     const getOrgsAffectedReviewAnswersHeaders = {
@@ -2879,13 +3043,13 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${orgsAffectedReviewAnswersUrl}`,
-      getOrgsAffectedReviewAnswersHeaders
+      getOrgsAffectedReviewAnswersHeaders,
     );
     TrendSaveOrgsAffectedPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetOrgsAffectedReviewAnswerReqSuccessful = check(response, {
       "Get Orgs Affected Review Answers Request Success": () =>
@@ -2894,12 +3058,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${orgsAffectedReviewAnswersCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetOrgsAffectedReviewAnswerReqSuccessful) {
       console.error(
         `Get Orgs Affected Review Answers Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -2918,7 +3082,7 @@ export function basicJourneysScript(data) {
       orgsAffectedReviewPostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersOrgsAffectedReviewWithReferer = Object.assign(
@@ -2926,7 +3090,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${orgsAffectedReviewAnswersUrl}`,
-      }
+      },
     );
 
     const postOrgsAffectedReviewAnswersHeaders = {
@@ -2937,7 +3101,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}modifications/modificationchanges/saveresponses`,
       orgsAffectedReviewAnswersPostBody,
-      postOrgsAffectedReviewAnswersHeaders
+      postOrgsAffectedReviewAnswersHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostOrgsAffectedReviewReqSuccessful = check(response, {
@@ -2945,17 +3109,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostOrgsAffectedReviewReqSuccessful) {
       console.error(
         `Post Orgs Affected Review Answers Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const modificationReviewChangesUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getModificationReviewWithReferer = Object.assign(
@@ -2963,7 +3127,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${orgsAffectedReviewAnswersUrl}`,
-      }
+      },
     );
 
     const getModificationReviewChangesHeaders = {
@@ -2973,13 +3137,13 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${modificationReviewChangesUrl}`,
-      getModificationReviewChangesHeaders
+      getModificationReviewChangesHeaders,
     );
     TrendSaveOrgsAffectedReviewAnswersPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isModificationReviewChangesReqSuccessful = check(response, {
       "Get Modification Review Changes Request Success": () =>
@@ -2988,12 +3152,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${modReviewChangesCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isModificationReviewChangesReqSuccessful) {
       console.error(
         `Get Modification Review Changes Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3011,7 +3175,7 @@ export function basicJourneysScript(data) {
       confirmModificationPostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersConfirmModificationWithReferer = Object.assign(
@@ -3019,7 +3183,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${modificationReviewChangesUrl}`,
-      }
+      },
     );
 
     const postConfirmModificationHeaders = {
@@ -3030,7 +3194,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}modifications/modificationchanges/confirmmodificationchanges?projectRecordId=${projectRecordId}`,
       confirmModificationChangesPostBody,
-      postConfirmModificationHeaders
+      postConfirmModificationHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostConfirmModificationReqSuccessful = check(response, {
@@ -3038,17 +3202,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostConfirmModificationReqSuccessful) {
       console.error(
         `Post Confirm Modification Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     modificationDetailsUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getModificationDetailsWithReferer = Object.assign(
@@ -3056,7 +3220,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${modificationReviewChangesUrl}`,
-      }
+      },
     );
 
     const getModificationDetailsHeaders = {
@@ -3066,13 +3230,13 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${modificationDetailsUrl}`,
-      getModificationDetailsHeaders
+      getModificationDetailsHeaders,
     );
     TrendSaveModificationChangesPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetModificationDetailsReqSuccessful = check(response, {
       "Get Modification Details Request Success": () => response.status === 200,
@@ -3080,12 +3244,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${modificationDetailsCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetModificationDetailsReqSuccessful) {
       console.error(
         `Get Modification Details Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3108,7 +3272,7 @@ export function basicJourneysScript(data) {
     const getSponsorReferenceUrl = `${baseURL}modifications/sponsorreference?projectRecordId=${projectRecordId}`;
     response = http.get(
       `${getSponsorReferenceUrl}`,
-      getSponsorReferenceHeaders
+      getSponsorReferenceHeaders,
     );
     TrendSponsorReferencePageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -3118,12 +3282,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${sponsorReferenceCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSponsorRefReqSuccessful) {
       console.error(
         `Get Sponsor Reference Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3141,7 +3305,7 @@ export function basicJourneysScript(data) {
       saveSponsorRefPostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersSaveSponsorRefWithReferer = Object.assign(
@@ -3149,7 +3313,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${getSponsorReferenceUrl}`,
-      }
+      },
     );
 
     const postSaveSponsorReferenceHeaders = {
@@ -3160,7 +3324,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}modifications/savesponsorreference`,
       saveSponsorReferencePostBody,
-      postSaveSponsorReferenceHeaders
+      postSaveSponsorReferenceHeaders,
     );
     let firstRedirectDuration = response.timings.duration;
     const isPostSaveSponsorRefReqSuccessful = check(response, {
@@ -3168,17 +3332,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSaveSponsorRefReqSuccessful) {
       console.error(
         `Post Save Sponsor Reference Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const reviewAllChangesUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getReviewAllChangesWithReferer = Object.assign(
@@ -3186,7 +3350,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${getSponsorReferenceUrl}`,
-      }
+      },
     );
 
     const getReviewAllChangesHeaders = {
@@ -3196,10 +3360,10 @@ export function basicJourneysScript(data) {
 
     response = http.get(`${reviewAllChangesUrl}`, getReviewAllChangesHeaders);
     TrendSaveSponsorReferencePageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetReviewAllChangesReqSuccessful = check(response, {
       "Get Review All Changes Request Success": () => response.status === 200,
@@ -3207,12 +3371,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${getReviewAllChangeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetReviewAllChangesReqSuccessful) {
       console.error(
         `Get Review All Changes Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3245,7 +3409,7 @@ export function basicJourneysScript(data) {
       {
         ProjectRecordId: `${projectRecordId}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersSendToSponsorWithReferer = Object.assign(
@@ -3253,7 +3417,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${reviewAllChangesUrl}`,
-      }
+      },
     );
 
     const postSendModificationToSponsorHeaders = {
@@ -3262,7 +3426,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${sendModificationToSponsorUrl}`,
       sendToModificationToSponsorPostBody,
-      postSendModificationToSponsorHeaders
+      postSendModificationToSponsorHeaders,
     );
     TrendSendToSponsorPageReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -3273,12 +3437,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${sentToSponsorCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSendToSponsorReqSuccessful) {
       console.error(
         `Post Send Modification To Sponsor Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
 
@@ -3299,12 +3463,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${postApprovalCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetPostApprovalReqSuccessful) {
       console.error(
         `Get Post Approval Tab Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3321,12 +3485,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${homePageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetHomePageReqSuccessful) {
       console.error(
         `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3341,17 +3505,17 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${sponsorWorkspaceCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSponsorWorkspacePageReqSuccessful) {
       console.error(
         `Get Sponsor Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
 
-    const getSponsorAuthUrl = `${baseURL}sponsorworkspace/authorisations?sponsorOrganisationUserId=${sponsorOrgId}`;
+    const getSponsorAuthUrl = `${baseURL}sponsorworkspace/modifications?sponsorOrganisationUserId=${sponsorOrgId}`;
     response = http.get(`${getSponsorAuthUrl}`, getHeaders);
     TrendSponsorAuthorisationsPageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -3362,12 +3526,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${sponsorAuthorisationsCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSponsorAuthorisationsPageReqSuccessful) {
       console.error(
         `Get Sponsor Authorisations Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3388,7 +3552,7 @@ export function basicJourneysScript(data) {
         "Search.SearchTerm": `${irasId}`,
         SponsorOrganisationUserId: `${sponsorOrgId}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersSearchSponsorAuthWithReferer = Object.assign(
@@ -3396,7 +3560,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${getSponsorAuthUrl}`,
-      }
+      },
     );
 
     const postSearchSponsorAuthHeaders = {
@@ -3407,7 +3571,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}sponsorworkspace/applyfilters`,
       searchSponsorAuthorisationsPostBody,
-      postSearchSponsorAuthHeaders
+      postSearchSponsorAuthHeaders,
     );
     let firstRedirectDuration = response.timings.duration;
     const isPostSearchSponsorAuthReqSuccessful = check(response, {
@@ -3415,12 +3579,12 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSearchSponsorAuthReqSuccessful) {
       console.error(
         `Post Search Sponsor Authorisations Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
 
@@ -3435,10 +3599,10 @@ export function basicJourneysScript(data) {
 
     response = http.get(`${getSponsorAuthUrl}`, getSponsorAuthRedirectHeaders);
     TrendSearchSponsorAuthPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     isGetSponsorAuthorisationsPageReqSuccessful = check(response, {
       "Get Sponsor Authorisations Page Request Success": () =>
@@ -3447,12 +3611,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${sponsorAuthorisationsCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSponsorAuthorisationsPageReqSuccessful) {
       console.error(
         `Get Sponsor Authorisations Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3478,12 +3642,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${checkAuthoriseCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetCheckAuthorisePageReqSuccessful) {
       console.error(
         `Get Sponsor Check Authorise Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3508,7 +3672,7 @@ export function basicJourneysScript(data) {
         SponsorOrganisationUserId: `${sponsorOrgId}`,
         ProjectModificationId: `${modificationId}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersSponsorAuthWithReferer = Object.assign(
@@ -3516,7 +3680,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${sponsorCheckAuthUrl}`,
-      }
+      },
     );
 
     const postSaveSponsorAuthorisationHeaders = {
@@ -3527,7 +3691,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}sponsorworkspace/checkandauthorise`,
       saveSponsorAuthorisationPostBody,
-      postSaveSponsorAuthorisationHeaders
+      postSaveSponsorAuthorisationHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostSaveSponsorRefReqSuccessful = check(response, {
@@ -3535,17 +3699,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSaveSponsorRefReqSuccessful) {
       console.error(
         `Post Save Sponsor Authorisation Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const sponsorAuthConfirmUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getSponsorConfirmWithReferer = Object.assign({}, getHeaders.headers, {
@@ -3559,13 +3723,13 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${sponsorAuthConfirmUrl}`,
-      getSponsorAuthConfirmHeaders
+      getSponsorAuthConfirmHeaders,
     );
     TrendSponsorAuthConfirmPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isSponsorAuthConfirmReqSuccessful = check(response, {
       "Get Sponsor Auth Confirm Request Success": () => response.status === 200,
@@ -3573,12 +3737,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${getSponsorAuthCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isSponsorAuthConfirmReqSuccessful) {
       console.error(
         `Get Sponsor Auth Confirm Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3588,7 +3752,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${getSponsorAuthUrl}`,
-      }
+      },
     );
 
     const getSponsorAuthReturnHeaders = {
@@ -3606,12 +3770,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${sponsorAuthorisationsCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSponsorAuthorisationsPageReqSuccessful) {
       console.error(
         `Get Sponsor Authorisations Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3629,12 +3793,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${homePageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetHomePageReqSuccessful) {
       console.error(
         `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3649,12 +3813,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${approvalsWorkspaceCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetApprovalsWorkspacePageReqSuccessful) {
       console.error(
         `Get Approvals Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3671,12 +3835,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${modificationsTasklistCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetModTasklistPageReqSuccessful) {
       console.error(
         `Get Modification Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3696,7 +3860,7 @@ export function basicJourneysScript(data) {
       {
         "Search.IrasId": `${irasId}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersSearchModTasklistWithReferer = Object.assign(
@@ -3704,7 +3868,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${modificationTasklistUrl}`,
-      }
+      },
     );
 
     const postSearchModTasklistHeaders = {
@@ -3715,7 +3879,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}modificationstasklist/applyfilters`,
       searchModificationTasklistPostBody,
-      postSearchModTasklistHeaders
+      postSearchModTasklistHeaders,
     );
     let firstRedirectDuration = response.timings.duration;
     const isPostSearchModTasklistReqSuccessful = check(response, {
@@ -3723,12 +3887,12 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSearchModTasklistReqSuccessful) {
       console.error(
         `Post Search Modification Tasklist Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
 
@@ -3737,7 +3901,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${modificationTasklistUrl}`,
-      }
+      },
     );
 
     const getModTasklistRedirectHeaders = {
@@ -3747,13 +3911,13 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${modificationTasklistUrl}`,
-      getModTasklistRedirectHeaders
+      getModTasklistRedirectHeaders,
     );
     TrendSearchModTasklistPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     isGetModTasklistPageReqSuccessful = check(response, {
       "Get Modification Tasklist Page Request Success": () =>
@@ -3762,12 +3926,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${modificationsTasklistCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetModTasklistPageReqSuccessful) {
       console.error(
         `Get Modification Tasklist Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3784,12 +3948,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${selectReviewerCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSelectReviewerPageReqSuccessful) {
       console.error(
         `Get Select a Reviewer Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3813,7 +3977,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${selectReviewerAssignModUrl}`,
-      }
+      },
     );
 
     const postModificationAssignHeaders = {
@@ -3824,24 +3988,24 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${baseURL}modificationstasklist/assignmodifications`,
       modificationAssignPostBody,
-      postModificationAssignHeaders
+      postModificationAssignHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostModificationAssignReqSuccessful = check(response, {
       "Post Modification Assign Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostModificationAssignReqSuccessful) {
       console.error(
         `Post Modification Assign Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const modAssignSuccessUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getModAssignSuccessWithReferer = Object.assign(
@@ -3849,7 +4013,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${selectReviewerAssignModUrl}`,
-      }
+      },
     );
 
     const getModificationAssignSuccessHeaders = {
@@ -3859,13 +4023,13 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${modAssignSuccessUrl}`,
-      getModificationAssignSuccessHeaders
+      getModificationAssignSuccessHeaders,
     );
     TrendModificationAssignedPageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetModificationAssignReqSuccessful = check(response, {
       "Get Modification Assigned Success Request Success": () =>
@@ -3874,12 +4038,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${getModAssignSuccessCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetModificationAssignReqSuccessful) {
       console.error(
         `Get Modification Assigned Success Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3889,7 +4053,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${modAssignSuccessUrl}`,
-      }
+      },
     );
 
     const getModTasklistReturnHeaders = {
@@ -3899,7 +4063,7 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${modificationTasklistUrl}`,
-      getModTasklistReturnHeaders
+      getModTasklistReturnHeaders,
     );
     TrendModificationTasklistPageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -3910,12 +4074,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${modificationsTasklistCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetModTasklistPageReqSuccessful) {
       console.error(
         `Get Modification Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3931,12 +4095,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${homePageCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetHomePageReqSuccessful) {
       console.error(
         `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3951,12 +4115,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${approvalsWorkspaceCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetApprovalsWorkspacePageReqSuccessful) {
       console.error(
         `Get Approvals Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3972,12 +4136,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${myTasklistCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetMyTasklistPageReqSuccessful) {
       console.error(
         `Get My Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -3993,12 +4157,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${modReviewAllChangesCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetModReviewChangesPageReqSuccessful) {
       console.error(
         `Get Modification Review All Changes Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -4027,12 +4191,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${modReviewOutcomeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetModReviewOutcomePageReqSuccessful) {
       console.error(
         `Get Modification Review Outcome Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -4055,7 +4219,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${modReviewOutcomeUrl}`,
-      }
+      },
     );
 
     const postReviewOutcomeHeaders = {
@@ -4066,19 +4230,19 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${modReviewOutcomeUrl}`,
       modReviewOutcomePostBody,
-      postReviewOutcomeHeaders
+      postReviewOutcomeHeaders,
     );
     let firstRedirectDuration = response.timings.duration;
     const isPostReviewOutcomeReqSuccessful = check(response, {
       "Post Review Outcome Request Success": () => response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostReviewOutcomeReqSuccessful) {
       console.error(
         `Post Review Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const modConfirmReviewOutcomeUrl = `${baseURL}modifications/confirmreviewoutcome`;
@@ -4094,13 +4258,13 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${modConfirmReviewOutcomeUrl}`,
-      getConfirmRevOutcomeHeaders
+      getConfirmRevOutcomeHeaders,
     );
     TrendConfirmReviewOutcomePageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetConfirmRevOutcomePageReqSuccessful = check(response, {
       "Get Confirm Review Outcome Page Request Success": () =>
@@ -4109,12 +4273,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${confirmReviewOutcomeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetConfirmRevOutcomePageReqSuccessful) {
       console.error(
         `Get Confirm Review Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -4135,7 +4299,7 @@ export function basicJourneysScript(data) {
       submitRevOutcomePostBody,
       {
         __RequestVerificationToken: `${requestVerificationToken}`,
-      }
+      },
     );
 
     const postHeadersSubmitOutcomeWithReferer = Object.assign(
@@ -4143,7 +4307,7 @@ export function basicJourneysScript(data) {
       postHeaders.headers,
       {
         Referer: `${modConfirmReviewOutcomeUrl}`,
-      }
+      },
     );
 
     const postSubmitReviewOutcomeHeaders = {
@@ -4154,7 +4318,7 @@ export function basicJourneysScript(data) {
     response = http.post(
       `${modSubmitReviewOutcomeUrl}`,
       submitReviewOutcomePostBody,
-      postSubmitReviewOutcomeHeaders
+      postSubmitReviewOutcomeHeaders,
     );
     firstRedirectDuration = response.timings.duration;
     const isPostSubmitOutcomeReqSuccessful = check(response, {
@@ -4162,17 +4326,17 @@ export function basicJourneysScript(data) {
         response.status === 302,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isPostSubmitOutcomeReqSuccessful) {
       console.error(
         `Post Submit Review Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     const modOutcomeSubmittedUrl = `${baseURL}${response.headers.Location.replace(
       "/",
-      ""
+      "",
     )}`;
 
     const getRevOutcomeSubmittedWithReferer = Object.assign(
@@ -4180,7 +4344,7 @@ export function basicJourneysScript(data) {
       getHeaders.headers,
       {
         Referer: `${modConfirmReviewOutcomeUrl}`,
-      }
+      },
     );
 
     const getRevOutcomeSubmittedHeaders = {
@@ -4190,13 +4354,13 @@ export function basicJourneysScript(data) {
 
     response = http.get(
       `${modOutcomeSubmittedUrl}`,
-      getRevOutcomeSubmittedHeaders
+      getRevOutcomeSubmittedHeaders,
     );
     TrendSubmitReviewOutcomePageReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     ); //combining duration of intial request and redirect requests
     TrendTransactionalReqDuration.add(
-      response.timings.duration + firstRedirectDuration
+      response.timings.duration + firstRedirectDuration,
     );
     const isGetSubmitRevOutcomePageReqSuccessful = check(response, {
       "Get Submitted Review Outcome Page Request Success": () =>
@@ -4205,12 +4369,12 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${submittedReviewOutcomeCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetSubmitRevOutcomePageReqSuccessful) {
       console.error(
         `Get Submitted Review Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     userThinkTime(2, 4);
@@ -4233,12 +4397,1993 @@ export function basicJourneysScript(data) {
         res.body.indexOf(`${myTasklistCheck}`) !== -1,
     });
     console.info(
-      "Request Sent: " + response.request.method + " " + response.request.url
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
     if (!isGetMyTasklistPageReqSuccessful) {
       console.error(
         `Get My Tasklist Page Request Failed - ${response.url} \nStatus - ${response.status}` +
-          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    sleep(1);
+  });
+
+  group("Manage Sponsor Journey", function () {
+    const rtsId = "98684";
+    const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac";
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}systemadmin`, getHeaders);
+    TrendSysAdminReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSysAdminPageReqSuccessful = check(response, {
+      "System Admin Page Request Success": () => response.status === 200,
+      "System Admin Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sysAdminCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSysAdminPageReqSuccessful) {
+      console.error(
+        `Get System Admin Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const manageSponsorOrgsUrl = `${baseURL}sponsororganisations`;
+    response = http.get(`${manageSponsorOrgsUrl}`, getHeaders);
+    TrendManageSponsorOrgsReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetManageSponsorOrgsPageReqSuccessful = check(response, {
+      "Get Manage Sponsor Orgs Page Request Success": () =>
+        response.status === 200,
+      "Manage Sponsor Orgs Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${manageSponsorOrgsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetManageSponsorOrgsPageReqSuccessful) {
+      console.error(
+        `Get Manage Sponsor Orgs Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const searchSponsorOrgsPostBody =
+      scriptData[0][0].searchSponsorOrgsPostBody[0].postBody;
+
+    const searchSponsorOrgsPagePostBody = Object.assign(
+      {},
+      searchSponsorOrgsPostBody,
+      {
+        "Search.SearchQuery": `${shortTitle}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeadersSearchManageSponsorOrgsWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${manageSponsorOrgsUrl}`,
+      },
+    );
+
+    const postSearchManageSponsorOrgsHeaders = {
+      headers: postHeadersSearchManageSponsorOrgsWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsororganisations/applyfilters`,
+      searchSponsorOrgsPagePostBody,
+      postSearchManageSponsorOrgsHeaders,
+    );
+    let firstRedirectDuration = response.timings.duration;
+    const isPostSearchManageSponsorReqSuccessful = check(response, {
+      "Post Search Manage Sponsor Orgs Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostSearchManageSponsorReqSuccessful) {
+      console.error(
+        `Post Search Manage Sponsor Orgs Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const searchedManageSponsorUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    const getManageSponsorOrgsWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${manageSponsorOrgsUrl}`,
+      },
+    );
+
+    const getManageSponsorRedirectHeaders = {
+      headers: getManageSponsorOrgsWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${searchedManageSponsorUrl}`,
+      getManageSponsorRedirectHeaders,
+    );
+    TrendSearchManageSponsorOrgPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetManageSponsorOrgsPageReqSuccessful = check(response, {
+      "Get Manage Sponsor Orgs Page Request Success": () =>
+        response.status === 200,
+      "Manage Sponsor Orgs Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${manageSponsorOrgsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetManageSponsorOrgsPageReqSuccessful) {
+      console.error(
+        `Get Manage Sponsor Orgs Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}sponsororganisations/view?rtsId=${rtsId}`,
+      getHeaders,
+    );
+    TrendSponsorOrgProfileReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetSponsorOrgProfilePageReqSuccessful = check(response, {
+      "Get View Sponsor Org Profile Page Request Success": () =>
+        response.status === 200,
+      "View Sponsor Org Profile Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgProfilePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgProfilePageReqSuccessful) {
+      console.error(
+        `Get View Sponsor Org Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewusers?rtsId=${rtsId}`,
+      getHeaders,
+    );
+    TrendViewSponsorUsersReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetSponsorOrgUsersPageReqSuccessful = check(response, {
+      "Get View Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "View Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get View Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewadduser?rtsId=${rtsId}`,
+      getHeaders,
+    );
+    TrendAddSponsorUsersReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetAddSponsorUsersPageReqSuccessful = check(response, {
+      "Get Add Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "Add Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${addSponsorUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetAddSponsorUsersPageReqSuccessful) {
+      console.error(
+        `Get Add Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewadduser?SearchQuery=k6&RtsId=${rtsId}&PageSize=20`,
+      getHeaders,
+    );
+    TrendSearchAddSponsorUserReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSearchAddSponsorUserPageReqSuccessful = check(response, {
+      "Get Search Add Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "Search Add Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${searchAddSponsorUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSearchAddSponsorUserPageReqSuccessful) {
+      console.error(
+        `Get Search Add Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getAddUserRoleUrl = `${baseURL}${response
+      .html()
+      .find("tbody .govuk-tag--green")
+      .parents("tr")
+      .find("a[class=govuk-link]")
+      .first()
+      .attr("href")
+      .replace("/", "")}`;
+
+    const userIdStart = getAddUserRoleUrl.indexOf("userId=");
+    const userIdEnd = getAddUserRoleUrl.indexOf("&rtsId");
+    const userId = getAddUserRoleUrl
+      .substring(userIdStart, userIdEnd)
+      .replace("userId=", "");
+
+    const sponsorAddUserUrl = `${baseURL}${response
+      .html()
+      .find("tbody .govuk-tag--green")
+      .parents("tr")
+      .find("a[class=govuk-link]")
+      .last()
+      .attr("href")
+      .replace("/", "")}`;
+
+    const sponsorAddUserIdStart = sponsorAddUserUrl.indexOf("userId=");
+    const sponsorAddUserIdEnd = sponsorAddUserUrl.indexOf("&rtsId");
+    sponsorAddUserId = sponsorAddUserUrl
+      .substring(sponsorAddUserIdStart, sponsorAddUserIdEnd)
+      .replace("userId=", "");
+
+    sponsorAddUserEmail = response
+      .html()
+      .find("tbody .govuk-tag--green")
+      .parents("tr")
+      .find(".line-break-anywhere")
+      .last()
+      .text();
+
+    response = http.get(`${getAddUserRoleUrl}`, getHeaders);
+    TrendAddSponsorUserRoleReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetAddSponsorUserRolePageReqSuccessful = check(response, {
+      "Get Add Sponsor User Role Request Success": () =>
+        response.status === 200,
+      "Add Sponsor User Role Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${addSponsorUserRolePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetAddSponsorUserRolePageReqSuccessful) {
+      console.error(
+        `Get Add Sponsor User Role Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const saveUserRolePostBody =
+      scriptData[0][0].saveUserRolePostBody[0].postBody;
+
+    const saveUserSponsorRolePostBody = Object.assign(
+      {},
+      saveUserRolePostBody,
+      {
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderSaveUserRoleWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getAddUserRoleUrl}`,
+      },
+    );
+
+    const postSaveUserRoleHeaders = {
+      headers: postHeaderSaveUserRoleWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsororganisations/saveuserrole?RtsId=${rtsId}&UserId=${userId}`,
+      saveUserSponsorRolePostBody,
+      postSaveUserRoleHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostSaveUserRoleReqSuccessful = check(response, {
+      "Post Save User Role Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostSaveUserRoleReqSuccessful) {
+      console.error(
+        `Post Save User Role Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getCheckAddSponsorUserWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${getAddUserRoleUrl}`,
+      },
+    );
+
+    const getCheckAddSponsorUserHeaders = {
+      headers: getCheckAddSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    const checkAddSponsorUserUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    response = http.get(
+      `${checkAddSponsorUserUrl}`,
+      getCheckAddSponsorUserHeaders,
+    );
+    TrendSaveUserRolePageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetCheckAddSponsorUserReqSuccessful = check(response, {
+      "Get Check Add Sponsor User Page Request Success": () =>
+        response.status === 200,
+      "Check Add Sponsor User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${checkAddSponsorUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetCheckAddSponsorUserReqSuccessful) {
+      console.error(
+        `Get Check Add Sponsor User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const userTitle = response
+      .html()
+      .find("input[type=hidden][id=Title]")
+      .first()
+      .attr("value");
+
+    const userGivenName = response
+      .html()
+      .find("input[type=hidden][id=GivenName]")
+      .first()
+      .attr("value");
+
+    const userFamilyName = response
+      .html()
+      .find("input[type=hidden][id=FamilyName]")
+      .first()
+      .attr("value");
+
+    const userEmail = response
+      .html()
+      .find("input[type=hidden][id=Email]")
+      .first()
+      .attr("value");
+
+    const userTelephone = response
+      .html()
+      .find("input[type=hidden][id=Telephone]")
+      .first()
+      .attr("value");
+
+    const userOrganisation = response
+      .html()
+      .find("input[type=hidden][id=Organisation]")
+      .first()
+      .attr("value");
+
+    const userJobTitle = response
+      .html()
+      .find("input[type=hidden][id=JobTitle]")
+      .first()
+      .attr("value");
+
+    const submitAddUserPostBody =
+      scriptData[0][0].submitAddUserPostBody[0].postBody;
+
+    const submitAddSponsorUserPostBody = Object.assign(
+      {},
+      submitAddUserPostBody,
+      {
+        UserId: `${userId}`,
+        RtsId: `${rtsId}`,
+        SponsorOrganisationId: `${sponsorOrgId}`,
+        Title: `${userTitle}`,
+        GivenName: `${userGivenName}`,
+        FamilyName: `${userFamilyName}`,
+        Email: `${userEmail}`,
+        Telephone: `${userTelephone}`,
+        Organisation: `${userOrganisation}`,
+        JobTitle: `${userJobTitle}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderSubmitSponsorUserWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${checkAddSponsorUserUrl}`,
+      },
+    );
+
+    const postSubmitSponsorUserHeaders = {
+      headers: postHeaderSubmitSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsororganisations/submitadduser`,
+      submitAddSponsorUserPostBody,
+      postSubmitSponsorUserHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostSubmitSponsorUserReqSuccessful = check(response, {
+      "Post Submit Add Sponsor User Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostSubmitSponsorUserReqSuccessful) {
+      console.error(
+        `Post Submit Add Sponsor User Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    let getViewSponsorOrgUsersWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${checkAddSponsorUserUrl}`,
+      },
+    );
+
+    let getViewSponsorOrgUsersHeaders = {
+      headers: getViewSponsorOrgUsersWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewusers?rtsId=${rtsId}`,
+      getViewSponsorOrgUsersHeaders,
+    );
+    TrendSubmitAddSponsorUserReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetSponsorOrgUsersPageReqSuccessful = check(response, {
+      "Get View Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "View Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get View Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSponsorOrgUserProfileUrl = `${baseURL}sponsororganisations/viewuser?rtsId=${rtsId}&userId=${userId}`;
+    response = http.get(`${getSponsorOrgUserProfileUrl}`, getHeaders);
+    TrendSponsorOrgUserProfileReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSponsorOrgUserProfilePageReqSuccessful = check(response, {
+      "Get Sponsor Org User Profile Request Success": () =>
+        response.status === 200,
+      "Sponsor Org User Profile Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgUserProfilePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgUserProfilePageReqSuccessful) {
+      console.error(
+        `Get Sponsor Org User Profile Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const sponsorUserDisablePostBody =
+      scriptData[0][0].sponsorUserDisablePostBody[0].postBody;
+
+    const sponsorDisableUserPostBody = Object.assign(
+      {},
+      sponsorUserDisablePostBody,
+      {
+        UserId: `${userId}`,
+        RtsId: `${rtsId}`,
+        SponsorOrganisationId: `${sponsorOrgId}`,
+        Title: `${userTitle}`,
+        GivenName: `${userGivenName}`,
+        FamilyName: `${userFamilyName}`,
+        Email: `${userEmail}`,
+        Telephone: `${userTelephone}`,
+        Organisation: `${userOrganisation}`,
+        JobTitle: `${userJobTitle}`,
+        userId: `${userId}`,
+        rtsId: `${rtsId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderDisableSponsorUserWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getSponsorOrgUserProfileUrl}`,
+      },
+    );
+
+    const postDisableSponsorUserHeaders = {
+      headers: postHeaderDisableSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    const postDisableSponsorUserUrl = `${baseURL}sponsororganisations/disableuser`;
+    response = http.post(
+      `${postDisableSponsorUserUrl}`,
+      sponsorDisableUserPostBody,
+      postDisableSponsorUserHeaders,
+    );
+    TrendDisableSponsorUserReqDuration.add(response.timings.duration);
+    TrendTransactionalReqDuration.add(response.timings.duration);
+    const isPostDisableSponsorUserReqSuccessful = check(response, {
+      "Post Disable Sponsor User Request Success": () =>
+        response.status === 200,
+      "Disable Sponsor User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${disableSponsorUserPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostDisableSponsorUserReqSuccessful) {
+      console.error(
+        `Post Disable Sponsor User Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const confirmSponsorUserDisablePostBody =
+      scriptData[0][0].confirmSponsorUserDisablePostBody[0].postBody;
+
+    const confirmSponsorDisableUserPostBody = Object.assign(
+      {},
+      confirmSponsorUserDisablePostBody,
+      {
+        UserId: `${userId}`,
+        RtsId: `${rtsId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderConfirmDisableSponsorUserWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${postDisableSponsorUserUrl}`,
+      },
+    );
+
+    const postHeaderConfirmDisableSponsorUser = {
+      headers: postHeaderConfirmDisableSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsororganisations/confirmdisableuser`,
+      confirmSponsorDisableUserPostBody,
+      postHeaderConfirmDisableSponsorUser,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostConfirmDisableSponsorUserReqSuccessful = check(response, {
+      "Post Confirm Disable Sponsor User Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostConfirmDisableSponsorUserReqSuccessful) {
+      console.error(
+        `Confirm Disable Sponsor User Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    getViewSponsorOrgUsersWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${postDisableSponsorUserUrl}`,
+    });
+
+    getViewSponsorOrgUsersHeaders = {
+      headers: getViewSponsorOrgUsersWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${baseURL}sponsororganisations/viewusers?rtsId=${rtsId}`,
+      getViewSponsorOrgUsersHeaders,
+    );
+    TrendConfirmDisableSponsorUserReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetSponsorOrgUsersPageReqSuccessful = check(response, {
+      "Get View Sponsor Org Users Request Success": () =>
+        response.status === 200,
+      "View Sponsor Org Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorOrgUsersPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get View Sponsor Org Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    sleep(1);
+  });
+
+  group("Sponsor Workspace Manage Users Journey", function () {
+    const rtsId = "98684";
+    const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac";
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}sponsorworkspace`, getHeaders);
+    TrendSponsorWorkspacePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSponsorWorkspacePageReqSuccessful = check(response, {
+      "Get Sponsor Workspace Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Workspace Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorWorkspaceCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorWorkspacePageReqSuccessful) {
+      console.error(
+        `Get Sponsor Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myOrganisationsUrl = `${baseURL}sponsorworkspace/myorganisations?sponsorOrganisationUserId=${sponsorOrgId}`;
+    response = http.get(`${myOrganisationsUrl}`, getHeaders);
+    TrendMyOrganisationsReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgsPageReqSuccessful = check(response, {
+      "Get My Organisations Page Request Success": () =>
+        response.status === 200,
+      "My Organisations Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgsPageReqSuccessful) {
+      console.error(
+        `Get My Organisations Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myOrganisationProfileUrl = `${baseURL}sponsorworkspace/myorganisationprofile?rtsId=${rtsId}`;
+    response = http.get(`${myOrganisationProfileUrl}`, getHeaders);
+    TrendMyOrganisationProfileReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgProfilePageReqSuccessful = check(response, {
+      "Get My Organisation Profile Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Profile Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgProfileCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgProfilePageReqSuccessful) {
+      console.error(
+        `Get My Organisation Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myOrganisationUsersUrl = `${baseURL}sponsorworkspace/myorganisationusers?rtsId=${rtsId}`;
+    response = http.get(`${myOrganisationUsersUrl}`, getHeaders);
+    TrendMyOrganisationUsersReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetMyOrgUsersPageReqSuccessful = check(response, {
+      "Get My Organisation Users Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgUsersCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myOrganisationAddUserUrl = `${baseURL}sponsorworkspace/myorganisationusersadduser?rtsId=${rtsId}`;
+    response = http.get(`${myOrganisationAddUserUrl}`, getHeaders);
+    TrendMyOrganisationAddUserReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgAddUserPageReqSuccessful = check(response, {
+      "Get My Organisation Add User Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Add User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgAddUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgAddUserEmailWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserUrl}`,
+      },
+    );
+
+    const getMyOrgAddUserEmailHeaders = {
+      headers: getMyOrgAddUserEmailWithReferer,
+      redirects: 0,
+    };
+
+    const myOrganisationAddUserEmailUrl = `${baseURL}sponsorworkspace/myorganisationusersadduser?Email=${sponsorAddUserEmail}&RtsId=${rtsId}`;
+    response = http.get(
+      `${myOrganisationAddUserEmailUrl}`,
+      getMyOrgAddUserEmailHeaders,
+    );
+    let firstRedirectDuration = response.timings.duration;
+    const isGetMyOrgAddUserEmailPageReqSuccessful = check(response, {
+      "Get My Organisation Add User Email Page Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserEmailPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Email Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyOrgAddUserRoleWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserUrl}`,
+      },
+    );
+
+    const getMyOrgAddUserRoleHeaders = {
+      headers: getMyOrgAddUserRoleWithReferer,
+      redirects: 0,
+    };
+
+    const myOrganisationAddUserRoleUrl = `${baseURL}sponsorworkspace/myorganisationusersadduserrole?rtsId=${rtsId}&userId=${sponsorAddUserId}`;
+
+    response = http.get(
+      `${myOrganisationAddUserRoleUrl}`,
+      getMyOrgAddUserRoleHeaders,
+    );
+    TrendMyOrganisationAddUserRolePageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetMyOrgAddUserRoleReqSuccessful = check(response, {
+      "Get My Organisation Add User Role Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Add User Role Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgAddUserRoleCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserRoleReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Role Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgAddUserSponsorRoleWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserRoleUrl}`,
+      },
+    );
+
+    const getMyOrgAddUserSponsorRoleHeaders = {
+      headers: getMyOrgAddUserSponsorRoleWithReferer,
+      redirects: 0,
+    };
+
+    const myOrganisationAddUserSponsorRoleUrl = `${baseURL}sponsorworkspace/myorganisationusersadduserrole?role=sponsor&rtsId=${rtsId}&userId=${sponsorAddUserId}&role=&nextPage=true`;
+    response = http.get(
+      `${myOrganisationAddUserSponsorRoleUrl}`,
+      getMyOrgAddUserSponsorRoleHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isGetMyOrgAddUserSponsorRoleReqSuccessful = check(response, {
+      "Get My Organisation Add User Sponsor Role Page Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserSponsorRoleReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Sponsor Role Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyOrgAddUserPermissionWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserRoleUrl}`,
+      },
+    );
+
+    const getMyOrgAddUserPermissionHeaders = {
+      headers: getMyOrgAddUserPermissionWithReferer,
+      redirects: 0,
+    };
+
+    const myOrganisationAddUserPermissionUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    response = http.get(
+      `${myOrganisationAddUserPermissionUrl}`,
+      getMyOrgAddUserPermissionHeaders,
+    );
+    TrendMyOrganisationAddUserPermissionPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetMyOrgAddUserPermissionReqSuccessful = check(response, {
+      "Get My Organisation Add User Permission Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Add User Permission Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgAddUserPermissionCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgAddUserPermissionReqSuccessful) {
+      console.error(
+        `Get My Organisation Add User Permission Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgCheckAddUserWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserPermissionUrl}`,
+      },
+    );
+
+    const getMyOrgCheckAddUserHeaders = {
+      headers: getMyOrgCheckAddUserWithReferer,
+      redirects: 0,
+    };
+
+    const sponsorAuthPermissionValues = randomItem(sponsorAuthPermission);
+    const checkSponsorAuthPermissionValue = sponsorAuthPermissionValues.check;
+    const myOrganisationAddUserCheckUrl = `${myOrganisationAddUserPermissionUrl.replace("myorganisationusersadduserpermission?", `myorganisationuserscheckandconfirm?${checkSponsorAuthPermissionValue}`)}`;
+
+    response = http.get(
+      `${myOrganisationAddUserCheckUrl}`,
+      getMyOrgCheckAddUserHeaders,
+    );
+    TrendMyOrganisationCheckAddUserPageReqDuration.add(
+      response.timings.duration,
+    );
+    TrendTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgCheckAddUserReqSuccessful = check(response, {
+      "Get My Organisation Check Add User Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Check Add User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgCheckAddUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgCheckAddUserReqSuccessful) {
+      console.error(
+        `Get My Organisation Check Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgConfirmAddUserWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myOrganisationAddUserCheckUrl}`,
+      },
+    );
+
+    const getMyOrgConfirmAddUserHeaders = {
+      headers: getMyOrgConfirmAddUserWithReferer,
+      redirects: 0,
+    };
+
+    const confirmSponsorAuthPermissionValue =
+      sponsorAuthPermissionValues.confirm;
+    const myOrganisationAddUserConfirmUrl = `${myOrganisationAddUserPermissionUrl.replace("myorganisationusersadduserpermission", "myorganisationusersconfirmadduser")}${confirmSponsorAuthPermissionValue}`;
+
+    response = http.get(
+      `${myOrganisationAddUserConfirmUrl}`,
+      getMyOrgConfirmAddUserHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isGetMyOrgConfirmAddUserReqSuccessful = check(response, {
+      "Get My Organisation Confirm Add User Page Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgConfirmAddUserReqSuccessful) {
+      console.error(
+        `Get My Organisation Confirm Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyOrgUsersWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${myOrganisationAddUserCheckUrl}`,
+    });
+
+    const getMyOrgUsersHeaders = {
+      headers: getMyOrgUsersWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(`${myOrganisationUsersUrl}`, getMyOrgUsersHeaders);
+    TrendMyOrganisationConfirmAddUserPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetMyOrgUsersPageReqSuccessful = check(response, {
+      "Get My Organisation Users Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgUsersCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSearchMyOrgUsersUrl = `${baseURL}sponsorworkspace/myorganisationusers?SearchQuery=${sponsorAddUserEmail}&RtsId=${rtsId}&PageSize=20`;
+    response = http.get(`${getSearchMyOrgUsersUrl}`, getHeaders);
+    TrendMyOrganisationSearchUsersPageReqDuration.add(
+      response.timings.duration,
+    );
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgSearchUsersPageReqSuccessful = check(response, {
+      "Get Search My Organisation Users Page Request Success": () =>
+        response.status === 200,
+      "Search My Organisation Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgSearchUsersCheck}`) == -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgSearchUsersPageReqSuccessful) {
+      console.error(
+        `Get Search My Organisation Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgUserProfileUrl = `${baseURL}sponsorworkspace/myorganisationusers/user?rtsId=${rtsId}&userId=${sponsorAddUserId}`;
+    response = http.get(`${getMyOrgUserProfileUrl}`, getHeaders);
+    TrendMyOrganisationUserProfilePageReqDuration.add(
+      response.timings.duration,
+    );
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgUserProfilePageReqSuccessful = check(response, {
+      "Get My Organisation User Profile Page Request Success": () =>
+        response.status === 200,
+      "My Organisation User Profile Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgUserProfileCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgUserProfilePageReqSuccessful) {
+      console.error(
+        `Get My Organisation User Profile Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getMyOrgDisableUserUrl = `${baseURL}sponsorworkspace/disableuser?userId=${sponsorAddUserId}&email=${sponsorAddUserEmail}`;
+    response = http.get(`${getMyOrgDisableUserUrl}`, getHeaders);
+    TrendMyOrganisationDisableUserPageReqDuration.add(
+      response.timings.duration,
+    );
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetMyOrgDisableUserPageReqSuccessful = check(response, {
+      "Get My Organisation Disable User Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Disable User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgDisableUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgDisableUserPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Disable User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const myOrgUserDisablePostBody =
+      scriptData[0][0].myOrgUserDisablePostBody[0].postBody;
+
+    const myOrgDisableUserPostBody = Object.assign(
+      {},
+      myOrgUserDisablePostBody,
+      {
+        Id: `${sponsorAddUserId}`,
+        Email: `${sponsorAddUserEmail}`,
+        RtsId: `${rtsId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderMyOrgDisableSponsorUserWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getMyOrgDisableUserUrl}`,
+      },
+    );
+
+    const postHeaderMyOrgDisableSponsorUser = {
+      headers: postHeaderMyOrgDisableSponsorUserWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsorworkspace/disableuser`,
+      myOrgDisableUserPostBody,
+      postHeaderMyOrgDisableSponsorUser,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostMyOrgDisableSponsorUserReqSuccessful = check(response, {
+      "Post My Organisation Disable User Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostMyOrgDisableSponsorUserReqSuccessful) {
+      console.error(
+        `Post My Organisation Disable User Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyOrganisationUsersWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${getMyOrgDisableUserUrl}`,
+      },
+    );
+
+    const getMyOrganisationUsersHeaders = {
+      headers: getMyOrganisationUsersWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${myOrganisationUsersUrl}`,
+      getMyOrganisationUsersHeaders,
+    );
+    TrendMyOrganisationConfirmDisableUserPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetMyOrgUsersPageReqSuccessful = check(response, {
+      "Get My Organisation Users Page Request Success": () =>
+        response.status === 200,
+      "My Organisation Users Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myOrgUsersCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyOrgUsersPageReqSuccessful) {
+      console.error(
+        `Get My Organisation Users Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    sleep(1);
+  });
+
+  group("Close Project Journey", function () {
+    const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac";
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const myResearchPageUrl = `${baseURL}application/welcome`;
+    response = http.get(`${myResearchPageUrl}`, getHeaders);
+    TrendMyResearchPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetMyResearchPageReqSuccessful = check(response, {
+      "My Research Page Request Success": () => response.status === 200,
+      "My Research Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myResearchPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyResearchPageReqSuccessful) {
+      console.error(
+        `Get My Research Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const searchMyResearchPostBody =
+      scriptData[0][0].searchMyResearchPostBody[0].postBody;
+
+    const searchMyResearchPagePostBody = Object.assign(
+      {},
+      searchMyResearchPostBody,
+      {
+        "Search.SearchTitleTerm": `${irasId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeadersSearchMyResearchWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${myResearchPageUrl}`,
+      },
+    );
+
+    const postSearchMyResearchHeaders = {
+      headers: postHeadersSearchMyResearchWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}application/applyfilters`,
+      searchMyResearchPagePostBody,
+      postSearchMyResearchHeaders,
+    );
+    let firstRedirectDuration = response.timings.duration;
+    const isPostSearchMyResearchReqSuccessful = check(response, {
+      "Post Search My Research Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostSearchMyResearchReqSuccessful) {
+      console.error(
+        `Post Search My Research Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getMyResearchWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${myResearchPageUrl}`,
+    });
+
+    const getMyResearchRedirectHeaders = {
+      headers: getMyResearchWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(`${myResearchPageUrl}`, getMyResearchRedirectHeaders);
+    TrendSearchMyResearchPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    isGetMyResearchPageReqSuccessful = check(response, {
+      "My Research Page Request Success": () => response.status === 200,
+      "My Research Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${myResearchPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetMyResearchPageReqSuccessful) {
+      console.error(
+        `Get My Research Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    let getProjectOverviewRedirectWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${myResearchPageUrl}`,
+      },
+    );
+
+    let getProjectOverviewRedirectHeaders = {
+      headers: getProjectOverviewRedirectWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${baseURL}projectoverview?projectRecordId=${projectRecordId}`,
+      getProjectOverviewRedirectHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    let isGetProjectOverviewRedirectReqSuccessful = check(response, {
+      "Get Project Overview Redirect Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetProjectOverviewRedirectReqSuccessful) {
+      console.error(
+        `Get Project Overview Redirect Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    let getProjectOverviewWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${myResearchPageUrl}`,
+    });
+
+    let getProjectOverviewHeaders = {
+      headers: getProjectOverviewWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${baseURL}projectoverview/projectdetails?projectRecordId=${projectRecordId}`,
+      getProjectOverviewHeaders,
+    ); //combining duration of intial request and redirect requests
+    TrendProjectOverviewPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    TrendNonTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    let isGetProjectOverviewReqSuccessful = check(response, {
+      "Get Project Overview Page Request Success": () =>
+        response.status === 200,
+      "Project Overview Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${projectOverviewPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetProjectOverviewReqSuccessful) {
+      console.error(
+        `Get Project Overview Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const postApprovalTabUrl = `${baseURL}projectoverview/postapproval?projectRecordId=${projectRecordId}`;
+
+    response = http.get(`${postApprovalTabUrl}`, getHeaders);
+    TrendPostApprovalTabReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetPostApprovalReqSuccessful = check(response, {
+      "Get Post Approval Tab Request Success": () => response.status === 200,
+      "Post Approval Tab Loaded Correctly": (res) =>
+        res.body.indexOf(`${postApprovalCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetPostApprovalReqSuccessful) {
+      console.error(
+        `Get Post Approval Tab Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getHeadersCloseProjectWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${postApprovalTabUrl}`,
+      },
+    );
+    const getCloseProjectHeaders = {
+      headers: getHeadersCloseProjectWithReferer,
+      redirects: 0,
+    };
+
+    const closeProjectUrl = `${baseURL}application/closeproject?projectRecordId=${projectRecordId}`;
+
+    response = http.get(`${closeProjectUrl}`, getCloseProjectHeaders);
+    TrendCloseProjectPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetCloseProjectPageReqSuccessful = check(response, {
+      "Close Project Page Request Success": () => response.status === 200,
+      "Close Project Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${closeProjectCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetCloseProjectPageReqSuccessful) {
+      console.error(
+        `Get Close Project Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const confirmProjClosurePostBody =
+      scriptData[0][0].confirmClosurePostBody[0].postBody;
+
+    const confirmClosurePostBody = Object.assign(
+      {},
+      confirmProjClosurePostBody,
+      {
+        ProjectRecordId: `${projectRecordId}`,
+        IrasId: `${irasId}`,
+        ShortProjectTitle: `${shortTitle}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeadersConfirmClosureWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${closeProjectUrl}`,
+      },
+    );
+
+    const postConfirmClosureHeaders = {
+      headers: postHeadersConfirmClosureWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}application/confirmprojectclosure`,
+      confirmClosurePostBody,
+      postConfirmClosureHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostConfirmClosureReqSuccessful = check(response, {
+      "Post Confirm Project Closure Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostConfirmClosureReqSuccessful) {
+      console.error(
+        `Post Confirm Project Closure Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const projectClosureUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    const getProjectClosureWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${closeProjectUrl}`,
+    });
+
+    const getProjectClosureHeaders = {
+      headers: getProjectClosureWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(`${projectClosureUrl}`, getProjectClosureHeaders);
+    TrendProjectClosurePageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetProjectClosureReqSuccessful = check(response, {
+      "Get Project Closure Request Success": () => response.status === 200,
+      "Project Closure Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${projectClosureCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetProjectClosureReqSuccessful) {
+      console.error(
+        `Get Project Closure Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    getProjectOverviewWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${projectClosureUrl}`,
+    });
+
+    getProjectOverviewHeaders = {
+      headers: getProjectOverviewWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${baseURL}projectoverview/projectdetails?projectRecordId=${projectRecordId}`,
+      getProjectOverviewHeaders,
+    );
+    TrendProjectOverviewPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    isGetProjectOverviewReqSuccessful = check(response, {
+      "Get Project Overview Page Request Success": () =>
+        response.status === 200,
+      "Project Overview Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${projectOverviewPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetProjectOverviewReqSuccessful) {
+      console.error(
+        `Get Project Overview Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    response = http.get(`${baseURL}`, getHeaders);
+    TrendHomePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    isGetHomePageReqSuccessful = check(response, {
+      "Get Home Page Request Success": () => response.status === 200,
+      "Home Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${homePageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetHomePageReqSuccessful) {
+      console.error(
+        `Get Home Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}sponsorworkspace`, getHeaders);
+    TrendSponsorWorkspacePageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetSponsorWorkspacePageReqSuccessful = check(response, {
+      "Get Sponsor Workspace Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Workspace Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorWorkspaceCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorWorkspacePageReqSuccessful) {
+      console.error(
+        `Get Sponsor Workspace Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSponsorAuthUrl = `${baseURL}sponsorworkspace/modifications?sponsorOrganisationUserId=${sponsorOrgId}`;
+    response = http.get(`${getSponsorAuthUrl}`, getHeaders);
+    TrendSponsorAuthorisationsPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetSponsorAuthorisationsPageReqSuccessful = check(response, {
+      "Get Sponsor Authorisations Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Authorisations Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorAuthorisationsCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorAuthorisationsPageReqSuccessful) {
+      console.error(
+        `Get Sponsor Authorisations Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getSponsorProjectClosuresUrl = `${baseURL}sponsorworkspace/projectclosures?sponsorOrganisationUserId=${sponsorOrgId}`;
+    response = http.get(`${getSponsorProjectClosuresUrl}`, getHeaders);
+    TrendSponsorProjectClosuresPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    let isGetSponsorProjectClosuresPageReqSuccessful = check(response, {
+      "Get Sponsor Project Closures Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Project Closures Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorClosuresCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorProjectClosuresPageReqSuccessful) {
+      console.error(
+        `Get Sponsor Project Closures Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getCheckAuthClosureWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${getSponsorProjectClosuresUrl}`,
+      },
+    );
+
+    const getCheckAuthClosureHeaders = {
+      headers: getCheckAuthClosureWithReferer,
+      redirects: 0,
+    };
+
+    const getCheckAuthClosureUrl = `${baseURL}sponsorworkspace/checkandauthoriseprojectclosure?projectRecordId=${projectRecordId}&sponsorOrganisationUserId=${sponsorOrgId}`;
+    response = http.get(
+      `${getCheckAuthClosureUrl}`,
+      getCheckAuthClosureHeaders,
+    );
+    TrendProjectOverviewPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    const isGetCheckAuthClosureReqSuccessful = check(response, {
+      "Get Check Auth Project Closure Page Request Success": () =>
+        response.status === 200,
+      "Check Auth Project Closure Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${checkAuthProjClosureCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetCheckAuthClosureReqSuccessful) {
+      console.error(
+        `Get Check Auth Project Closure Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const checkAuthClosurePostBody =
+      scriptData[0][0].checkAuthClosurePostBody[0].postBody;
+
+    const checkAuthProjClosurePostBody = Object.assign(
+      {},
+      checkAuthClosurePostBody,
+      {
+        ProjectRecordId: `${projectRecordId}`,
+        SponsorOrganisationUserId: `${sponsorOrgId}`,
+        IrasId: `${irasId}`,
+        ShortProjectTitle: `${shortTitle}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeadersCheckAuthClosureWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getCheckAuthClosureUrl}`,
+      },
+    );
+
+    const postCheckAuthClosureHeaders = {
+      headers: postHeadersCheckAuthClosureWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsorworkspace/checkandauthoriseprojectclosure`,
+      checkAuthProjClosurePostBody,
+      postCheckAuthClosureHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostCheckAuthClosureReqSuccessful = check(response, {
+      "Post Check Auth Project Closure Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostCheckAuthClosureReqSuccessful) {
+      console.error(
+        `Post Check Auth Project Closure Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getClosurePreAuthWithReferer = Object.assign({}, getHeaders.headers, {
+      Referer: `${getCheckAuthClosureUrl}`,
+    });
+
+    const getClosurePreAuthHeaders = {
+      headers: getClosurePreAuthWithReferer,
+      redirects: 0,
+    };
+
+    const getClosurePreAuthUrl = `${baseURL}sponsorworkspace/projectclosurepreauthorisation`;
+    response = http.get(`${getClosurePreAuthUrl}`, getClosurePreAuthHeaders);
+    TrendClosurePreAuthPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetClosurePreAuthReqSuccessful = check(response, {
+      "Get Project Closure Pre Auth Request Success": () =>
+        response.status === 200,
+      "Project Closure Pre Auth Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${closurePreAuthCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetClosurePreAuthReqSuccessful) {
+      console.error(
+        `Get Project Closure Pre Auth Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const confirmAuthClosurePostBody =
+      scriptData[0][0].confirmAuthClosurePostBody[0].postBody;
+
+    const confirmAuthProjClosurePostBody = Object.assign(
+      {},
+      confirmAuthClosurePostBody,
+      {
+        ProjectRecordId: `${projectRecordId}`,
+        SponsorOrganisationUserId: `${sponsorOrgId}`,
+        __RequestVerificationToken: `${requestVerificationToken}`,
+      },
+    );
+
+    const postHeaderConfirmAuthProjClosureWithReferer = Object.assign(
+      {},
+      postHeaders.headers,
+      {
+        Referer: `${getClosurePreAuthUrl}`,
+      },
+    );
+
+    const postConfirmAuthProjClosureHeaders = {
+      headers: postHeaderConfirmAuthProjClosureWithReferer,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}sponsorworkspace/projectclosurepreauthorisationconfirm`,
+      confirmAuthProjClosurePostBody,
+      postConfirmAuthProjClosureHeaders,
+    );
+    firstRedirectDuration = response.timings.duration;
+    const isPostConfirmAuthProjClosureReqSuccessful = check(response, {
+      "Post Confirm Auth Project Closure Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostConfirmAuthProjClosureReqSuccessful) {
+      console.error(
+        `Post Confirm Auth Project Closure Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getConfirmClosureOutcomeWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${getClosurePreAuthUrl}`,
+      },
+    );
+
+    const getConfirmClosureOutcomeHeaders = {
+      headers: getConfirmClosureOutcomeWithReferer,
+      redirects: 0,
+    };
+
+    const confirmClosureOutcomeUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    response = http.get(
+      `${confirmClosureOutcomeUrl}`,
+      getConfirmClosureOutcomeHeaders,
+    );
+    TrendConfirmClosureOutcomePageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    const isGetConfirmClosureOutcomeReqSuccessful = check(response, {
+      "Get Confirm Closure Outcome Request Success": () =>
+        response.status === 200,
+      "Confirm Closure Outcome Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${confirmClosureOutcomeCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetConfirmClosureOutcomeReqSuccessful) {
+      console.error(
+        `Get Confirm Closure Outcome Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    const getProjectClosuresWithReferer = Object.assign(
+      {},
+      getHeaders.headers,
+      {
+        Referer: `${getClosurePreAuthUrl}`,
+      },
+    );
+
+    const getSponsorProjectClosuresHeaders = {
+      headers: getProjectClosuresWithReferer,
+      redirects: 0,
+    };
+
+    response = http.get(
+      `${getSponsorProjectClosuresUrl}`,
+      getSponsorProjectClosuresHeaders,
+    );
+    TrendSponsorProjectClosuresPageReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    isGetSponsorProjectClosuresPageReqSuccessful = check(response, {
+      "Get Sponsor Project Closures Page Request Success": () =>
+        response.status === 200,
+      "Sponsor Project Closures Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${sponsorClosuresCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorProjectClosuresPageReqSuccessful) {
+      console.error(
+        `Get Sponsor Project Closures Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
       );
     }
     sleep(1);
