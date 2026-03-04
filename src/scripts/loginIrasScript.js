@@ -6,7 +6,7 @@ import { SharedArray } from "k6/data";
 import { generateTOTP } from "../utils/generateMfaKey.js";
 
 const baseURL =
-  "https://fd-rsp-applications-automationtest-uks-e7f6hkg3c5edhxex.a03.azurefd.net/";
+  "https://fd-rsp-applications-preprod-uks-f6esbkgtfncwc4gf.a03.azurefd.net/";
 
 const loginDetails = new SharedArray("postBodies", function () {
   return JSON.parse(open("../resources/data/autoTestData.json")).loginDetails;
