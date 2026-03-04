@@ -40,8 +40,8 @@ export const options = {
       executor: "ramping-vus",
       gracefulStop: "30s",
       stages: [
-        { target: 1, duration: "5s" },
-        { target: 0, duration: "5s" },
+        { target: 1, duration: "20s" },
+        { target: 0, duration: "20s" },
       ],
       gracefulRampDown: "10s",
       exec: "loginIras",
