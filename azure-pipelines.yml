@@ -4,10 +4,11 @@ parameters:
   - name: testScript
     displayName: Select a Test Script
     type: string
-    default: basicJourneysScriptPreProd
+    default: loginIrasScript
     values:
       - basicJourneysScriptAuto
       - basicJourneysScriptPreProd
+      - loginIrasScript
 
 trigger: none
 
