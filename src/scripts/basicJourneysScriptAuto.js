@@ -1,7 +1,7 @@
 // NOTE: PRIOR TO RUNNING YOU MUST COMPLETE THIS TODO LIST
 // 1. Ensure FutureIRAS.SysAdmin@hra.nhs.uk user has System Admin, Study-wide Reviewer and Sponsor roles
 //    Ensure reviewerId in script below is still valid for FutureIRAS.SysAdmin@hra.nhs.uk in this env
-// 2. Check FutureIRAS.SysAdmin@hra.nhs.uk user is assigned as a sponsor for the review body Ministry of Defence - Defence Science Technology Laboratory, assign if necessary
+// 2. Check FutureIRAS.SysAdmin@hra.nhs.uk user is assigned as an Organisation Admin for the organisation Ministry of Defence - Defence Science Technology Laboratory, assign if necessary
 //    Ensure sponsorOrgId and rtsId in script below is still valid for Ministry of Defence - Defence Science Technology Laboratory in this env
 // 3. Ensure revBodyProfileIds and userProfileIds arrays in preProdTestData.json are filled with valid values for k6 Test Review bodies and Users (minimum 50, the more the better)
 //    If necessary generate them quickly by first running the script using only on the Create Review Body and Create User requests
@@ -13,6 +13,11 @@
 //    Co-ordinate with test team when running in this env as it will clash with the automation test and the IRAS projects spreadsheet
 // POST TEST RUN ACTIONS
 // 6. Consider data cleanup for the k6 review bodies and users created, particularly if testing is complete and there are no immmediate plans for further tests
+// RUNNING NOTES
+// Cannot run more then single user load for create project flow due to cms issue (RSP-6687)
+// This therefore also effects all downstream modification journeys which must be run with single user load
+// Backstage flows Manage Users, Manage Review Bodies, Manage Sponsor and Sponsor Workspace Manage User Journeys are not effect
+// Therefore they can be run with the desired user load
 import { sleep, group, fail, check } from "k6";
 import http from "k6/http";
 import { Trend } from "k6/metrics";
@@ -718,8 +723,7 @@ export function basicJourneysScript(data) {
   let modificationDetailsUrl;
   let timestamp;
   let orgName;
-  let emailAdd;
-  let sponsorAddUserId;
+  let manageAddUserEmail;
   let sponsorAddUserEmail;
   let projectRecordId;
   let irasId;
@@ -910,9 +914,28 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
-    response = http.get(
-      `${baseURL}reviewbody/view?SearchQuery=k6&PageSize=20`,
-      getHeaders,
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const searchRevBodyPostBody =
+      scriptData[0][0].searchRevBodyPostBody[0].postBody;
+
+    let searchReviewBodyPostBody = Object.assign({}, searchRevBodyPostBody, {
+      __RequestVerificationToken: `${requestVerificationToken}`,
+    });
+
+    const postSearchRevBodyHeaders = {
+      headers: postHeaders.headers,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}reviewbody/applyfilters`,
+      searchReviewBodyPostBody,
+      postSearchRevBodyHeaders,
     );
     TrendRevBodyListSearchReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
@@ -1414,6 +1437,7 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
+    //FIRST ADDED USER USER FOR MANAGE SPONSOR JOURNEY
     response = http.get(`${baseURL}admin/users/createuser`, getHeaders);
     TrendAddUserReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -1438,15 +1462,18 @@ export function basicJourneysScript(data) {
       .find("input[type=hidden][name=__RequestVerificationToken]")
       .first()
       .attr("value");
+
     timestamp = Date.now();
-    emailAdd = `${emailPrefix}${timestamp}${emailSuffix}`;
+    manageAddUserEmail = `${emailPrefix}${timestamp}${emailSuffix}`;
+
     const selectedUserPostBody = randomItem(userPostBodies).postBody;
-    const confirmUserPostBody = Object.assign({}, selectedUserPostBody, {
+    let confirmUserPostBody = Object.assign({}, selectedUserPostBody, {
       Id: "",
       OriginalEmail: "",
-      Email: `${emailAdd}`,
+      Email: `${manageAddUserEmail}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
+
     response = http.post(
       `${baseURL}admin/users/confirmusersubmission`,
       confirmUserPostBody,
@@ -1454,7 +1481,7 @@ export function basicJourneysScript(data) {
     );
     TrendConfirmAddUserReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
-    const isPostConfirmAddUserPageReqSuccessful = check(response, {
+    let isPostConfirmAddUserPageReqSuccessful = check(response, {
       "Confirm Add User Page Request Success": () => response.status === 200,
       "Confirm Add User Page Loaded Correctly": (res) =>
         res.body.indexOf(`${confirmAddUserCheck}`) !== -1,
@@ -1475,11 +1502,13 @@ export function basicJourneysScript(data) {
       .find("input[type=hidden][name=__RequestVerificationToken]")
       .first()
       .attr("value");
-    const submitUserPostBody = Object.assign({}, selectedUserPostBody, {
+
+    let submitUserPostBody = Object.assign({}, selectedUserPostBody, {
       Status: "Active",
-      Email: `${emailAdd}`,
+      Email: `${manageAddUserEmail}`,
       __RequestVerificationToken: `${requestVerificationToken}`,
     });
+
     response = http.post(
       `${baseURL}admin/users/submituser`,
       submitUserPostBody,
@@ -1487,7 +1516,7 @@ export function basicJourneysScript(data) {
     );
     TrendSubmitAddUserReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
-    const isPostSubmitAddUserPageReqSuccessful = check(response, {
+    let isPostSubmitAddUserPageReqSuccessful = check(response, {
       "Submit Add User Page Request Success": () => response.status === 200,
       "Submit Add User Page Loaded Correctly": (res) =>
         res.body.indexOf(`${submitAddUserCheck}`) !== -1,
@@ -1522,14 +1551,171 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
-    response = http.get(
-      `${baseURL}admin/users?SearchQuery=k6&PageSize=20`,
-      getHeaders,
+    //ADDING SECOND USER FOR SPONSOR WORKSPACE JOURNEY
+    response = http.get(`${baseURL}admin/users/createuser`, getHeaders);
+    TrendAddUserReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    isGetAddUsersPageReqSuccessful = check(response, {
+      "Add User Page Request Success": () => response.status === 200,
+      "Add User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${addUserPageCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
     );
-    TrendManageUsersSearchReqDuration.add(response.timings.duration);
+    if (!isGetAddUsersPageReqSuccessful) {
+      console.error(
+        `Get Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    timestamp = Date.now();
+    sponsorAddUserEmail = `${emailPrefix}${timestamp}${emailSuffix}`;
+
+    confirmUserPostBody = Object.assign({}, selectedUserPostBody, {
+      Id: "",
+      OriginalEmail: "",
+      Email: `${sponsorAddUserEmail}`,
+      __RequestVerificationToken: `${requestVerificationToken}`,
+    });
+    response = http.post(
+      `${baseURL}admin/users/confirmusersubmission`,
+      confirmUserPostBody,
+      postHeaders,
+    );
+    TrendConfirmAddUserReqDuration.add(response.timings.duration);
     TrendTransactionalReqDuration.add(response.timings.duration);
+    isPostConfirmAddUserPageReqSuccessful = check(response, {
+      "Confirm Add User Page Request Success": () => response.status === 200,
+      "Confirm Add User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${confirmAddUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostConfirmAddUserPageReqSuccessful) {
+      console.error(
+        `Post Confirm Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    submitUserPostBody = Object.assign({}, selectedUserPostBody, {
+      Status: "Active",
+      Email: `${sponsorAddUserEmail}`,
+      __RequestVerificationToken: `${requestVerificationToken}`,
+    });
+
+    response = http.post(
+      `${baseURL}admin/users/submituser`,
+      submitUserPostBody,
+      postHeaders,
+    );
+    TrendSubmitAddUserReqDuration.add(response.timings.duration);
+    TrendTransactionalReqDuration.add(response.timings.duration);
+    isPostSubmitAddUserPageReqSuccessful = check(response, {
+      "Submit Add User Page Request Success": () => response.status === 200,
+      "Submit Add User Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${submitAddUserCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostSubmitAddUserPageReqSuccessful) {
+      console.error(
+        `Post Submit Add User Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    response = http.get(`${baseURL}admin/users`, getHeaders);
+    TrendManageUsersListReqDuration.add(response.timings.duration);
+    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    isGetManagUsersListPageReqSuccessful = check(response, {
+      "Manage Users List Page Request Success": () => response.status === 200,
+      "Manage Users List Page Loaded Correctly": (res) =>
+        res.body.indexOf(`${manageUserListCheck}`) !== -1,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetManagUsersListPageReqSuccessful) {
+      console.error(
+        `Get Manage Users List Page Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+    userThinkTime(2, 4);
+
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    const searchUsersPostBody =
+      scriptData[0][0].searchUsersPostBody[0].postBody;
+
+    let searchManageUsersPostBody = Object.assign({}, searchUsersPostBody, {
+      __RequestVerificationToken: `${requestVerificationToken}`,
+    });
+
+    const postSearchManageUsersHeaders = {
+      headers: postHeaders.headers,
+      redirects: 0,
+    };
+
+    response = http.post(
+      `${baseURL}admin/applyfilters?fromPagination=false`,
+      searchManageUsersPostBody,
+      postSearchManageUsersHeaders,
+    );
+    let firstRedirectDuration = response.timings.duration;
+    let isPostManageUsersSearchReqSuccessful = check(response, {
+      "Post Manage Users List Search Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostManageUsersSearchReqSuccessful) {
+      console.error(
+        `Post Manage Users List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getSearchManageUsersHeaders = {
+      headers: getHeaders.headers,
+      redirects: 0,
+    };
+
+    response = http.get(`${baseURL}admin/users`, getSearchManageUsersHeaders);
+    TrendManageUsersSearchReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
     let isGetManageUsersSearchReqSuccessful = check(response, {
-      "Manage Users List Search Request Success": () => response.status === 200,
+      "Get Manage Users List Search Request Success": () =>
+        response.status === 200,
       "Manage Users List Search Loaded Correctly": (res) =>
         res.body.indexOf(`${manageUserListCheck}`) !== -1,
     });
@@ -1772,14 +1958,46 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
-    response = http.get(
-      `${baseURL}admin/users?SearchQuery=k6&PageSize=20`,
-      getHeaders,
+    requestVerificationToken = response
+      .html()
+      .find("input[type=hidden][name=__RequestVerificationToken]")
+      .first()
+      .attr("value");
+
+    searchManageUsersPostBody = Object.assign({}, searchUsersPostBody, {
+      __RequestVerificationToken: `${requestVerificationToken}`,
+    });
+
+    response = http.post(
+      `${baseURL}admin/applyfilters?fromPagination=false`,
+      searchManageUsersPostBody,
+      postSearchManageUsersHeaders,
     );
-    TrendManageUsersSearchReqDuration.add(response.timings.duration);
-    TrendTransactionalReqDuration.add(response.timings.duration);
+    firstRedirectDuration = response.timings.duration;
+    isPostManageUsersSearchReqSuccessful = check(response, {
+      "Post Manage Users List Search Request Success": () =>
+        response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isPostManageUsersSearchReqSuccessful) {
+      console.error(
+        `Post Manage Users List Search Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    response = http.get(`${baseURL}admin/users`, getSearchManageUsersHeaders);
+    TrendManageUsersSearchReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    ); //combining duration of intial request and redirect requests
+    TrendTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
     isGetManageUsersSearchReqSuccessful = check(response, {
-      "Manage Users List Search Request Success": () => response.status === 200,
+      "Get Manage Users List Search Request Success": () =>
+        response.status === 200,
       "Manage Users List Search Loaded Correctly": (res) =>
         res.body.indexOf(`${manageUserListCheck}`) !== -1,
     });
@@ -3473,7 +3691,9 @@ export function basicJourneysScript(data) {
   });
 
   group("Modification Authorised by Sponsor Journey", function () {
+    const rtsId = "98684";
     const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac";
+
     response = http.get(`${baseURL}`, getHeaders);
     TrendHomePageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -3513,10 +3733,35 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
-    const getSponsorAuthUrl = `${baseURL}sponsorworkspace/modifications?sponsorOrganisationUserId=${sponsorOrgId}`;
+    const getSponsorSelectorHeaders = {
+      headers: getHeaders.headers,
+      redirects: 0,
+    };
+
+    const getSponsorSelectorUrl = `${baseURL}sponsorworkspace/sponsorselector?sponsorOrganisationUserId=${sponsorOrgId}`;
+    response = http.get(`${getSponsorSelectorUrl}`, getSponsorSelectorHeaders);
+    let firstRedirectDuration = response.timings.duration;
+    let isGetSponsorSelectorReqSuccessful = check(response, {
+      "Get Sponsor Selector Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorSelectorReqSuccessful) {
+      console.error(
+        `Get Sponsor Selector Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getSponsorAuthUrl = `${baseURL}sponsorworkspace/modifications?sponsorOrganisationUserId=${sponsorOrgId}&rtsId=${rtsId}`;
     response = http.get(`${getSponsorAuthUrl}`, getHeaders);
-    TrendSponsorAuthorisationsPageReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    TrendSponsorAuthorisationsPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    TrendNonTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
     let isGetSponsorAuthorisationsPageReqSuccessful = check(response, {
       "Get Sponsor Authorisations Page Request Success": () =>
         response.status === 200,
@@ -3571,7 +3816,7 @@ export function basicJourneysScript(data) {
       searchSponsorAuthorisationsPostBody,
       postSearchSponsorAuthHeaders,
     );
-    let firstRedirectDuration = response.timings.duration;
+    firstRedirectDuration = response.timings.duration;
     const isPostSearchSponsorAuthReqSuccessful = check(response, {
       "Post Search Sponsor Authorisations Request Success": () =>
         response.status === 302,
@@ -3628,8 +3873,9 @@ export function basicJourneysScript(data) {
       redirects: 0,
     };
 
-    const sponsorCheckAuthUrl = `${baseURL}sponsorworkspace/checkandauthorise?projectRecordId=${projectRecordId}&irasId=${irasId}&projectModificationId=${modificationId}&sponsorOrganisationUserId=${sponsorOrgId}`;
-
+    const sponsorCheckAuthUrl = encodeURI(
+      `${baseURL}sponsorworkspace/checkandauthorise?projectRecordId=${projectRecordId}&irasId=${irasId}&shortTitle=${shortTitle}&projectModificationId=${modificationId}&sponsorOrganisationUserId=${sponsorOrgId}&rtsId=${rtsId}`,
+    );
     response = http.get(`${sponsorCheckAuthUrl}`, getSponsorCheckAuthHeaders);
     TrendCheckAuthorisePageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);
@@ -3656,6 +3902,13 @@ export function basicJourneysScript(data) {
       .first()
       .attr("value");
 
+    const modificationIdentifier = response
+      .html()
+      .find("dd[class=govuk-summary-list__value]")
+      .eq(2)
+      .text()
+      .trim();
+
     const sponsorAuthPostBody =
       scriptData[0][0].sponsorAuthPostBody[0].postBody;
 
@@ -3669,6 +3922,8 @@ export function basicJourneysScript(data) {
         ModificationId: `${modificationId}`,
         SponsorOrganisationUserId: `${sponsorOrgId}`,
         ProjectModificationId: `${modificationId}`,
+        ModificationIdentifier: `${modificationIdentifier}`,
+        RtsId: `${rtsId}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
       },
     );
@@ -4635,7 +4890,7 @@ export function basicJourneysScript(data) {
     userThinkTime(2, 4);
 
     response = http.get(
-      `${baseURL}sponsororganisations/viewadduser?SearchQuery=k6&RtsId=${rtsId}&PageSize=20`,
+      `${baseURL}sponsororganisations/viewadduser?SearchQuery=${manageAddUserEmail}&RtsId=${rtsId}&PageSize=20`,
       getHeaders,
     );
     TrendSearchAddSponsorUserReqDuration.add(response.timings.duration);
@@ -4659,9 +4914,7 @@ export function basicJourneysScript(data) {
 
     const getAddUserRoleUrl = `${baseURL}${response
       .html()
-      .find("tbody .govuk-tag--green")
-      .parents("tr")
-      .find("a[class=govuk-link]")
+      .find("div[class=govuk-grid-column-full] a[class=govuk-link]")
       .first()
       .attr("href")
       .replace("/", "")}`;
@@ -4671,29 +4924,6 @@ export function basicJourneysScript(data) {
     const userId = getAddUserRoleUrl
       .substring(userIdStart, userIdEnd)
       .replace("userId=", "");
-
-    const sponsorAddUserUrl = `${baseURL}${response
-      .html()
-      .find("tbody .govuk-tag--green")
-      .parents("tr")
-      .find("a[class=govuk-link]")
-      .last()
-      .attr("href")
-      .replace("/", "")}`;
-
-    const sponsorAddUserIdStart = sponsorAddUserUrl.indexOf("userId=");
-    const sponsorAddUserIdEnd = sponsorAddUserUrl.indexOf("&rtsId");
-    sponsorAddUserId = sponsorAddUserUrl
-      .substring(sponsorAddUserIdStart, sponsorAddUserIdEnd)
-      .replace("userId=", "");
-
-    sponsorAddUserEmail = response
-      .html()
-      .find("tbody .govuk-tag--green")
-      .parents("tr")
-      .find(".line-break-anywhere")
-      .last()
-      .text();
 
     response = http.get(`${getAddUserRoleUrl}`, getHeaders);
     TrendAddSponsorUserRoleReqDuration.add(response.timings.duration);
@@ -4777,10 +5007,7 @@ export function basicJourneysScript(data) {
       redirects: 0,
     };
 
-    const checkAddSponsorUserUrl = `${baseURL}${response.headers.Location.replace(
-      "/",
-      "",
-    )}`;
+    const checkAddSponsorUserUrl = `${baseURL}sponsororganisations/viewuser?rtsId=${rtsId}&userId=${userId}&addUser=True`;
 
     response = http.get(
       `${checkAddSponsorUserUrl}`,
@@ -5300,7 +5527,15 @@ export function basicJourneysScript(data) {
       redirects: 0,
     };
 
-    const myOrganisationAddUserRoleUrl = `${baseURL}sponsorworkspace/myorganisationusersadduserrole?rtsId=${rtsId}&userId=${sponsorAddUserId}`;
+    const myOrganisationAddUserRoleUrl = `${baseURL}${response.headers.Location.replace(
+      "/",
+      "",
+    )}`;
+
+    const userIdStart = myOrganisationAddUserRoleUrl.indexOf("userId=");
+    const userId = myOrganisationAddUserRoleUrl
+      .substring(userIdStart)
+      .replace("userId=", "");
 
     response = http.get(
       `${myOrganisationAddUserRoleUrl}`,
@@ -5342,7 +5577,7 @@ export function basicJourneysScript(data) {
       redirects: 0,
     };
 
-    const myOrganisationAddUserSponsorRoleUrl = `${baseURL}sponsorworkspace/myorganisationusersadduserrole?role=sponsor&rtsId=${rtsId}&userId=${sponsorAddUserId}&role=&nextPage=true`;
+    const myOrganisationAddUserSponsorRoleUrl = `${baseURL}sponsorworkspace/myorganisationusersadduserrole?role=sponsor&rtsId=${rtsId}&userId=${userId}&role=&nextPage=true`;
     response = http.get(
       `${myOrganisationAddUserSponsorRoleUrl}`,
       getMyOrgAddUserSponsorRoleHeaders,
@@ -5541,7 +5776,7 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
-    const getMyOrgUserProfileUrl = `${baseURL}sponsorworkspace/myorganisationusers/user?rtsId=${rtsId}&userId=${sponsorAddUserId}`;
+    const getMyOrgUserProfileUrl = `${baseURL}sponsorworkspace/myorganisationusers/user?rtsId=${rtsId}&userId=${userId}`;
     response = http.get(`${getMyOrgUserProfileUrl}`, getHeaders);
     TrendMyOrganisationUserProfilePageReqDuration.add(
       response.timings.duration,
@@ -5564,7 +5799,7 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
-    const getMyOrgDisableUserUrl = `${baseURL}sponsorworkspace/disableuser?userId=${sponsorAddUserId}&email=${sponsorAddUserEmail}`;
+    const getMyOrgDisableUserUrl = `${baseURL}sponsorworkspace/disableuser?userId=${userId}&email=${sponsorAddUserEmail}`;
     response = http.get(`${getMyOrgDisableUserUrl}`, getHeaders);
     TrendMyOrganisationDisableUserPageReqDuration.add(
       response.timings.duration,
@@ -5600,7 +5835,7 @@ export function basicJourneysScript(data) {
       {},
       myOrgUserDisablePostBody,
       {
-        Id: `${sponsorAddUserId}`,
+        Id: `${userId}`,
         Email: `${sponsorAddUserEmail}`,
         RtsId: `${rtsId}`,
         __RequestVerificationToken: `${requestVerificationToken}`,
@@ -5682,6 +5917,7 @@ export function basicJourneysScript(data) {
   });
 
   group("Close Project Journey", function () {
+    const rtsId = "98684";
     const sponsorOrgId = "4334aedd-4720-4d89-a4d7-6d625da4a9ac";
 
     response = http.get(`${baseURL}`, getHeaders);
@@ -6086,10 +6322,35 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
-    const getSponsorAuthUrl = `${baseURL}sponsorworkspace/modifications?sponsorOrganisationUserId=${sponsorOrgId}`;
+    const getSponsorSelectorHeaders = {
+      headers: getHeaders.headers,
+      redirects: 0,
+    };
+
+    const getSponsorSelectorUrl = `${baseURL}sponsorworkspace/sponsorselector?sponsorOrganisationUserId=${sponsorOrgId}`;
+    response = http.get(`${getSponsorSelectorUrl}`, getSponsorSelectorHeaders);
+    firstRedirectDuration = response.timings.duration;
+    let isGetSponsorSelectorReqSuccessful = check(response, {
+      "Get Sponsor Selector Request Success": () => response.status === 302,
+    });
+    console.info(
+      "Request Sent: " + response.request.method + " " + response.request.url,
+    );
+    if (!isGetSponsorSelectorReqSuccessful) {
+      console.error(
+        `Get Sponsor Selector Request Failed - ${response.url} \nStatus - ${response.status}` +
+          `\nResponse Time - ${response.timings.duration} \nError Code - ${response.error_code}`,
+      );
+    }
+
+    const getSponsorAuthUrl = `${baseURL}sponsorworkspace/modifications?sponsorOrganisationUserId=${sponsorOrgId}&rtsId=${rtsId}`;
     response = http.get(`${getSponsorAuthUrl}`, getHeaders);
-    TrendSponsorAuthorisationsPageReqDuration.add(response.timings.duration);
-    TrendNonTransactionalReqDuration.add(response.timings.duration);
+    TrendSponsorAuthorisationsPageReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
+    TrendNonTransactionalReqDuration.add(
+      response.timings.duration + firstRedirectDuration,
+    );
     let isGetSponsorAuthorisationsPageReqSuccessful = check(response, {
       "Get Sponsor Authorisations Page Request Success": () =>
         response.status === 200,
@@ -6107,7 +6368,7 @@ export function basicJourneysScript(data) {
     }
     userThinkTime(2, 4);
 
-    const getSponsorProjectClosuresUrl = `${baseURL}sponsorworkspace/projectclosures?sponsorOrganisationUserId=${sponsorOrgId}`;
+    const getSponsorProjectClosuresUrl = `${baseURL}sponsorworkspace/projectclosures?sponsorOrganisationUserId=${sponsorOrgId}&rtsId=${rtsId}`;
     response = http.get(`${getSponsorProjectClosuresUrl}`, getHeaders);
     TrendSponsorProjectClosuresPageReqDuration.add(response.timings.duration);
     TrendNonTransactionalReqDuration.add(response.timings.duration);

@@ -27,6 +27,15 @@
             }
           }
         ],
+        "searchRevBodyPostBody": [
+          {
+            "postBody": {
+              "Search.SearchQuery": "k6",
+              "PageSize": "20",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
         "revBodyStatusPostBody": [
           {
             "postBody": {
@@ -91,6 +100,16 @@
               "UserRoles[3].Id": "952697e4-3d60-4172-b7bf-ee5ed6a7a1c3",
               "UserRoles[4].Name": "workflow_co-ordinator",
               "UserRoles[4].Id": "97977acf-0bd5-48c2-9cf5-bc3fd215e5bb",
+              "__RequestVerificationToken": ""
+            }
+          }
+        ],
+        "searchUsersPostBody": [
+          {
+            "postBody": {
+              "Search.SearchQuery": "k6",
+              "PageSize": "20",
+              "PageNumber": "1",
               "__RequestVerificationToken": ""
             }
           }
@@ -609,6 +628,8 @@
               "SponsorOrganisationUserId": "",
               "ProjectModificationId": "",
               "ReviewType": "Review required",
+              "ModificationIdentifier": "",
+              "RtsId": "",
               "Outcome": "Authorised",
               "__RequestVerificationToken": ""
             }
@@ -948,11 +969,11 @@
       "revBodyListCheck": "Find a review body",
       "addRevBodyCheck": "Add a new review body",
       "confirmRevBodyChangeCheck": "Check the information here is correct before creating the profile.",
-      "submitRevBodyCheck": "Review body has been successfully added",
+      "submitRevBodyCheck": "Review body has been added",
       "revBodyProfileCheck": "Review body profile:",
       "revBodyEditCheck": "Edit review body details",
       "revBodyStatusChangeCheck": "Confirm that you want to",
-      "revBodyConfirmStatusChangeCheck": "to confirm that their profile has been",
+      "revBodyConfirmStatusChangeCheck": "again if needed from the Manage review bodies section.",
       "revBodyAuditCheck": "Audit history:",
       "revBodyUserListCheck": "Search, assign or remove users from this review body",
       "revBodyAddUserCheck": "Search for user to add to review body",
@@ -963,7 +984,7 @@
       "userProfileCheck": "User profile:",
       "userEditCheck": "Edit user profile record",
       "userStatusChangeCheck": "Confirm that you want to",
-      "submitUserStatusChangeCheck": "to confirm that their record has been",
+      "submitUserStatusChangeCheck": "again if needed from the Manage users section.",
       "userAuditCheck": "Audit history:",
       "manageSponsorOrgsCheck": "Manage sponsor organisations",
       "sponsorOrgProfilePageCheck": "Sponsor organisation profile:",
@@ -973,7 +994,7 @@
       "addSponsorUserRolePageCheck": "Add user role",
       "checkAddSponsorUserCheck": "Check and add user",
       "sponsorOrgUserProfilePageCheck": "View and edit user profile",
-      "disableSponsorUserPageCheck": "Confirm that you want to disable",
+      "disableSponsorUserPageCheck": "Confirm that you want to deactivate",
       "myOrgsCheck": "My organisations",
       "myOrgProfileCheck": "Sponsor organisations profile",
       "myOrgUsersCheck": "Add an existing user to an organisation",
@@ -983,7 +1004,7 @@
       "myOrgCheckAddUserCheck": "Check and confirm user",
       "myOrgSearchUsersCheck": "There are no matching results",
       "myOrgUserProfileCheck": "User profile",
-      "myOrgDisableUserCheck": "Confirm that you want to disable",
+      "myOrgDisableUserCheck": "Confirm that you want to deactivate",
       "myResearchPageCheck": "My research",
       "createProjectRecordPageCheck": "Create a project record",
       "startProjectIrasPageCheck": "This is the 4 to 7 digit ID generated when you created your initial application",
@@ -1014,12 +1035,12 @@
       "approvalsWorkspaceCheck": "Approvals",
       "modificationsTasklistCheck": "This page shows all the modifications that are ready for you to assign",
       "selectReviewerCheck": "Select a reviewer",
-      "getModAssignSuccessCheck": "Modifications have been successfully assigned",
+      "getModAssignSuccessCheck": "Modifications assigned",
       "myTasklistCheck": "My tasklist",
       "modReviewAllChangesCheck": "Next steps",
       "modReviewOutcomeCheck": "Review outcome",
       "confirmReviewOutcomeCheck": "Check and send review outcome to applicant",
-      "submittedReviewOutcomeCheck": "Review outcome successfully sent to applicant",
+      "submittedReviewOutcomeCheck": "Review outcome sent to applicant",
       "closeProjectCheck": "Close Project",
       "projectClosureCheck": "Closure sent to sponsor",
       "closurePreAuthCheck": "Are you sure you want to close the project?",
