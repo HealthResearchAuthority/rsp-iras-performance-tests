@@ -8,7 +8,7 @@ parameters:
     values:
       - basicJourneysScriptAuto
       - basicJourneysScriptPreProd
-      - loginIrasScript.js
+      - loginIrasScript
 
 trigger: none
 
